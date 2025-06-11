@@ -32,20 +32,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
   // Xử lý sự kiện click đánh giá sao
-  const stars = document.querySelectorAll("#rating-stars .star");
-
-  stars.forEach(star => {
-    star.addEventListener("click", () => {
-      const val = parseInt(star.dataset.value, 10);
-
-      stars.forEach(s => {
-        const sVal = parseInt(s.dataset.value, 10);
-        if (sVal <= val) {
-          s.classList.add("active");
-        } else {
-          s.classList.remove("active");
-        }
-      });
-    });
-  });
+  
 });

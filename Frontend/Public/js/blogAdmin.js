@@ -123,12 +123,13 @@ document.addEventListener('DOMContentLoaded', () => {
   async function approveItem(id, type) {
     try {
       let url;
-      if(type === 'blog') url = `/api/admin/approve-blog/${id}`;
-      else if(type === 'document') url = `/api/admin/approve-document/${id}`;
+      if(type === 'blog') url = `https://backend-yl09.onrender.com/api/admin/approve-blog/${id}`;
+      else if(type === 'document') url = `https://backend-yl09.onrender.com/api/admin/approve-document/${id}`;
       else throw new Error('Loại tài liệu không hợp lệ');
 
       const res = await fetch(url, {
         method: 'PUT',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' }
       });
       if (!res.ok) throw new Error('Duyệt tài liệu thất bại');
@@ -323,7 +324,16 @@ function showConfirmModal(message, onConfirm) {
   confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
 
   newConfirmBtn.addEventListener("click", () => {
-    bsModal.hide();
-    onConfirm();
-  });
+  bsModal.hide();
+  onConfirm();
+
+  // ✅ Xoá lớp backdrop của Bootstrap nếu còn tồn tại
+  const backdrop = document.querySelector('.modal-backdrop');
+  if (backdrop) backdrop.remove();
+
+  // ✅ Cho phép body scroll trở lại
+  document.body.classList.remove('modal-open');
+  document.body.style.overflow = ''; // reset overflow
+});
+
 }

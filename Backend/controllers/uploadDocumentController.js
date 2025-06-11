@@ -5,6 +5,21 @@ const puppeteer = require('puppeteer');
 const Document = require('../models/Document');
 const data = require('../data.json');
 
+async function generateThumbnailFromPdf(pdfPath, outputImagePath) {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  // Mở file PDF
+  await page.goto(`file://${path.resolve(pdfPath)}`, { waitUntil: 'networkidle0' });
+
+  // Tùy chỉnh viewport để chụp trang đầu
+  await page.setViewport({ width: 800, height: 1000 });
+
+  // Chụp ảnh
+  await page.screenshot({ path: outputImagePath, fullPage: false });
+  await browser.close();
+}
+
 async function convertDocxToPdf(inputPath, outputPath) {
   const { value: html } = await mammoth.convertToHtml({ path: inputPath });
 
@@ -68,6 +83,15 @@ exports.uploadDocument = async (req, res) => {
         fs.unlinkSync(req.file.path);
 
         filePathToSave = pdfFilePath;
+        // Tạo ảnh thumbnail từ file PDF
+        const previewFilename = path.basename(pdfFilePath, '.pdf') + '.png';
+        const previewPath = path.join('uploads/previews', previewFilename);
+
+        // Đảm bảo thư mục tồn tại
+        fs.mkdirSync('uploads/previews', { recursive: true });
+
+        await generateThumbnailFromPdf(pdfFilePath, previewPath);
+
       } catch (convertError) {
         console.error('Lỗi chuyển đổi DOCX sang PDF:', convertError);
         // Nếu convert lỗi, xóa file đã upload, trả về lỗi

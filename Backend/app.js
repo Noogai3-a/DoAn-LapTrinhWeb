@@ -152,13 +152,13 @@ app.get('/blog-post', authMiddleware,(req, res) => {
 });
 
 //Đăng tài liệu
-app.use('/api/documents', uploadRoutes);
+app.use('/api/upload-documents', uploadRoutes);         // chứa: POST upload
 
 //Duyệt tài liệu
-app.use('/api/documents', documentRoutes);
+app.use('/api/review-documents', documentRoutes);       // chứa: /:id, duyệt/xóa document
 
 //Xem tài liệu 
-app.use('/api/documents', reviewDocRoutes);
+app.use('/api/documents', reviewDocRoutes);             // chứa: /latest, /popular → frontend dùng
 app.use('/uploads', express.static('uploads'));
 app.get('/document.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../Frontend/Public/document.html'));
@@ -176,7 +176,7 @@ app.get('/upload', authMiddleware, (req, res) => {
 
 app.use('/api/admin', adminRoutes);
 app.use('/api/blogs', blogRoutes);
-app.use('/api/documents', documentRoutes);
+app.use('/uploads/previews', express.static(path.join(__dirname, 'uploads/previews')));
 
 // Route trả thông tin người dùng
 app.get('/api/user-info', authMiddleware, (req, res) => {

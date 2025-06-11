@@ -10,6 +10,7 @@ const documentSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  imageUrl: String,
   subjectTypeSlug: {
     type: String,
     required: true,
