@@ -10,7 +10,7 @@
     { "source": "/forgot", "destination": "/forgot.html" },
     { "source": "/blog-post", "destination": "/blog-post.html" },
     { "source": "/blog-read", "destination": "/blog-read.html" },
-    { "source": "/userql", "destination": "/userql.html" },
+    { "source": "/userql", "destination": "/userQL.html" },
     { "source": "/usertk", "destination": "/userTK.html" },
     { "source": "/adminTL", "destination": "/adminTL.html" },
     { "source": "/adminTQ", "destination": "/adminTQ.html" },
