@@ -196,7 +196,54 @@ app.get('/api/user-info', authMiddleware, (req, res) => {
         return res.status(401).json({ msg: 'Not logged in' });
     }
 });
+// Thêm route đổi mật khẩu
+const bcrypt = require('bcryptjs');
+app.post('/api/change-password', authMiddleware, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ error: 'Vui lòng nhập đầy đủ mật khẩu hiện tại và mật khẩu mới' });
+        }
 
+        // Kiểm tra xem là admin hay user thông thường
+        const userModel = req.session.admin ? 
+            require('./models/Admin') : 
+            require('./models/User');
+        
+        const userId = req.session.admin ? 
+            req.session.admin.id : 
+            req.session.user.id;
+
+        // Tìm user trong database
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'USER_NOT_FOUND' });
+        }
+
+        // Kiểm tra mật khẩu hiện tại
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ error: 'INCORRECT_CURRENT_PASSWORD' });
+        }
+
+        // Kiểm tra mật khẩu mới không giống mật khẩu cũ
+        if (currentPassword === newPassword) {
+            return res.status(400).json({ error: 'NEW_PASSWORD_MUST_BE_DIFFERENT' });
+        }
+
+        // Hash mật khẩu mới và lưu vào database
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
+        await user.save();
+
+        // Trả về thành công
+        res.json({ success: true, message: 'Đổi mật khẩu thành công' });
+    } catch (error) {
+        console.error('Lỗi khi đổi mật khẩu:', error);
+        res.status(500).json({ error: 'SERVER_ERROR' });
+    }
+});
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
