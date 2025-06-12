@@ -59,6 +59,11 @@
     flex-direction: column;
     gap: 40px;
 }
+.section-title {
+    text-align: left;
+    width: 100%;
+    padding-left: 20px;
+}
 .section .section-title {
     text-align: left;
     font-size: 28px;
@@ -67,6 +72,7 @@
     width: 100%;
     padding-left: 20px;
 }
+
 
 .document-box{
     display: flex;
