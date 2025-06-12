@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     return `
       <a href="${fileUrl}" class="doc-item" target="_blank">
-        <img src="${thumbnail}" alt="${title}" class="blog-image">
+        <img src="${thumbnail}" alt="${title}" class="doc-image">
         <h3>${title}</h3>
         <h6>${subtitle}</h6>
         <p>${description.slice(0, 80)}...</p>
