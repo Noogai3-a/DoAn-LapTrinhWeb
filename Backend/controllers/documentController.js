@@ -100,4 +100,16 @@ exports.approveDocument = async (req, res) => {
   }
 };
 
+exports.getMyDocuments = async (req, res) => {
+  try {
+    const userId = req.user._id; // Đảm bảo middleware auth đã gắn user vào req
+    const documents = await Document.find({ uploader: user.username }).sort({ createdAt: -1 });
+
+    res.status(200).json(documents);
+  } catch (err) {
+    console.error("Lỗi khi lấy tài liệu của người dùng:", err);
+    res.status(500).json({ message: "Lỗi server khi lấy tài liệu người dùng" });
+  }
+};
+
 

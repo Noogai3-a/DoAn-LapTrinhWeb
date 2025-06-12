@@ -152,6 +152,75 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   loadMyBlogs();
+  loadMyDocuments();
+
+    async function loadMyDocuments() {
+    const container = document.getElementById("my-documents");
+    try {
+      const res = await fetch('https://backend-yl09.onrender.com/api/documents/my', {
+        credentials: 'include'
+      });
+
+      if (!res.ok) throw new Error("Không thể tải tài liệu");
+
+      const docs = await res.json();
+      if (!Array.isArray(docs) || docs.length === 0) {
+        container.innerHTML = `<p>Bạn chưa đăng tài liệu nào.</p>`;
+        return;
+      }
+
+      container.innerHTML = docs.map(doc => {
+        const fileUrl = `https://backend-yl09.onrender.com/${doc.fileUrl.replace(/\\/g, '/')}`;
+        const title = doc.title || "Tài liệu";
+        const desc = doc.description || "";
+        const id = doc._id;
+
+        return `
+          <div class="document-item" data-id="${id}">
+            <div class="doc-content">
+              <h3><a href="${fileUrl}" target="_blank">${title}</a></h3>
+              <p>${desc}</p>
+            </div>
+            <div class="doc-action">
+              <i class="fas fa-trash delete-icon"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Gắn sự kiện xoá
+      document.querySelectorAll(".document-item .delete-icon").forEach(button => {
+        button.addEventListener("click", async (e) => {
+          const docItem = e.target.closest(".document-item");
+          const docId = docItem.getAttribute("data-id");
+
+          showConfirmModal("Bạn có chắc chắn muốn xóa tài liệu này không?", async () => {
+            try {
+              const deleteRes = await fetch(`https://backend-yl09.onrender.com/api/review-documents/${docId}`, {
+                method: 'DELETE',
+                credentials: 'include'
+              });
+              if (!deleteRes.ok) {
+                const errData = await deleteRes.json();
+                showToast('Xóa thất bại: ' + (errData.msg || deleteRes.statusText), 'error');
+                return;
+              }
+
+              showToast('Xóa tài liệu thành công!', 'success');
+              loadMyDocuments(); // reload lại danh sách
+            } catch (err) {
+              showToast('Lỗi khi xóa tài liệu: ' + err.message, 'error');
+            }
+          });
+        });
+      });
+
+    } catch (err) {
+      console.error("❌ Lỗi khi tải tài liệu:", err);
+      container.innerHTML = `<p>Không thể tải tài liệu. Vui lòng thử lại sau.</p>`;
+    }
+  }
+
 });
 
 function showToast(message, type = 'success') {

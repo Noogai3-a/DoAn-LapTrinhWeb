@@ -1,16 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const documentController = require('../controllers/documentController');
+const apiAuth = require('../middleware/apiAuthMiddleware');
 
-// ✅ Route đặc biệt đặt trước
+// Các route phổ biến
 router.get('/latest', documentController.getLatestDocuments);
 router.get('/popular', documentController.getPopularDocuments);
-router.get(
-  '/by-subject/:subjectTypeSlug/:subjectNameSlug',
-  documentController.getDocumentsBySubject
-);
+router.get('/by-subject/:subjectTypeSlug/:subjectNameSlug', documentController.getDocumentsBySubject);
 
-// ❗ Nếu bạn có router.get('/:id', ...) thì đặt SAU CÙNG
+// Lấy tài liệu do user hiện tại đăng
+router.get('/my', apiAuth, documentController.getMyDocuments);
+
+// Route lấy chi tiết theo ID — đặt cuối cùng
 // router.get('/:id', documentController.getDocumentById);
 
 module.exports = router;

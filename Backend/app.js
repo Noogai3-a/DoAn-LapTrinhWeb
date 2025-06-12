@@ -89,6 +89,11 @@ const proxyRoutes = require('./routes/proxy');
 const uploadRoutes = require('./routes/uploadDocumentRoutes');
 const documentRoutes = require('./routes/reviewDocumentRoutes');
 const reviewDocRoutes = require('./routes/documentRoutes');
+const apiAuthMiddleware = require('./middleware/apiAuthMiddleware');
+const documentController = require('./controllers/documentController');
+
+app.get('/api/documents/my', apiAuthMiddleware, documentController.getMyDocuments);
+
 
 
 app.use('/api/auth', authRoutes);
