@@ -118,4 +118,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       container.innerHTML = `<p>Không thể tải bài viết. Vui lòng thử lại sau.</p>`;
     });
   }
+  function createDocumentHTML(doc) {
+  const fileUrl = `https://backend-yl09.onrender.com/${doc.fileUrl.replace(/\\/g, '/')}`;
+  const subtitle = `${doc.subjectNameLabel || ''} • ${doc.subjectTypeLabel || ''}`;
+  const title = doc.title || 'Tài liệu';
+  const thumbnail = doc.previewImage || '/assets/doc-default.png';
+
+  return `
+    <a href="${fileUrl}" class="blog-item" target="_blank">
+      <img src="${thumbnail}" alt="${title}" class="blog-image">
+      <h3>${title}</h3>
+      <h6>${subtitle}</h6>
+      <p>${doc.description || ''}</p>
+    </a>
+  `;
+}
+
 });
