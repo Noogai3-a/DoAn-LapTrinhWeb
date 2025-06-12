@@ -29,7 +29,7 @@ exports.getDocumentsBySubject = async (req, res) => {
   const query = {
     subjectTypeSlug,
     subjectNameSlug,
-    status: 'pending'
+    status: 'approved'
   };
 
   console.log('[MongoDB Query]', query);
