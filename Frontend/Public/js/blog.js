@@ -100,10 +100,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (blogs.length > 0) {
       const latestBlogs = [...blogs]
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 3);
+        .slice(0, 4);
       const mostViewedBlogs = [...blogs]
         .sort((a, b) => (b.views || 0) - (a.views || 0))
-        .slice(0, 3);
+        .slice(0, 4);
 
       blogListContainers[0].innerHTML = latestBlogs.map(createBlogItem).join('');
       blogListContainers[1].innerHTML = mostViewedBlogs.map(createBlogItem).join('');
