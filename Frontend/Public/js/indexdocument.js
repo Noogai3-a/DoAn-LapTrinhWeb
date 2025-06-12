@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const description = doc.description || "";
 
     return `
-      <a href="${fileUrl}" class="blog-item" target="_blank">
+      <a href="${fileUrl}" class="doc-item" target="_blank">
         <img src="${thumbnail}" alt="${title}" class="blog-image">
         <h3>${title}</h3>
         <h6>${subtitle}</h6>
