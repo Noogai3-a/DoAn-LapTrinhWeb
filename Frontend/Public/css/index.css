@@ -60,6 +60,30 @@
     gap: 40px;
 }
 
+.document-box{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.breadcrumb {
+    font-size: 30px;
+    font-weight: bold;
+    text-align: left;
+    align-self: flex-start; /* Đẩy riêng nó sang trái */
+    padding-top: 20px;
+    padding-left: 20px;
+}
+
+.document-grid {
+    display: flex;
+    justify-content: flex-start; 
+    flex-wrap: wrap;
+    gap: 30px;
+    padding-left: 20px;
+}
+
 .document h1 {
     font-size: 36px;
     color: #356859;
