@@ -87,6 +87,30 @@
     margin-bottom: 15px; 
 }
 
+.blog-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.blog-stats {
+    display: flex;
+    gap: 15px;
+    color: #777;
+    font-size: 12px;
+}
+
+.blog-stats span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.blog-stats i {
+    font-size: 14px;
+}
+
 .blog-item h6 {
     color: silver;
 }
@@ -176,5 +200,14 @@
         border-radius: 12px;
         transition: all 0.3s ease;
         cursor: pointer;
+    }
+    .blog-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .blog-stats {
+        font-size: 10px;
     }
 }

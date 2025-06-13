@@ -49,7 +49,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           alt="thumbnail" 
           class="blog-image lazy-img">
         <h3>${blog.title}</h3>
-        <h6>${date}</h6>
+        <div class="blog-meta">
+          <h6>${date}</h6>
+          <div class="blog-stats">
+            <span class="author"><i class="fas fa-user"></i> ${blog.author}</span>
+            <span class="views"><i class="fas fa-eye"></i> ${blog.views || 0}</span>
+          </div>
+        </div>
         <p>${contentText.substring(0, 50)}...</p>
       </a>
     `;

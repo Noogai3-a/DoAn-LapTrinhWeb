@@ -25,6 +25,7 @@ window.addEventListener("DOMContentLoaded", async function () {
 
     document.getElementById("post-title").innerText = blog.title;
     document.getElementById("post-date").innerText = formatDate(blog.createdAt);
+    document.getElementById("post-author").innerText = `Người viết: ${blog.author}`;
     document.getElementById("post-content").innerHTML = content;
 
     // Convert Google Drive link to direct download ID

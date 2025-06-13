@@ -157,6 +157,30 @@
   color: #777;
 }
 
+.blog-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.blog-stats {
+    display: flex;
+    gap: 15px;
+    color: #777;
+    font-size: 12px;
+}
+
+.blog-stats span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.blog-stats i {
+    font-size: 14px;
+}
+
 .document h1 {
     font-size: 36px;
     color: #356859;
@@ -393,6 +417,15 @@
     }
     .blog-item {
         padding: 10px;
+    }
+    .blog-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .blog-stats {
+        font-size: 10px;
     }
     .document-grid {
         grid-template-columns: repeat(1, 1fr);

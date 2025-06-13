@@ -91,7 +91,7 @@ exports.createBlog = async (req, res) => {
     const { uploadFileToDrive } = require('../uploads/googleDrive');
 
     const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
-    const siteUrl = process.env.SITE_URL || 'http://localhost:3000'; // Dùng để tạo link proxy
+    const siteUrl = process.env.SITE_URL || 'http://localhost:5500'; // Dùng để tạo link proxy
 
     if (!title || !content) {
       return res.status(400).json({ msg: 'Title and content are required' });
