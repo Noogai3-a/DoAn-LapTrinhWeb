@@ -3,6 +3,7 @@ const BlogContent = require('../models/BlogContent');
 const Comment = require('../models/Comment');
 const fs = require('fs');
 const { uploadFileToDrive } = require('../uploads/googleDrive');
+const { containsBadWords } = require('../utils/badWords');
 
 // --- Blog ---
 
@@ -252,6 +253,13 @@ exports.createComment = async (req, res) => {
       if (!parentExists) {
           return res.status(400).json({ msg: 'Parent comment not found' });
       }
+    }
+
+    if (containsBadWords(content)) {
+      return res.status(400).json({ 
+        msg: 'Comment chứa từ ngữ không phù hợp',
+        containsBadWords: true
+      });
     }
 
     const newComment = new Comment({

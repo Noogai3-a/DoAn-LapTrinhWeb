@@ -104,7 +104,7 @@
 }
 
 .comment-content {
-    background: #f8f8f8;
+    background: #f0f0f0;
     padding: 12px;
     border-radius: 10px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
@@ -135,7 +135,24 @@
 }
 
 .reply-item .comment-content {
-    background: #f0f0f0;
+    background: #f8f8f8;
+}
+
+.reply-button {
+    background: none;
+    border: none;
+    color: #007bff; /* Màu xanh của link */
+    cursor: pointer;
+    padding: 0;
+    font-size: 14px;
+    margin-top: 5px;
+    text-decoration: none; /* Bỏ gạch chân mặc định */
+    display: inline-block; /* Để có thể thêm padding nếu cần */
+}
+
+.reply-button:hover {
+    color: #0056b3; /* Màu xanh đậm hơn khi hover */
+    text-decoration: underline; /* Thêm gạch chân khi hover */
 }
 
 .reply-form {

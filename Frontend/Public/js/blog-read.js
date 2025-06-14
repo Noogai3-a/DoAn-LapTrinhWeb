@@ -113,6 +113,18 @@ function md5(string) {
   return CryptoJS.MD5(string).toString();
 }
 
+function containsBadWords(text) {
+  const badWords = [
+      'fuck', 'shit', 'damn', 'bitch', 'ass',
+      'đụ', 'địt', 'đéo', 'đcm', 'đcmn', 'đít',
+      'lồn', 'cặc', 'đụ', 'đéo', 'đcm', 'đcmn',
+      // Thêm các từ cấm khác vào đây
+  ];
+    
+  const lowerText = text.toLowerCase();
+  return badWords.some(word => lowerText.includes(word.toLowerCase()));
+}
+
 document.addEventListener('DOMContentLoaded', async function () {
   const form = document.querySelector('.comment-form');
   const textarea = form.querySelector('textarea');
@@ -198,8 +210,11 @@ document.addEventListener('DOMContentLoaded', async function () {
           
           if (!content) {
             showToast('Vui lòng nhập nội dung phản hồi', 'error');
+            return;          
+          }
+          if (containsBadWords(content)) {
+            showToast('Phản hồi chứa từ ngữ không phù hợp', 'error');
             return;
-          
           }
           submitButton.disabled = true;
           submitButton.textContent = 'Đang gửi...';
@@ -322,9 +337,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     const commentText = textarea.value.trim();
     if (!commentText) return alert('Vui lòng nhập bình luận');
     if (!blogId) return alert('Không xác định được bài viết');
+    if (containsBadWords(commentText)) {
+        showToast('Comment chứa từ ngữ không phù hợp', 'error');
+        return;
+    }
 
     if (!userInfo || !userInfo.username || !userInfo.email) {
-      // Chuyển trang đến login (thay URL theo dự án của bạn)
       window.location.href = '/login'; 
       return;
     }
