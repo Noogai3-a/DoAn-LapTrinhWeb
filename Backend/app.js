@@ -82,7 +82,6 @@ app.use('/json', express.static(path.join(__dirname, 'json')));
 
 //Imagines
 const multer = require('multer');
-const fs = require('fs');
 const upload = multer({ dest: 'uploads/Img/' });  // folder tạm lưu file upload
 const { uploadFileToDrive } = require('./uploads/googleDrive');
 
