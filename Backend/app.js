@@ -1,3 +1,10 @@
+const fs = require('fs');
+
+if (process.env.GOOGLE_CREDENTIALS) {
+  const decoded = Buffer.from(process.env.GOOGLE_CREDENTIALS, 'base64').toString('utf8');
+  fs.writeFileSync('credentials.json', decoded);
+}
+
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
