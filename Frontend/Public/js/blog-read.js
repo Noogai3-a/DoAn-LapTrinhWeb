@@ -271,6 +271,57 @@ document.addEventListener('DOMContentLoaded', async function () {
     await loadComments();
   }
 
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const commentText = textarea.value.trim();
+    if (!commentText) return alert('Vui lòng nhập bình luận');
+    if (!blogId) return alert('Không xác định được bài viết');
+
+    if (!userInfo || !userInfo.username || !userInfo.email) {
+      // Chuyển trang đến login (thay URL theo dự án của bạn)
+      window.location.href = '/login'; 
+      return;
+    }
+
+    try {
+      const res = await fetch(`https://backend-yl09.onrender.com/api/blogs/${blogId}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          blogId: blogId,
+          username: userInfo.username,
+          email: userInfo.email,
+          content: commentText
+        })
+      });
+
+      if (!res.ok) {
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const errData = await res.json();
+          throw new Error(errData.msg || 'Lỗi gửi bình luận');
+        } else {
+          const text = await res.text();
+          console.error('Error response text:', text);
+          throw new Error('Server trả về lỗi không phải JSON');
+        }
+      }
+      // Render comment mới trực tiếp mà không load lại toàn bộ
+      const newComment = {
+        username: userInfo.username,
+        email: userInfo.email,
+        content: commentText
+      };
+      await renderComment(newComment);
+      // Xóa textarea để người dùng có thể nhập bình luận mới
+      textarea.value = '';
+    } catch (err) {
+      console.error('Gửi bình luận lỗi:', err);
+      alert(err.message);
+    }
+  });
   replyForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const textarea = replyForm.querySelector('textarea');
