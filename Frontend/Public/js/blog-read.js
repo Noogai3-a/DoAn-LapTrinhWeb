@@ -167,15 +167,16 @@ document.addEventListener('DOMContentLoaded', async function () {
             <strong>${escapeHtml(comment.username)}</strong>
             <p>${escapeHtml(comment.content)}</p>
             <button class="reply-button">Reply</button>
-            <div class="reply-form" style="display: none;">
+            <form class="reply-form" style="display: none;">
                 <textarea 
                     id="reply-text-${comment._id}" 
                     name="reply-text" 
                     placeholder="Viết phản hồi của bạn..." 
                     rows="2"
+                    required
                 ></textarea>
-                <button type="submit" id="submit-reply-${comment._id}">Gửi phản hồi</button>
-            </div>
+                <button type="submit" id="submit-reply-${comment._id}" name="submit-reply">Gửi phản hồi</button>
+            </form>
             <div class="replies-container"></div>
         </div>
       `;
