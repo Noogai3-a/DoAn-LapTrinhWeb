@@ -104,7 +104,7 @@
 }
 
 .comment-content {
-    background: #fff;
+    background: #f8f8f8;
     padding: 12px;
     border-radius: 10px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
@@ -132,6 +132,10 @@
     display: flex;
     align-items: flex-start;
     margin-bottom: 10px;
+}
+
+.reply-item .comment-content {
+    background: #f0f0f0;
 }
 
 .reply-form {
