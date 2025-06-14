@@ -183,6 +183,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       // Xử lý nút reply
       const replyButton = div.querySelector('.reply-button');
       const replyForm = div.querySelector('.reply-form');
+      const submitButton = replyForm.querySelector('button[type="submit"]');
       
       replyButton.addEventListener('click', () => {
           replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
