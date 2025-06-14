@@ -155,94 +155,161 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   async function renderComment(comment) {
+      const div = document.createElement('div');
+      div.classList.add('comment-item');
+      div.dataset.commentId = comment._id;
+
+      const avatarUrl = await resolveAvatar(comment.email);
+
+      div.innerHTML = `
+          <img src="${avatarUrl}" alt="Avatar" class="avatar">
+          <div class="comment-content">
+              <strong>${escapeHtml(comment.username)}</strong>
+              <p>${escapeHtml(comment.content)}</p>
+              <button class="reply-button">Reply</button>
+              <div class="reply-form" style="display: none;">
+                  <textarea placeholder="Viết phản hồi của bạn..." rows="2"></textarea>
+                  <button type="submit">Gửi phản hồi</button>
+              </div>
+              <div class="replies-container"></div>
+          </div>
+      `;
+
+      // Xử lý nút reply
+      const replyButton = div.querySelector('.reply-button');
+      const replyForm = div.querySelector('.reply-form');
+      
+      replyButton.addEventListener('click', () => {
+          replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+      });
+
+      // Xử lý form reply
+      replyForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const textarea = replyForm.querySelector('textarea');
+          const content = textarea.value.trim();
+          
+          if (!content) return;
+          
+          try {
+              const res = await fetch(`https://backend-yl09.onrender.com/api/blogs/${blogId}/comments`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  credentials: 'include',
+                  body: JSON.stringify({
+                      blogId: blogId,
+                      username: userInfo.username,
+                      email: userInfo.email,
+                      content: content,
+                      parentComment: comment._id
+                  })
+              });
+
+              if (!res.ok) throw new Error('Failed to post reply');
+
+              const newReply = await res.json();
+              await renderReply(newReply.comment, div.querySelector('.replies-container'));
+              textarea.value = '';
+              replyForm.style.display = 'none';
+          } catch (err) {
+              console.error('Error posting reply:', err);
+              alert('Failed to post reply');
+          }
+      });
+
+      commentsList.appendChild(div);
+  }
+
+  async function renderReply(reply, container) {
     const div = document.createElement('div');
-    div.classList.add('comment-item');
-
-    const avatarUrl = await resolveAvatar(comment.email);
-
+    div.classList.add('reply-item');
+    
+    const avatarUrl = await resolveAvatar(reply.email);
+    
     div.innerHTML = `
-      <img src="${avatarUrl}" alt="Avatar" class="avatar">
-      <div class="comment-content">
-        <strong>${escapeHtml(comment.username)}</strong>
-        <p>${escapeHtml(comment.content)}</p>
-      </div>
+        <img src="${avatarUrl}" alt="Avatar" class="avatar">
+        <div class="comment-content">
+            <strong>${escapeHtml(reply.username)}</strong>
+            <p>${escapeHtml(reply.content)}</p>
+        </div>
     `;
-    commentsList.appendChild(div);
+    
+    container.appendChild(div);
   }
 
   async function loadComments() {
     const isPreview = getQueryParam("preview") === "true";
-      try {
+    try {
         const res = await fetch(`https://backend-yl09.onrender.com/api/blogs/${blogId}?preview=${isPreview}`,
-          {credentials: 'include'}
+            {credentials: 'include'}
         );
         if (!res.ok) throw new Error('Không thể tải bài viết');
         const data = await res.json();
 
         const comments = data.comments || [];
+        const replies = comments.filter(c => c.parentComment);
+        const parentComments = comments.filter(c => !c.parentComment);
 
         commentsList.innerHTML = '';
-        for (const comment of comments) {
-          await renderComment(comment);
+        for (const comment of parentComments) {
+            await renderComment(comment);
+            // Load replies cho comment này
+            const commentReplies = replies.filter(r => r.parentComment === comment._id);
+            for (const reply of commentReplies) {
+                const commentElement = commentsList.querySelector(`[data-comment-id="${comment._id}"]`);
+                if (commentElement) {
+                    await renderReply(reply, commentElement.querySelector('.replies-container'));
+                }
+            }
         }
-      } catch (err) {
+    } catch (err) {
         console.error('Lỗi load comments:', err);
-      }
+    }
   }
 
   if (blogId) {
     await loadComments();
   }
 
-  form.addEventListener('submit', async function (e) {
+  replyForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    const commentText = textarea.value.trim();
-    if (!commentText) return alert('Vui lòng nhập bình luận');
-    if (!blogId) return alert('Không xác định được bài viết');
-
-    if (!userInfo || !userInfo.username || !userInfo.email) {
-      // Chuyển trang đến login (thay URL theo dự án của bạn)
-      window.location.href = '/login'; 
-      return;
-    }
-
+    const textarea = replyForm.querySelector('textarea');
+    const submitButton = replyForm.querySelector('button[type="submit"]');
+    const content = textarea.value.trim();
+    
+    if (!content) return;
+    
+    // Disable form khi đang gửi
+    submitButton.disabled = true;
+    submitButton.textContent = 'Đang gửi...';
+    
     try {
-      const res = await fetch(`https://backend-yl09.onrender.com/api/blogs/${blogId}/comments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          blogId: blogId,
-          username: userInfo.username,
-          email: userInfo.email,
-          content: commentText
-        })
-      });
+        const res = await fetch(`https://backend-yl09.onrender.com/api/blogs/${blogId}/comments`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                blogId: blogId,
+                username: userInfo.username,
+                email: userInfo.email,
+                content: content,
+                parentComment: comment._id
+            })
+        });
 
-      if (!res.ok) {
-        const contentType = res.headers.get('content-type') || '';
-        if (contentType.includes('application/json')) {
-          const errData = await res.json();
-          throw new Error(errData.msg || 'Lỗi gửi bình luận');
-        } else {
-          const text = await res.text();
-          console.error('Error response text:', text);
-          throw new Error('Server trả về lỗi không phải JSON');
-        }
-      }
-      // Render comment mới trực tiếp mà không load lại toàn bộ
-      const newComment = {
-        username: userInfo.username,
-        email: userInfo.email,
-        content: commentText
-      };
-      await renderComment(newComment);
-      // Xóa textarea để người dùng có thể nhập bình luận mới
-      textarea.value = '';
+        if (!res.ok) throw new Error('Failed to post reply');
+
+        const newReply = await res.json();
+        await renderReply(newReply.comment, div.querySelector('.replies-container'));
+        textarea.value = '';
+        replyForm.style.display = 'none';
     } catch (err) {
-      console.error('Gửi bình luận lỗi:', err);
-      alert(err.message);
+        console.error('Error posting reply:', err);
+        showToast('Lỗi khi gửi phản hồi', 'error');
+    } finally {
+        // Enable lại form
+        submitButton.disabled = false;
+        submitButton.textContent = 'Gửi phản hồi';
     }
   });
 });

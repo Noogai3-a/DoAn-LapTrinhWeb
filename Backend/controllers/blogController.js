@@ -241,17 +241,25 @@ exports.deleteBlog = async (req, res) => {
 // Tạo comment cho blog
 exports.createComment = async (req, res) => {
   try {
-    const { blogId, username, email, content } = req.body;
+    const { blogId, username, email, content, parentComment } = req.body;
 
     if (!blogId || !username || !email || !content) {
       return res.status(400).json({ msg: 'All fields are required' });
     }
 
+    if (parentComment) {
+      const parentExists = await Comment.findById(parentComment);
+      if (!parentExists) {
+          return res.status(400).json({ msg: 'Parent comment not found' });
+      }
+    }
+
     const newComment = new Comment({
-      blog: blogId,
-      username,
-      email,
-      content,
+        blog: blogId,
+        username,
+        email,
+        content,
+        parentComment: parentComment || null
     });
 
     await newComment.save();
