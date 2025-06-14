@@ -162,17 +162,22 @@ document.addEventListener('DOMContentLoaded', async function () {
       const avatarUrl = await resolveAvatar(comment.email);
 
       div.innerHTML = `
-          <img src="${avatarUrl}" alt="Avatar" class="avatar">
-          <div class="comment-content">
-              <strong>${escapeHtml(comment.username)}</strong>
-              <p>${escapeHtml(comment.content)}</p>
-              <button class="reply-button">Reply</button>
-              <div class="reply-form" style="display: none;">
-                  <textarea placeholder="Viết phản hồi của bạn..." rows="2"></textarea>
-                  <button type="submit">Gửi phản hồi</button>
-              </div>
-              <div class="replies-container"></div>
-          </div>
+        <img src="${avatarUrl}" alt="Avatar" class="avatar">
+        <div class="comment-content">
+            <strong>${escapeHtml(comment.username)}</strong>
+            <p>${escapeHtml(comment.content)}</p>
+            <button class="reply-button">Reply</button>
+            <div class="reply-form" style="display: none;">
+                <textarea 
+                    id="reply-text-${comment._id}" 
+                    name="reply-text" 
+                    placeholder="Viết phản hồi của bạn..." 
+                    rows="2"
+                ></textarea>
+                <button type="submit" id="submit-reply-${comment._id}">Gửi phản hồi</button>
+            </div>
+            <div class="replies-container"></div>
+        </div>
       `;
 
       // Xử lý nút reply
@@ -189,7 +194,13 @@ document.addEventListener('DOMContentLoaded', async function () {
           const textarea = replyForm.querySelector('textarea');
           const content = textarea.value.trim();
           
-          if (!content) return;
+          if (!content) {
+            showToast('Vui lòng nhập nội dung phản hồi', 'error');
+            return;
+          
+          }
+          submitButton.disabled = true;
+          submitButton.textContent = 'Đang gửi...';
           
           try {
               const res = await fetch(`https://backend-yl09.onrender.com/api/blogs/${blogId}/comments`, {
@@ -211,9 +222,10 @@ document.addEventListener('DOMContentLoaded', async function () {
               await renderReply(newReply.comment, div.querySelector('.replies-container'));
               textarea.value = '';
               replyForm.style.display = 'none';
+              showToast('Gửi phản hồi thành công!', 'success');
           } catch (err) {
               console.error('Error posting reply:', err);
-              alert('Failed to post reply');
+              showToast('Lỗi khi gửi phản hồi', 'error');
           } finally {
             // Enable lại form
             submitButton.disabled = false;
