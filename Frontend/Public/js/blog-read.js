@@ -353,48 +353,6 @@ document.addEventListener('DOMContentLoaded', async function () {
       alert(err.message);
     }
   });
-  
-  replyForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const textarea = replyForm.querySelector('textarea');
-    const submitButton = replyForm.querySelector('button[type="submit"]');
-    const content = textarea.value.trim();
-    
-    if (!content) return;
-    
-    // Disable form khi đang gửi
-    submitButton.disabled = true;
-    submitButton.textContent = 'Đang gửi...';
-    
-    try {
-        const res = await fetch(`https://backend-yl09.onrender.com/api/blogs/${blogId}/comments`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({
-                blogId: blogId,
-                username: userInfo.username,
-                email: userInfo.email,
-                content: content,
-                parentComment: comment._id
-            })
-        });
-
-        if (!res.ok) throw new Error('Failed to post reply');
-
-        const newReply = await res.json();
-        await renderReply(newReply.comment, div.querySelector('.replies-container'));
-        textarea.value = '';
-        replyForm.style.display = 'none';
-    } catch (err) {
-        console.error('Error posting reply:', err);
-        showToast('Lỗi khi gửi phản hồi', 'error');
-    } finally {
-        // Enable lại form
-        submitButton.disabled = false;
-        submitButton.textContent = 'Gửi phản hồi';
-    }
-  });
 });
 
 function lazyLoadImages(callback) {
