@@ -214,6 +214,10 @@ document.addEventListener('DOMContentLoaded', async function () {
           } catch (err) {
               console.error('Error posting reply:', err);
               alert('Failed to post reply');
+          } finally {
+            // Enable lại form
+            submitButton.disabled = false;
+            submitButton.textContent = 'Gửi phản hồi';
           }
       });
 
@@ -235,6 +239,33 @@ document.addEventListener('DOMContentLoaded', async function () {
     `;
     
     container.appendChild(div);
+  }
+
+  function showToast(message, type = 'success') {
+    const toastEl = document.getElementById('liveToast');
+    const toastBody = toastEl.querySelector('.toast-body');
+
+    toastEl.classList.remove('bg-success', 'bg-danger', 'text-white');
+
+    if (type === 'error') {
+        toastEl.classList.add('bg-danger', 'text-white');
+    } else {
+        toastEl.classList.add('bg-success', 'text-white');
+    }
+
+    toastBody.innerHTML = message;
+
+    const toast = new bootstrap.Toast(toastEl, {
+        delay: 2000,
+        autohide: true
+    });
+
+    toast.show();
+  }
+
+// Thêm hàm escapeHtml nếu chưa có
+  function escapeHtml(text) {
+      return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   async function loadComments() {
@@ -322,6 +353,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       alert(err.message);
     }
   });
+  
   replyForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const textarea = replyForm.querySelector('textarea');
