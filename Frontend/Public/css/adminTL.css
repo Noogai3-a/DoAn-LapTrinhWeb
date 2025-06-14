@@ -409,3 +409,10 @@ body {
     opacity: 0.5;
     cursor: not-allowed;
 }
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem; /* tương đương gap-2 trong Bootstrap */
+}

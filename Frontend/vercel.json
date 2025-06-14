@@ -14,6 +14,7 @@
     { "source": "/usertk", "destination": "/userTK.html" },
     { "source": "/adminTL", "destination": "/adminTL.html" },
     { "source": "/adminTQ", "destination": "/adminTQ.html" },
+    { "source": "/admin-upload", "destination": "/admin-upload.html" },
     { "source": "/upload", "destination": "/upload.html" },
     { "source": "/standard", "destination": "/standard.html" },
     { "source": "/template", "destination": "/template.html" },
