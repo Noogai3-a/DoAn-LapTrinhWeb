@@ -99,16 +99,29 @@ exports.getDocumentById = async (req, res) => {
 };
 
 exports.deleteDocument = async (req, res) => {
-    try {
-        const doc = await Document.findById(req.params.id);
-        if (!doc) {
-            return res.status(404).json({ error: 'Document not found' });
-        }
+  try {
+    const id = req.params.id;
+    const doc = await Document.findById(id);
 
-        await doc.remove();
-        res.json({ success: true, message: 'Document deleted successfully' });
-    } catch (err) {
-        console.error('Error deleting document:', err);
-        res.status(500).json({ error: 'Server error' });
+    if (!doc) {
+      return res.status(404).json({ error: 'Document not found' });
     }
+
+    // Xóa file vật lý nếu tồn tại
+    const relativePath = doc.fileUrl.replace(/\\/g, '/');
+    const absolutePath = path.resolve(relativePath);
+
+    fs.unlink(absolutePath, async (err) => {
+      if (err) {
+        console.warn('Không thể xóa file:', err.message);
+        // Vẫn tiếp tục xóa trong DB
+      }
+
+      await Document.findByIdAndDelete(id);
+      res.json({ success: true, message: 'Document deleted successfully' });
+    });
+  } catch (err) {
+    console.error('Error deleting document:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 };
