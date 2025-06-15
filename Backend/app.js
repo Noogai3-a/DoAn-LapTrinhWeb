@@ -1,4 +1,6 @@
 const fs = require('fs');
+const path = require('path');
+require('dotenv').config();
 
 if (process.env.GOOGLE_CREDENTIALS) {
   const decoded = Buffer.from(process.env.GOOGLE_CREDENTIALS, 'base64').toString('utf8');
@@ -10,8 +12,6 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const cors = require('cors');
-const path = require('path');
-require('dotenv').config();
 
 const app = express();
 
