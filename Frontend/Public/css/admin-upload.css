@@ -1,0 +1,103 @@
+/* admin-upload.css */
+
+.admin-upload-wrapper {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.admin-upload-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ccc;
+}
+
+.admin-upload-title h1 {
+    font-size: 1.8rem;
+    color: #4e73df;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-upload-form {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    padding: 30px;
+}
+
+.admin-upload-form h3 {
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.admin-upload-form .form-label {
+    font-weight: 600;
+    color: #555;
+}
+
+.admin-upload-form .form-control {
+    padding: 10px 12px;
+    border: 1px solid #d1d3e2;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.admin-upload-form .btn-primary {
+    background-color: #4e73df;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.admin-upload-form .btn-primary:hover {
+    background-color: #375ab5;
+}
+
+@media (max-width: 576px) {
+    .admin-upload-wrapper {
+        padding: 10px;
+    }
+
+    .admin-upload-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .admin-upload-form {
+        padding: 20px;
+    }
+}
+
+.simple-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 12px 20px;
+    background-color: #4e73df;
+    color: white;
+    font-weight: 500;
+    border-radius: 6px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    z-index: 9999;
+}
+
+.simple-toast.error {
+    background-color: #e74a3b;
+}
+
+.simple-toast.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
