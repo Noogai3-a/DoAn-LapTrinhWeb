@@ -137,20 +137,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   }
 
-  async function deleteBlog(id) {
-    try {
-      const res = await fetch(`https://backend-yl09.onrender.com/api/blogs/${id}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      if (!res.ok) throw new Error('Xóa tài liệu thất bại');
+  async function deleteItem(id, type) {
+  try {
+    const endpoint = type === 'blog' 
+      ? `${BACKEND}/api/blogs/${id}` 
+      : `${BACKEND}/api/documents/${id}`;
+      
+    const res = await fetch(`https://backend-yl09.onrender.com/api/review-documents/${docId}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
 
-      showToast('Xóa tài liệu thành công!', 'success');
-      loadItems();
-    } catch (err) {
-     showToast('Lỗi: ' + err.message, 'error');
-    }
+    if (!res.ok) throw new Error('Xóa tài liệu thất bại');
+
+    showToast('Xóa tài liệu thành công!', 'success');
+    loadItems(); // reload danh sách
+  } catch (err) {
+    showToast('Lỗi: ' + err.message, 'error');
   }
+}
+
 
   function addEventListeners() {
     document.querySelectorAll('.action-btn.view').forEach(btn => {
@@ -161,13 +167,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     document.querySelectorAll('.action-btn.delete').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.getAttribute('data-id');
-        showConfirmModal('Bạn có chắc muốn xóa tài liệu này không?', () => {
-          deleteBlog(id);
-        });
-      });
+  btn.addEventListener('click', () => {
+    const id = btn.getAttribute('data-id');
+    const type = btn.getAttribute('data-type');
+    showConfirmModal('Bạn có chắc muốn xóa tài liệu này không?', () => {
+      deleteItem(id, type);
     });
+  });
+});
+
   }
   prevBtn.addEventListener('click', () => {
     if (currentPage > 1) {

@@ -185,7 +185,6 @@ app.get('/upload', authMiddleware, (req, res) => {
 });
 
 
-app.use('/api/admin', adminRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/uploads/previews', express.static(path.join(__dirname, 'uploads/previews')));
 
