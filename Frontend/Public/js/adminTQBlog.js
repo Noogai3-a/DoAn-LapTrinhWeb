@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       ? `${BACKEND}/api/blogs/${id}` 
       : `${BACKEND}/api/documents/${id}`;
       
-    const res = await fetch(`https://backend-yl09.onrender.com/api/review-documents/${docId}`, {
+    const res = await fetch(`https://backend-yl09.onrender.com/api/review-documents/${id}`, {
       method: 'DELETE',
       credentials: 'include'
     });
