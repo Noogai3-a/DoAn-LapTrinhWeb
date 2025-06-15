@@ -113,20 +113,7 @@ exports.getMyDocuments = async (req, res) => {
   }
 };
 
-exports.deleteDocument = async (req, res) => {
-    try {
-        const doc = await Document.findById(req.params.id);
-        if (!doc) {
-            return res.status(404).json({ error: 'Document not found' });
-        }
 
-        await doc.remove();
-        res.json({ success: true, message: 'Document deleted successfully' });
-    } catch (err) {
-        console.error('Error deleting document:', err);
-        res.status(500).json({ error: 'Server error' });
-    }
-};
 
 
 
