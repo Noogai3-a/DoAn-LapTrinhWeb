@@ -203,10 +203,15 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Sự kiện
+  function toggleDetailNextButton() {
+    nextButton.style.display = validateDetailForm() ? "inline-block" : "none";
+  }
+
   subjectTypeSelect.addEventListener("change", () => {
     updateSubjectTypeLabel();
     updateSubjectNames();
     updateSubjectNameLabel();
+    toggleDetailNextButton();
   });
 
   subjectNameSelect.addEventListener("change", () => {
@@ -217,19 +222,24 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       customDiv.style.display = "none";
     }
+    toggleDetailNextButton();
   });
+
+  documentTypeSelect.addEventListener("change", toggleDetailNextButton);
 
   function validateDetailForm() {
     return (
-      subjectTypeInput.value.trim() !== "" &&
-      subjectNameInput.value.trim() !== "" &&
-      documentTypeInput.value.trim() !== "" &&
-      titleValue.trim() !== ""
+      subjectTypeSelect.value.trim() !== "" &&
+      subjectNameSelect.value.trim() !== "" &&
+      documentTypeSelect.value.trim() !== ""
     );
   }
 
 
-  document.getElementById("subjectNameCustomInput").addEventListener("input", updateSubjectNameLabel);
+  document.getElementById("subjectNameCustomInput").addEventListener("input", () => {
+    updateSubjectNameLabel();
+    toggleDetailNextButton();
+  });
 
 
   // Lấy nút Quay lại

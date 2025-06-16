@@ -212,9 +212,40 @@
     min-height: 100vh;
     padding-top: 40px;
 }
-
-.detail-box i.icon {
+.detail-box i.icon{
     padding-right: 15px;
+}
+
+.detail-search-bar p{
+    display: flex;
+}
+
+.detail-search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.detail-search-bar p,
+.detail-search-bar input {
+    font-size: 16px;
+    height: 45px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.detail-search-bar p {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    align-items: center;
+    text-align: center;
+}
+
+.detail-search-bar input {
+    border-left: none;
+    width: 500px;
+    border-right: none;
 }
 
 .line {
@@ -226,23 +257,23 @@
 
 .form-container {
     display: grid;
-    grid-template-columns: 150px 1fr; /* chỉnh nhãn to hơn cho cân đối */
+    grid-template-columns: 100px 1fr;
     gap: 15px 20px;
-    max-width: 700px;
+    max-width: 600px;
     padding: 30px;
     margin: auto;
 }
 
-.detail-label {
+.detail-label{
     display: contents;
 }
-
-.detail-title-input, 
+ 
+.detail-select,
 textarea {
     background-color: #d9d9d9;
     border: none;
     border-radius: 10px;
-    padding: 12px 16px;
+    padding: 10px;
     font-size: 16px;
     width: 100%;
     box-sizing: border-box;
@@ -255,26 +286,45 @@ textarea {
 
 .button-row {
     grid-column: 1 / -1;
+
+    /* Dùng Flexbox để đẩy hai nút ra hai mép trái – phải */
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
+    align-items: center; /* căn giữa theo chiều dọc, nếu cần */
+    
+    margin-top: 10px;
 }
 
-.next-button, .back-button {
+.next-button {
     background-color: #009688;
     color: white;
     border: none;
-    padding: 12px 24px;
+    padding: 10px 20px;
     font-size: 16px;
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.next-button:hover, .back-button:hover {
+.next-button:hover {
     background-color: #00796b;
 }
+
+.back-button {
+    background-color: #009688;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #00796b;
+}
+
 
 /* Done */
 #done.active {
