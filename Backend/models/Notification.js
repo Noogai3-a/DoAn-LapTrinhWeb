@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },  // Người nhận thông báo
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     type: { 
       type: String, 
       enum: ['COMMENT', 'REPLY', 'APPROVE', 'REJECT'] ,
@@ -18,4 +18,5 @@ const notificationSchema = new mongoose.Schema({
     postTitle: { type: String },
     postType: { type: String, enum: ['BLOG', 'DOCUMENT'] },
   });
+  
 module.exports = mongoose.model('Notification', notificationSchema);
