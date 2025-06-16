@@ -82,7 +82,6 @@ exports.rejectBlog = async (req, res) => {
 
     // Xóa blog và các nội dung liên quan
     await BlogContent.deleteOne({ blog: blog._id });
-    await Comment.deleteMany({ blog: blog._id });
     await Blog.deleteOne({ _id: blog._id });
 
     res.json({ msg: 'Từ chối bài thành công' });
