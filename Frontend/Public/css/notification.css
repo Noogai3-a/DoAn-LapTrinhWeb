@@ -174,3 +174,32 @@
     text-align: center;
     color: #ff4444;
 }
+
+.notification-item.unread {
+    background-color: #f0f7f4;
+}
+
+.notification-item.unread::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: #356859;
+    border-radius: 2px;
+}
+
+.notification-item.unread .notification-content {
+    font-weight: 500;
+}
+
+/* Thêm style cho thông báo REJECT */
+.notification-item[data-type="REJECT"] {
+    cursor: default !important;
+    opacity: 0.8;
+}
+
+.notification-item[data-type="REJECT"]:hover {
+    background-color: #fff5f5;
+}

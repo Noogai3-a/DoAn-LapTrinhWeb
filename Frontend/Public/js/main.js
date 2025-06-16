@@ -192,9 +192,10 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
         .then(res => res.json())
         .then(data => {
             // Hiển thị số lượng thông báo
-            if (data.length > 0) {
+            const unreadCount = data.filter(n => !n.isRead).length;
+            if (unreadCount > 0) {
                 notificationCount.style.display = 'block';
-                notificationCount.textContent = data.length;
+                notificationCount.textContent = unreadCount;
             } else {
                 notificationCount.style.display = 'none';
             }
@@ -243,12 +244,38 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
                 `;
     
                 // Thêm sự kiện click để chuyển đến bài viết
-                notificationItem.addEventListener('click', () => {
-                    if (notification.content.postId) {
-                        window.location.href = `/blog-read?post=${notification.content.postId}`;
-                    }
-                });
-    
+                if (!notification.isRead) {
+                    notificationItem.addEventListener('mouseenter', () => {
+                        // Gọi API để đánh dấu đã đọc
+                        fetch(`https://backend-yl09.onrender.com/api/notifications/${notification._id}/read`, {
+                            method: 'PUT',
+                            credentials: 'include'
+                        })
+                        .then(() => {
+                            notificationItem.classList.remove('unread');
+                            // Cập nhật lại số thông báo chưa đọc
+                            const currentCount = parseInt(notificationCount.textContent);
+                            if (currentCount > 1) {
+                                notificationCount.textContent = currentCount - 1;
+                            } else {
+                                notificationCount.style.display = 'none';
+                            }
+                        })
+                        .catch(err => console.error('Lỗi khi đánh dấu đã đọc:', err));
+                    });
+                }
+        
+                // Chỉ cho phép click nếu không phải thông báo REJECT
+                if (notification.type !== 'REJECT') {
+                    notificationItem.style.cursor = 'pointer';
+                    notificationItem.addEventListener('click', () => {
+                        if (notification.content.postId) {
+                            window.location.href = `/blog-read?post=${notification.content.postId}`;
+                        }
+                    });
+                } else {
+                    notificationItem.style.cursor = 'default';
+                }
                 notificationList.appendChild(notificationItem);
             });
         })
