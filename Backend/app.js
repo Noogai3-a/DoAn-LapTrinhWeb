@@ -4,7 +4,9 @@ require('dotenv').config();
 
 if (process.env.GOOGLE_CREDENTIALS) {
   const decoded = Buffer.from(process.env.GOOGLE_CREDENTIALS, 'base64').toString('utf8');
-  fs.writeFileSync('credentials.json', decoded);
+  const outputPath = path.join(__dirname, 'credentials.json');
+
+  fs.writeFileSync(outputPath, decoded);
 }
 
 const express = require('express');
