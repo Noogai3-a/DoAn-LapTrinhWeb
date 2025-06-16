@@ -172,6 +172,30 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
         });
     }
 
+    const checkUnreadNotifications = () => {
+        fetch('https://backend-yl09.onrender.com/api/notifications', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            const unreadCount = data.filter(n => !n.isRead).length;
+            if (unreadCount > 0) {
+                notificationCount.style.display = 'block';
+                notificationCount.textContent = unreadCount;
+            } else {
+                notificationCount.style.display = 'none';
+            }
+        })
+        .catch(err => console.error('Lỗi khi kiểm tra thông báo:', err));
+    };
+
+    checkUnreadNotifications();
+    setInterval(checkUnreadNotifications, 5000);
+
     notificationBell.addEventListener('click', () => {
         if (dropdown.style.display === 'block') {
             dropdown.style.display = 'none';
@@ -191,14 +215,6 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
         })
         .then(res => res.json())
         .then(data => {
-            // Hiển thị số lượng thông báo
-            const unreadCount = data.filter(n => !n.isRead).length;
-            if (unreadCount > 0) {
-                notificationCount.style.display = 'block';
-                notificationCount.textContent = unreadCount;
-            } else {
-                notificationCount.style.display = 'none';
-            }
             notificationList.innerHTML = '';
     
             if (data.length === 0) {
@@ -210,6 +226,7 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
             data.forEach(notification => {
                 const notificationItem = document.createElement('div');
                 notificationItem.className = 'notification-item';
+                notificationItem.setAttribute('data-type', notification.type);
                 
                 // Tạo nội dung thông báo dựa vào type
                 let message = '';
