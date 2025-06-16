@@ -18,6 +18,7 @@
     { "source": "/upload", "destination": "/upload.html" },
     { "source": "/standard", "destination": "/standard.html" },
     { "source": "/template", "destination": "/template.html" },
+    { "source": "/document-edit", "destination": "/document-edit.html"},
     {
       "source": "/api/:path*",
       "destination": "https://backend-yl09.onrender.com/api/:path*"
