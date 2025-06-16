@@ -219,62 +219,40 @@
                 
             <div id="detail" class="page">
                 <div class="detail-box">
-                    <div class="detail-search-bar">
-                        <p><i class="fa-solid fa-school icon"></i>Course</p>
-                        <input type="text" placeholder="Search something">
-                        <div class="search-icon">
-                            <i class="fas fa-search"></i>
-                        </div>
-                    </div>
-                    <div class="line"></div>
-                        <form class="form-container">
+                    <form class="form-container">
+
                         <label class="detail-label">
                             Loại môn học
-                            <select class="detail-select" name="subjectTypeSlug" required>
-                                <option value="">-- Chọn loại môn --</option>
-                                <option value="mon-chinh-tri">Môn Chính trị</option>
-                                <option value="mon-tu-chon">Môn Tự chọn</option>
-                                <option value="mon-chuyen-nganh">Môn Chuyên ngành</option>
-                                <option value="mon-co-so-nganh">Môn Cơ sở ngành</option>
-                                <option value="mon-dai-cuong">Môn Đại cương</option>
-                            </select>
+                            <input type="text" name="subjectType" placeholder="Nhập loại môn học" class="detail-title-input" required>
                         </label>
 
                         <label class="detail-label">
                             Tên môn học
-                            <select class="detail-select" name="subjectNameSlug" id="subjectNameSelect">
-                                <option value="">-- Chọn tên môn học --</option>
-                            </select>
+                            <input type="text" name="subjectName" placeholder="Nhập tên môn học" class="detail-title-input" required>
                         </label>
-                        <input type="hidden" name="subjectTypeLabel" id="subjectTypeLabel">
-                        <input type="hidden" name="subjectNameLabel" id="subjectNameLabel">
 
                         <label class="detail-label">
                             Thể loại tài liệu
-                            <select class="detail-select" name="documentType">
-                                <option>-- Chọn loại tài liệu --</option>
-                                <option value="bai-giang">Bài giảng</option>
-                                <option value="de-thi">Đề thi</option>
-                                <option value="tai-lieu-tham-khao">Tài liệu tham khảo</option>
-                            </select>
+                            <input type="text" name="documentType" placeholder="Nhập thể loại tài liệu" class="detail-title-input" required>
                         </label>
 
                         <label class="detail-label">
-                            Tên
-                            <input type="text" name="title" placeholder="Hãy viết tên của tài liệu" class="detail-title-input">
+                            Tên tài liệu
+                            <input type="text" name="title" placeholder="Hãy viết tên của tài liệu" class="detail-title-input" required>
                         </label>
 
                         <label class="detail-label">
                             Mô tả
-                            <textarea name="description" placeholder="Hãy viết gì đó về tài liệu"></textarea>
+                            <textarea name="description" placeholder="Hãy viết gì đó về tài liệu" required></textarea>
                         </label>
 
                         <div class="button-row">
                             <button type="button" class="back-button">Quay lại</button>
                             <button type="button" class="next-button">Tiếp</button>
                         </div>
-                        </form>
+                    </form>
                 </div>
+
             </div>
 
             <div id="done" class="page">

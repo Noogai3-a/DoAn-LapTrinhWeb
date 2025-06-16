@@ -100,17 +100,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   nextButton.style.display = "none";
 
-  const subjectTypeSelect = formDetail.querySelector('select[name="subjectTypeSlug"]');
-  const subjectNameSelect = formDetail.querySelector('select[name="subjectNameSlug"]');
-  const documentTypeSelect = formDetail.querySelector('select[name="documentType"]');
+  const subjectTypeInput = formDetail.querySelector('input[name="subjectTypeLabel"]');
+  const subjectNameInput = formDetail.querySelector('input[name="subjectNameLabel"]');
+  const documentTypeInput = formDetail.querySelector('input[name="documentType"]');
   const titleInput = formDetail.querySelector('input[name="title"]');
   const descriptionInput = formDetail.querySelector('textarea[name="description"]');
 
-  // Thêm 2 input hidden để lưu label tương ứng
+  // Hidden input để lưu label (giữ lại)
   let subjectTypeLabelInput = formDetail.querySelector('input[name="subjectTypeLabel"]');
   let subjectNameLabelInput = formDetail.querySelector('input[name="subjectNameLabel"]');
 
-  // Nếu chưa có, tạo và thêm vào form
   if (!subjectTypeLabelInput) {
     subjectTypeLabelInput = document.createElement('input');
     subjectTypeLabelInput.type = 'hidden';
@@ -123,6 +122,8 @@ document.addEventListener("DOMContentLoaded", function () {
     subjectNameLabelInput.name = 'subjectNameLabel';
     formDetail.appendChild(subjectNameLabelInput);
   }
+  // Tải dữ liệu từ data.json
+  let subjectNamesByType = {};
 
   fetch('/json/data.json')
     .then(response => {
@@ -135,67 +136,48 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch(error => {
       console.error("Lỗi khi tải dữ liệu môn học:", error);
     });
-
-  function updateSubjectNames() {
-    const selectedType = subjectTypeSelect.value;
-    subjectNameSelect.innerHTML = '<option value="">-- Chọn tên môn học --</option>';
-
-    if (selectedType && subjectNamesByType[selectedType] && subjectNamesByType[selectedType].subjects) {
-      subjectNamesByType[selectedType].subjects.forEach(subject => {
-        const option = document.createElement("option");
-        option.value = subject.slug;      // dùng slug làm value
-        option.textContent = subject.label;
-        subjectNameSelect.appendChild(option);
-      });
-    }
-    toggleDetailNextButton();
+  // Hàm chuyển label về slug
+  function toSlug(str) {
+    return str.normalize('NFD') // chuẩn hóa unicode
+      .replace(/[\u0300-\u036f]/g, '') // loại bỏ dấu
+      .replace(/đ/g, 'd').replace(/Đ/g, 'D') // xử lý riêng tiếng Việt
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
   }
+  // Xác định label & slug dựa trên dữ liệu nhập
+  function updateLabels() {
+    const typeLabel = subjectTypeInput.value.trim();
+    const nameLabel = subjectNameInput.value.trim();
+    
+    const typeSlug = toSlug(typeLabel);
+    const nameSlug = toSlug(nameLabel);
+    
+    subjectTypeLabelInput.value = typeLabel;
+    subjectNameLabelInput.value = nameLabel;
 
-  function updateSubjectTypeLabel() {
-    const typeSlug = subjectTypeSelect.value;
-    if (typeSlug && subjectNamesByType[typeSlug]) {
-      subjectTypeLabelInput.value = subjectNamesByType[typeSlug].label;
-    } else {
-      subjectTypeLabelInput.value = '';
-    }
-  }
-
-  function updateSubjectNameLabel() {
-    const typeSlug = subjectTypeSelect.value;
-    const nameSlug = subjectNameSelect.value;
-    if (typeSlug && nameSlug && subjectNamesByType[typeSlug] && subjectNamesByType[typeSlug].subjects) {
-      const subject = subjectNamesByType[typeSlug].subjects.find(s => s.slug === nameSlug);
-      if (subject) {
-        subjectNameLabelInput.value = subject.label;
-        return;
-      }
-    }
-    subjectNameLabelInput.value = '';
+    subjectTypeInput.dataset.slug = typeSlug;
+    subjectNameInput.dataset.slug = nameSlug;
   }
 
   function validateDetailForm() {
     return (
-      subjectTypeSelect.value !== "" &&
-      subjectNameSelect.value !== "" &&
-      documentTypeSelect.value !== "" &&
+      subjectTypeInput.value.trim() !== "" &&
+      subjectNameInput.value.trim() !== "" &&
+      documentTypeInput.value.trim() !== "" &&
       titleInput.value.trim() !== ""
       // descriptionInput.value.trim() !== ""
     );
   }
 
   function toggleDetailNextButton() {
+    updateLabels();
     nextButton.style.display = validateDetailForm() ? "inline-block" : "none";
   }
 
-  subjectTypeSelect.addEventListener("change", () => {
-    updateSubjectTypeLabel();
-    updateSubjectNameLabel();
-    updateSubjectNames();
-  });
-
-  subjectNameSelect.addEventListener("change", updateSubjectNameLabel);
-
-  [subjectTypeSelect, subjectNameSelect, documentTypeSelect, titleInput, descriptionInput].forEach(el => {
+  // Gắn event listener
+  [subjectTypeInput, subjectNameInput, documentTypeInput, titleInput, descriptionInput].forEach(el => {
     el.addEventListener("input", toggleDetailNextButton);
     el.addEventListener("change", toggleDetailNextButton);
   });
