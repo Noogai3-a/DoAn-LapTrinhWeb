@@ -245,7 +245,7 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
                 // Thêm sự kiện click để chuyển đến bài viết
                 notificationItem.addEventListener('click', () => {
                     if (notification.content.postId) {
-                        window.location.href = `https://backend-yl09.onrender.com/blog-read?post=${notification.content.postId}`;
+                        window.location.href = `/blog-read?post=${notification.content.postId}`;
                     }
                 });
     
