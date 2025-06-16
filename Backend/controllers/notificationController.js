@@ -5,7 +5,7 @@ const path = require('path');
 // Lấy danh sách thông báo của user
 exports.getNotifications = async (req, res) => {
     try {
-        const userId = req.session.user?.id;
+        const userId = req.session.user?.id || req.session.admin?.id;
         
         if (!userId) {
             return res.status(401).json({ message: 'Unauthorized' });
