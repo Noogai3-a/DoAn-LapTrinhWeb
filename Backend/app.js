@@ -105,9 +105,8 @@ app.get('/api/documents/my', apiAuthMiddleware, documentController.getMyDocument
 
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api', proxyRoutes);
 app.use('/api/notifications', notificationRoutes);
-
+app.use('/api', proxyRoutes)
 
 app.use(express.static(path.join(__dirname, 'public')));
 
