@@ -84,6 +84,14 @@
     align-items: center;
     height: 50vh; /* Chiều cao 50% của cửa sổ */
 }
+
+.upload-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+}
   
   /* Khung Drag and Drop */
 .upload-box {
@@ -96,7 +104,7 @@
     text-align: center;
     width: 90%;
     max-width: 1000px;
-    max-height: 80vh; /* Giới hạn chiều cao tối đa */
+    height: 300px; /* cố định chiều cao upload-box */
 }
   
   /* Icon trong phần upload */
@@ -139,7 +147,8 @@
 
 #after-upload {
     display: flex;
-    width: 70%;
+    width: 90%;
+    max-width: 1000px;
     justify-content: space-between; /* căn trái - phải */
     align-items: center;
     padding: 10px 20px;
@@ -158,16 +167,34 @@
     color: #000;            /* Giữ nguyên màu */
 }
 
-.file-info a {
-    text-decoration: none;
-    color: #000;
-    font-weight: 500;
+.file-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.file-info a:visited {
-    color: #000;
+.file-info div {
+    flex: 1;
 }
-  
+
+.file-info button {
+    background: #cccccc;
+    border: none;
+    padding: 8px 12px;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.file-info button:hover {
+    background: #999999;
+}
+
 #next-btn {
     background-color: #009688;
     color: white;
