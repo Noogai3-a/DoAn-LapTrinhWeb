@@ -2,6 +2,7 @@ const Blog = require('../models/Blog');
 const BlogContent = require('../models/BlogContent');
 const User = require('../models/User');
 const Document = require('../models/Document');
+const notificationController = require('./notificationController');
 
 // Lấy danh sách bài blog chưa được duyệt
 exports.getPendingBlogs = async (req, res) => {
