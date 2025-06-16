@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainContent = document.getElementById('main');
     const notificationBell = document.querySelector('.notification-bell');
     const notificationCount = document.querySelector('.notification-count');
+    const dropdown = document.querySelector('.notification-dropdown');
     checkScreenSize();
     // 🔒 Nếu đang ở userql/usertk mà không có session → redirect về index
     if (window.location.pathname.includes('userql') || window.location.pathname.includes('usertk')) {
@@ -176,6 +177,77 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
         return; // Không chạy tiếp nếu thiếu element
     }
 
+    notificationBell.addEventListener('click', () => {
+        fetch('https://backend-yl09.onrender.com/api/notifications', {
+            credentials: 'include'
+        })
+        .then(res => res.json())
+        .then(data => {
+            // Hiển thị số lượng thông báo
+            if (data.length > 0) {
+                notificationCount.style.display = 'block';
+                notificationCount.textContent = data.length;
+            }
+    
+            // Hiển thị danh sách thông báo
+            const notificationList = document.querySelector('.notification-list');
+            notificationList.innerHTML = ''; // Xóa nội dung cũ
+    
+            if (data.length === 0) {
+                notificationList.innerHTML = '<div class="no-notifications">Không có thông báo mới</div>';
+                return;
+            }
+    
+            // Tạo HTML cho từng thông báo
+            data.forEach(notification => {
+                const notificationItem = document.createElement('div');
+                notificationItem.className = 'notification-item';
+                
+                // Tạo nội dung thông báo dựa vào type
+                let message = '';
+                switch(notification.type) {
+                    case 'COMMENT':
+                        message = `Có bình luận mới trong bài "${notification.postTitle}"`;
+                        break;
+                    case 'REPLY':
+                        message = `Có phản hồi mới cho bình luận của bạn trong "${notification.postTitle}"`;
+                        break;
+                    case 'APPROVE':
+                        message = `Bài viết "${notification.postTitle}" đã được duyệt`;
+                        break;
+                    case 'REJECT':
+                        message = `Bài viết "${notification.postTitle}" đã bị từ chối`;
+                        break;
+                }
+    
+                notificationItem.innerHTML = `
+                    <div class="notification-content">
+                        <p>${message}</p>
+                        <small>${new Date(notification.createdAt).toLocaleDateString()}</small>
+                    </div>
+                `;
+    
+                // Thêm sự kiện click để chuyển đến bài viết
+                notificationItem.addEventListener('click', () => {
+                    if (notification.content.postId) {
+                        window.location.href = `/blog-read?post=${notification.content.postId}`;
+                    }
+                });
+    
+                notificationList.appendChild(notificationItem);
+            });
+    
+            // Hiển thị dropdown
+            const dropdown = document.querySelector('.notification-dropdown');
+            dropdown.style.display = 'block';
+        })
+        .catch(err => {
+            console.error('Lỗi khi lấy thông báo:', err);
+            const notificationList = document.querySelector('.notification-list');
+            notificationList.innerHTML = '<div class="error-notification">Không thể tải thông báo</div>';
+        });
+    });
+
     const fetchSuggestions = (query = '') => {
         const type = typeSelect.value;
         if (type !== 'blog') {
@@ -230,6 +302,9 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.search-bar')) {
             suggestions.style.display = 'none';
+        }
+        if (!notificationBell.contains(e.target)) {
+            dropdown.style.display = 'none';
         }
     });
 

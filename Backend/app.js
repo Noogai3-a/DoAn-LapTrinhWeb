@@ -97,6 +97,7 @@ const documentRoutes = require('./routes/reviewDocumentRoutes');
 const reviewDocRoutes = require('./routes/documentRoutes');
 const apiAuthMiddleware = require('./middleware/apiAuthMiddleware');
 const documentController = require('./controllers/documentController');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 app.get('/api/documents/my', apiAuthMiddleware, documentController.getMyDocuments);
 
@@ -105,6 +106,7 @@ app.get('/api/documents/my', apiAuthMiddleware, documentController.getMyDocument
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', proxyRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 
 app.use(express.static(path.join(__dirname, 'public')));
