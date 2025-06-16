@@ -187,6 +187,12 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
         })
         .then(res => res.json())
         .then(data => {
+            if (!Array.isArray(data)) {
+                console.warn("Server trả về không phải mảng:", data);
+                const notificationList = document.querySelector('.notification-list');
+                notificationList.innerHTML = '<div class="no-notifications">Bạn chưa đăng nhập hoặc không có thông báo nào</div>';
+                return;
+            }
             // Hiển thị số lượng thông báo
             if (data.length > 0) {
                 notificationCount.style.display = 'block';
