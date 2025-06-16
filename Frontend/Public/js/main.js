@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const notificationBell = document.querySelector('.notification-bell');
     const notificationCount = document.querySelector('.notification-count');
     const dropdown = document.querySelector('.notification-dropdown');
+    const notificationList = document.querySelector('.notification-list');
     checkScreenSize();
     // 🔒 Nếu đang ở userql/usertk mà không có session → redirect về index
     if (window.location.pathname.includes('userql') || window.location.pathname.includes('usertk')) {
@@ -182,6 +183,15 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
     }
 
     notificationBell.addEventListener('click', () => {
+        if (dropdown.style.display === 'block') {
+            dropdown.style.display = 'none';
+            return;
+        }
+
+        // Hiển thị loading state
+        notificationList.innerHTML = '<div class="loading-notification">Đang tải thông báo...</div>';
+        dropdown.style.display = 'block';
+
         fetch('https://backend-yl09.onrender.com/api/notifications', {
             method: 'GET',
             credentials: 'include',
@@ -195,11 +205,10 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
             if (data.length > 0) {
                 notificationCount.style.display = 'block';
                 notificationCount.textContent = data.length;
+            } else {
+                notificationCount.style.display = 'none';
             }
-    
-            // Hiển thị danh sách thông báo
-            const notificationList = document.querySelector('.notification-list');
-            notificationList.innerHTML = ''; // Xóa nội dung cũ
+            notificationList.innerHTML = '';
     
             if (data.length === 0) {
                 notificationList.innerHTML = '<div class="no-notifications">Không có thông báo mới</div>';
@@ -213,25 +222,33 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
                 
                 // Tạo nội dung thông báo dựa vào type
                 let message = '';
+                let icon = '';
                 switch(notification.type) {
                     case 'COMMENT':
                         message = `Có bình luận mới trong bài "${notification.postTitle}"`;
+                        icon = '<i class="fas fa-comment"></i>';
                         break;
                     case 'REPLY':
                         message = `Có phản hồi mới cho bình luận của bạn trong "${notification.postTitle}"`;
+                        icon = '<i class="fas fa-reply"></i>';
                         break;
                     case 'APPROVE':
                         message = `Bài viết "${notification.postTitle}" đã được duyệt`;
+                        icon = '<i class="fas fa-check-circle"></i>';
                         break;
                     case 'REJECT':
                         message = `Bài viết "${notification.postTitle}" đã bị từ chối`;
+                        icon = '<i class="fas fa-times-circle"></i>';
                         break;
                 }
     
                 notificationItem.innerHTML = `
                     <div class="notification-content">
-                        <p>${message}</p>
-                        <small>${new Date(notification.createdAt).toLocaleDateString()}</small>
+                        <div class="notification-icon">${icon}</div>
+                        <div class="notification-text">
+                            <p>${message}</p>
+                            <small>${new Date(notification.createdAt).toLocaleDateString()}</small>
+                        </div>
                     </div>
                 `;
     
@@ -244,10 +261,6 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
     
                 notificationList.appendChild(notificationItem);
             });
-    
-            // Hiển thị dropdown
-            const dropdown = document.querySelector('.notification-dropdown');
-            dropdown.style.display = 'block';
         })
         .catch(err => {
             console.error('Lỗi khi lấy thông báo:', err);
@@ -311,7 +324,8 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
         if (!e.target.closest('.search-bar')) {
             suggestions.style.display = 'none';
         }
-        if (!notificationBell.contains(e.target)) {
+        
+        if (!notificationBell.contains(e.target) && !dropdown.contains(e.target)) {
             dropdown.style.display = 'none';
         }
     });
