@@ -189,7 +189,12 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
                 'Content-Type': 'application/json'
             }
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Unauthorized');
+            }
+            return res.json();
+        })
         .then(data => {
             if (!Array.isArray(data)) {
                 console.warn("Server trả về không phải mảng:", data);

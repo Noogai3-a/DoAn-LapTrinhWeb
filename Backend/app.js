@@ -193,12 +193,14 @@ app.use('/uploads/previews', express.static(path.join(__dirname, 'uploads/previe
 app.get('/api/user-info', authMiddleware, (req, res) => {
     if (req.session.admin) {
         return res.json({ 
+            _id: req.session.admin.id,
             role: 'admin',
             username: req.session.admin.username,
             email: req.session.admin.email
         });
     } else if (req.session.user) {
         return res.json({ 
+            _id: req.session.user.id,
             role: 'user',
             username: req.session.user.username,
             email: req.session.user.email
