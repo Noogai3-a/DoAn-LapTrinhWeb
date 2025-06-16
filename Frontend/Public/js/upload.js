@@ -1,6 +1,3 @@
-// JavaScript (chèn vào cuối <body> hoặc file .js riêng)
-let subjectNamesByType = {};
-
 document.addEventListener("DOMContentLoaded", function () {
   // === PHẦN UPLOAD ===
   const fileInput = document.getElementById("fileUpload");
