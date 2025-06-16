@@ -5,32 +5,91 @@ document.addEventListener("DOMContentLoaded", function () {
   // === PHẦN UPLOAD ===
   const fileInput = document.getElementById("fileUpload");
   const afterUpload = document.getElementById("after-upload");
-  const fileNameDisplay = afterUpload.querySelector(".file-info a");
+  const fileListDisplay = document.getElementById("file-list");
   const uploadNextBtn = document.getElementById("next-btn");
+  const uploadBox = document.getElementById("upload-box");
 
   afterUpload.style.display = "none";
-
-  fileInput.addEventListener("change", function () {
   const allowedTypes = [
     "application/pdf",
     "application/msword", // .doc
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // .docx
   ];
 
-  if (fileInput.files.length > 0) {
-    const file = fileInput.files[0];
-    if (!allowedTypes.includes(file.type)) {
-      alert("Chỉ cho phép upload file PDF, DOC hoặc DOCX.");
-      fileInput.value = "";
-      afterUpload.style.display = "none";
-      return;
-    }
-    fileNameDisplay.textContent = file.name;
-    afterUpload.style.display = "flex";
-  } else {
-    afterUpload.style.display = "none";
+  const MAX_FILES = 10;
+  let selectFiles = [];
+
+  // Render lại danh sách file
+  function renderFileList() {
+    fileListDisplay.innerHTML = "";
+
+    selectedFiles.forEach((file, index) => {
+      const fileItem = document.createElement("div");
+      fileItem.classList.add("file-info");
+      fileItem.innerHTML = `
+        <div><i class="fas fa-file-alt"></i> ${file.name}</div>
+        <button onclick="removeFile(${index})">Xóa</button>
+      `;
+      fileListDisplay.appendChild(fileItem);
+    });
+
+    afterUpload.style.display = selectedFiles.length > 0 ? "flex" : "none";
   }
-});
+
+  // Thêm file vào danh sách
+  function addFiles(files) {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+
+      if (!allowedTypes.includes(file.type)) {
+        alert(`File ${file.name} không hợp lệ.`);
+        continue;
+      }
+
+      if (selectedFiles.length >= MAX_FILES) {
+        alert("Chỉ cho phép tối đa 10 file.");
+        break;
+      }
+
+      if (selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+        alert(`File ${file.name} đã tồn tại trong danh sách.`);
+        continue;
+      }
+
+      selectedFiles.push(file);
+    }
+    renderFileList();
+  }
+
+  // Xóa file theo index
+  function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    renderFileList();
+  }
+
+  // Khi chọn file từ input
+  fileInput.addEventListener("change", function () {
+    addFiles(fileInput.files);
+    fileInput.value = "";
+  });
+
+  // Xử lý kéo thả file
+  uploadBox.addEventListener("dragover", function (e) {
+    e.preventDefault();
+    uploadBox.style.border = "2px dashed #000";
+  });
+
+  uploadBox.addEventListener("dragleave", function (e) {
+    e.preventDefault();
+    uploadBox.style.border = "";
+  });
+
+  uploadBox.addEventListener("drop", function (e) {
+    e.preventDefault();
+    uploadBox.style.border = "";
+    const files = e.dataTransfer.files;
+    addFiles(files);
+  });
 
 
   uploadNextBtn.addEventListener("click", function () {
