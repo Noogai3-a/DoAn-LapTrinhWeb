@@ -113,6 +113,25 @@ exports.getMyDocuments = async (req, res) => {
   }
 };
 
+exports.updateDocument = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { title, description, subjectName } = req.body;
+
+    const doc = await Document.findById(id);
+    if (!doc) return res.status(404).json({ msg: 'Document không tồn tại' });
+
+    doc.title = title || doc.title;
+    doc.description = description || doc.description;
+    doc.subjectName = subjectName || doc.subjectName;
+    await doc.save();
+
+    res.json({ msg: 'Cập nhật tài liệu thành công', document: doc });
+  } catch (err) {
+    console.error('Lỗi update document:', err);
+    res.status(500).json({ msg: 'Lỗi server' });
+  }
+};
 
 
 

@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Cập nhật thống kê từ API
   try {
     const res = await fetch(`${BACKEND}/api/admin/stats`, {
-    credentials: 'include' // ← THÊM DÒNG NÀY
+      credentials: 'include' // ← THÊM DÒNG NÀY
     });
     const data = await res.json();
 
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let allItems = [];
   let currentPage = 1;
   const itemsPerPage = 10;
-  
+
   if (!tableBody) {
     console.error('Không tìm thấy tbody!');
     return;
@@ -41,18 +41,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   function escapeHtml(text) {
     if (!text) return '';
     return text.replace(/&/g, "&amp;")
-               .replace(/</g, "&lt;")
-               .replace(/>/g, "&gt;")
-               .replace(/"/g, "&quot;")
-               .replace(/'/g, "&#039;");
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
   function createRow(item) {
-    const isApproved = item.approved === true; 
+    const isApproved = item.approved === true;
     let subjectName = '';
-    if(item.type === 'blog') {
+    if (item.type === 'blog') {
       subjectName = 'Blog'; // hoặc item.subject nếu có
-    } else if(item.type === 'document') {
+    } else if (item.type === 'document') {
       subjectName = item.subject || 'Tài liệu';
     }
 
@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         </td>
         <td>
           <button class="action-btn view" data-id="${item._id}" data-type="${item.type}" title="Xem"><i class="fas fa-eye"></i></button>
+          <button class="action-btn edit" data-id="${item._id}" data-type="${item.type}" title="Sửa"><i class="fas fa-edit"></i></button>
           <button class="action-btn delete" data-id="${item._id}" data-type="${item.type}" title="Xóa"><i class="fas fa-trash"></i></button>
         </td>
       </tr>
@@ -110,52 +111,52 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   async function loadItems() {
-  try {
-    const res = await fetch(`${BACKEND}/api/admin/blogs`, {
-      credentials: 'include'
-    });
-    if (!res.ok) throw new Error('Lỗi khi tải dữ liệu');
-    const data = await res.json();
+    try {
+      const res = await fetch(`${BACKEND}/api/admin/blogs`, {
+        credentials: 'include'
+      });
+      if (!res.ok) throw new Error('Lỗi khi tải dữ liệu');
+      const data = await res.json();
 
-    const { approvedItems = [], pendingItems = [] } = data;
-    allItems = [...pendingItems, ...approvedItems];
+      const { approvedItems = [], pendingItems = [] } = data;
+      allItems = [...pendingItems, ...approvedItems];
 
-    if (allItems.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không có tài liệu</td></tr>';
-      paginationContainer.style.display = 'none';
-    } else {
-      paginationContainer.style.display = 'flex';
-      currentPage = 1;
-      renderTable();
-      renderPagination();
+      if (allItems.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không có tài liệu</td></tr>';
+        paginationContainer.style.display = 'none';
+      } else {
+        paginationContainer.style.display = 'flex';
+        currentPage = 1;
+        renderTable();
+        renderPagination();
+      }
+
+      addEventListeners();
+    } catch (err) {
+      console.error('Lỗi khi load blog:', err);
+      tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:red;">Lỗi khi tải dữ liệu</td></tr>';
     }
-
-    addEventListeners();
-  } catch (err) {
-    console.error('Lỗi khi load blog:', err);
-    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:red;">Lỗi khi tải dữ liệu</td></tr>';
-  }
   }
 
   async function deleteItem(id, type) {
-  try {
-    const endpoint = type === 'blog' 
-      ? `${BACKEND}/api/blogs/${id}` 
-      : `${BACKEND}/api/documents/${id}`;
-      
-    const res = await fetch(`https://backend-yl09.onrender.com/api/review-documents/${id}`, {
-      method: 'DELETE',
-      credentials: 'include'
-    });
+    try {
+      const endpoint = type === 'blog'
+        ? `${BACKEND}/api/blogs/${id}`
+        : `${BACKEND}/api/documents/${id}`;
 
-    if (!res.ok) throw new Error('Xóa tài liệu thất bại');
+      const res = await fetch(`https://backend-yl09.onrender.com/api/review-documents/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
 
-    showToast('Xóa tài liệu thành công!', 'success');
-    loadItems(); // reload danh sách
-  } catch (err) {
-    showToast('Lỗi: ' + err.message, 'error');
+      if (!res.ok) throw new Error('Xóa tài liệu thất bại');
+
+      showToast('Xóa tài liệu thành công!', 'success');
+      loadItems(); // reload danh sách
+    } catch (err) {
+      showToast('Lỗi: ' + err.message, 'error');
+    }
   }
-}
 
 
   function addEventListeners() {
@@ -167,14 +168,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     document.querySelectorAll('.action-btn.delete').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const id = btn.getAttribute('data-id');
-    const type = btn.getAttribute('data-type');
-    showConfirmModal('Bạn có chắc muốn xóa tài liệu này không?', () => {
-      deleteItem(id, type);
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        const type = btn.getAttribute('data-type');
+        showConfirmModal('Bạn có chắc muốn xóa tài liệu này không?', () => {
+          deleteItem(id, type);
+        });
+      });
     });
-  });
-});
+
+    document.querySelectorAll('.action-btn.edit').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        const type = btn.getAttribute('data-type');
+
+        if (type === 'blog') {
+          window.location.href = `/blog-edit?id=${id}`;
+        } else if (type === 'document') {
+          window.location.href = `/document-edit?id=${id}`;
+        }
+      });
+    });
+
 
   }
   prevBtn.addEventListener('click', () => {
@@ -196,26 +211,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadItems();
 });
 function showToast(message, type = 'success') {
-    const toastE1 = document.getElementById("liveToast");
-    const toastBody = toastE1.querySelector(".toast-body");
+  const toastE1 = document.getElementById("liveToast");
+  const toastBody = toastE1.querySelector(".toast-body");
 
-    // Xóa hết class bg- cũ, giữ lại border-0
-    toastE1.classList.remove("bg-success", "bg-danger", "text-white");
+  // Xóa hết class bg- cũ, giữ lại border-0
+  toastE1.classList.remove("bg-success", "bg-danger", "text-white");
 
-    if (type === 'error') {
-        toastE1.classList.add("bg-danger", "text-white");
-    } else {
-        toastE1.classList.add("bg-success", "text-white");
-    }
+  if (type === 'error') {
+    toastE1.classList.add("bg-danger", "text-white");
+  } else {
+    toastE1.classList.add("bg-success", "text-white");
+  }
 
-    toastBody.innerHTML = message;
+  toastBody.innerHTML = message;
 
-    const toast = new bootstrap.Toast(toastE1, {
-        delay: 2000,
-        autohide: true
-    });
+  const toast = new bootstrap.Toast(toastE1, {
+    delay: 2000,
+    autohide: true
+  });
 
-    toast.show();
+  toast.show();
 }
 function showConfirmModal(message, onConfirm) {
   const modalEl = document.getElementById("confirmModal");
