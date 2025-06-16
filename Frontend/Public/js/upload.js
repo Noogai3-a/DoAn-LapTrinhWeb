@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
         continue;
       }
 
-      if (selectedFiles.length >= MAX_FILES) {
+       if (selectedFiles.length >= MAX_FILES) {
         alert("Chỉ cho phép tối đa 10 file.");
         break;
       }
@@ -72,25 +72,6 @@ document.addEventListener("DOMContentLoaded", function () {
     addFiles(fileInput.files);
     fileInput.value = "";
   });
-
-  // Xử lý kéo thả file
-  uploadBox.addEventListener("dragover", function (e) {
-    e.preventDefault();
-    uploadBox.style.border = "2px dashed #000";
-  });
-
-  uploadBox.addEventListener("dragleave", function (e) {
-    e.preventDefault();
-    uploadBox.style.border = "";
-  });
-
-  uploadBox.addEventListener("drop", function (e) {
-    e.preventDefault();
-    uploadBox.style.border = "";
-    const files = e.dataTransfer.files;
-    addFiles(files);
-  });
-
 
   uploadNextBtn.addEventListener("click", function () {
     // 1. Ẩn phần "upload", hiển thị phần "detail"
