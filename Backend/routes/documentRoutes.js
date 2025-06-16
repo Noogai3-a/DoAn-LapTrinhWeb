@@ -14,6 +14,6 @@ router.put('/:id',  documentController.updateDocument);
 router.get('/my', apiAuth, documentController.getMyDocuments);
 
 // Route lấy chi tiết theo ID — đặt cuối cùng
-// router.get('/:id', documentController.getDocumentById);
+router.get('/:id', documentController.getDocumentById);
 
 module.exports = router;
