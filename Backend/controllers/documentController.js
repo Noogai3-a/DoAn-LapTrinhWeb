@@ -121,9 +121,31 @@ exports.updateDocument = async (req, res) => {
     const doc = await Document.findById(id);
     if (!doc) return res.status(404).json({ msg: 'Document không tồn tại' });
 
+    const isAdmin = req.session.user?.role === 'admin';
+    const isAuthor = doc.uploader === req.session.user?.username;
+
+    if (!isAdmin && !isAuthor) {
+      return res.status(403).json({ msg: 'Không có quyền chỉnh sửa tài liệu này' });
+    }
+
+    // Cập nhật metadata
     doc.title = title || doc.title;
     doc.description = description || doc.description;
     doc.subjectName = subjectName || doc.subjectName;
+
+    // Nếu có file mới → thay thế file cũ
+    if (req.file) {
+      const oldPath = doc.pdfPath;
+      doc.pdfPath = req.file.path;
+
+      // Xoá file cũ nếu tồn tại
+      if (oldPath && fs.existsSync(oldPath)) {
+        fs.unlink(oldPath, (err) => {
+          if (err) console.error('❌ Lỗi xoá file cũ:', err);
+        });
+      }
+    }
+
     await doc.save();
 
     res.json({ msg: 'Cập nhật tài liệu thành công', document: doc });
