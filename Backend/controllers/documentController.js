@@ -155,6 +155,18 @@ exports.updateDocument = async (req, res) => {
   }
 };
 
+exports.getDocumentById = async (req, res) => {
+  try {
+    const doc = await Document.findById(req.params.id);
+    if (!doc) {
+      return res.status(404).json({ msg: 'Document không tồn tại' });
+    }
+    res.json(doc);
+  } catch (err) {
+    console.error('Lỗi khi lấy document theo ID:', err);
+    res.status(500).json({ msg: 'Lỗi server' });
+  }
+};
 
 
 
