@@ -151,8 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
   async function rejectItem(id, type) {
     try {
       let url;
-      if(type === 'blog') url = `/api/blogs/${id}`;
-      else if(type === 'document') url = `/api/admin/documents/${id}`;
+      if(type === 'blog') url = `https://backend-yl09.onrender.com/api/blogs/${id}`;
+      else if(type === 'document') url = `https://backend-yl09.onrender.com/api/admin/documents/${id}`;
       else throw new Error('Loại tài liệu không hợp lệ');
 
       const response = await fetch(url, {
