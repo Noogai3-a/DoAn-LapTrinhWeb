@@ -1,15 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const notificationController = require('../controllers/notificationController');
-const { verifyToken } = require('../middleware/auth');
+const authMiddleware = require('../middleware/authMiddleware');
 
-// Tất cả routes đều yêu cầu đăng nhập
-router.use(verifyToken);
 // Lấy danh sách thông báo
-router.get('/', notificationController.getNotifications);
+router.get('/', authMiddleware, notificationController.getNotifications);
 // Đánh dấu đã đọc một thông báo
-router.put('/:id/read', notificationController.markAsRead);
+router.put('/:id/read', authMiddleware, notificationController.markAsRead);
 // Đánh dấu tất cả đã đọc
-router.put('/read-all', notificationController.markAllAsRead);
+router.put('/read-all', authMiddleware, notificationController.markAllAsRead);
 
 module.exports = router;

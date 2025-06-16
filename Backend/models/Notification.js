@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const notificationSchema = {
+const notificationSchema = new mongoose.Schema({
     userId: { type: ObjectId, ref: 'User' },  // Người nhận thông báo
     type: { 
       type: String, 
@@ -16,6 +16,5 @@ const notificationSchema = {
     createdAt: { type: Date, default: Date.now },
     postTitle: { type: String },
     postType: { type: String, enum: ['BLOG', 'DOCUMENT'] },
-  }
-
-  module.exports = mongoose.model('Notification', notificationSchema);
+  });
+module.exports = mongoose.model('Notification', notificationSchema);
