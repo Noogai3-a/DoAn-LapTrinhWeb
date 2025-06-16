@@ -34,6 +34,27 @@ async function convertDocxToPdf(inputPath, outputPath) {
   await browser.close();
 }
 
+function normalizeTitle(filename) {
+  // Bỏ đuôi mở rộng
+  let title = filename.replace(/\.[^/.]+$/, "");
+
+  // Chuẩn hóa dấu tiếng Việt về không dấu
+  title = removeVietnameseTones(title);
+
+  // Thay các khoảng trắng hoặc ký tự đặc biệt bằng khoảng trắng duy nhất
+  title = title.replace(/[^a-zA-Z0-9\s]/g, " ");
+  title = title.replace(/\s+/g, " ").trim();
+
+  return title;
+}
+
+function removeVietnameseTones(str) {
+  return str.normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d").replace(/Đ/g, "D");
+}
+
+
 function getLabelsFromSlug(subjectTypeSlug, subjectNameSlug) {
   const subjectType = data[subjectTypeSlug];
   if (!subjectType || !subjectType.subjects) return null;
@@ -50,7 +71,7 @@ function getLabelsFromSlug(subjectTypeSlug, subjectNameSlug) {
 exports.uploadDocument = async (req, res) => {
   try {
     const uploader = req.session.user?.username ?? req.session.admin?.username;
-    const { title, subjectTypeSlug, subjectNameSlug, documentType } = req.body;
+    const {subjectTypeSlug, subjectNameSlug, documentType } = req.body;
 
     console.log('[Upload] Received:', { title, subjectTypeSlug, subjectNameSlug, documentType });
 
@@ -58,10 +79,15 @@ exports.uploadDocument = async (req, res) => {
       return res.status(400).json({ error: 'Chưa upload file.' });
     }
 
-    if (!title || !subjectTypeSlug || !subjectNameSlug || !documentType) {
+    if (!subjectTypeSlug || !subjectNameSlug || !documentType) {
       fs.unlinkSync(req.file.path);
       return res.status(400).json({ error: 'Thiếu thông tin bắt buộc.' });
     }
+
+    // Tự lấy title từ tên file
+    let originalName = req.file.originalname;
+    let title = normalizeTitle(originalName);
+
 
     const labels = getLabelsFromSlug(subjectTypeSlug, subjectNameSlug);
     if (!labels) {

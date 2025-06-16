@@ -220,39 +220,50 @@
             <div id="detail" class="page">
                 <div class="detail-box">
                     <form class="form-container">
+                    <label class="detail-label">
+                        Loại môn học
+                        <select class="detail-select" name="subjectTypeSlug" id="subjectTypeSelect">
+                            <option value="">-- Chọn loại môn --</option>
+                        </select>
+                    </label>
 
+                    <label class="detail-label">
+                        Tên môn học
+                        <select class="detail-select" name="subjectNameSlug" id="subjectNameSelect">
+                            <option value="">-- Chọn tên môn học --</option>
+                        </select>
+                    </label>
+                    <div id="subjectNameCustomDiv" style="display: none;">
                         <label class="detail-label">
-                            Loại môn học
-                            <input type="text" name="subjectType" placeholder="Nhập loại môn học" class="detail-title-input" required>
+                            Tên môn học (tự nhập)
+                            <input type="text" id="subjectNameCustomInput" placeholder="Nhập tên môn học">
                         </label>
+                    </div>
+                    
+                    <input type="hidden" name="subjectTypeLabel" id="subjectTypeLabel">
+                    <input type="hidden" name="subjectNameLabel" id="subjectNameLabel">
 
-                        <label class="detail-label">
-                            Tên môn học
-                            <input type="text" name="subjectName" placeholder="Nhập tên môn học" class="detail-title-input" required>
-                        </label>
+                    <label class="detail-label">
+                        Thể loại tài liệu
+                        <select class="detail-select" name="documentType">
+                            <option>-- Chọn loại tài liệu --</option>
+                            <option value="bai-giang">Bài giảng</option>
+                            <option value="de-thi">Đề thi</option>
+                            <option value="tai-lieu-tham-khao">Tài liệu tham khảo</option>
+                        </select>
+                    </label>
 
-                        <label class="detail-label">
-                            Thể loại tài liệu
-                            <input type="text" name="documentType" placeholder="Nhập thể loại tài liệu" class="detail-title-input" required>
-                        </label>
+                    <label class="detail-label">
+                        Mô tả
+                        <textarea name="description" placeholder="Hãy viết gì đó về tài liệu"></textarea>
+                    </label>
 
-                        <label class="detail-label">
-                            Tên tài liệu
-                            <input type="text" name="title" placeholder="Hãy viết tên của tài liệu" class="detail-title-input" required>
-                        </label>
-
-                        <label class="detail-label">
-                            Mô tả
-                            <textarea name="description" placeholder="Hãy viết gì đó về tài liệu" required></textarea>
-                        </label>
-
-                        <div class="button-row">
-                            <button type="button" class="back-button">Quay lại</button>
-                            <button type="button" class="next-button">Tiếp</button>
-                        </div>
+                    <div class="button-row">
+                        <button type="button" class="back-button">Quay lại</button>
+                        <button type="button" class="next-button">Tiếp</button>
+                    </div>
                     </form>
                 </div>
-
             </div>
 
             <div id="done" class="page">

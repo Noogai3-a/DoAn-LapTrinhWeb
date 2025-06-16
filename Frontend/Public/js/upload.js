@@ -84,6 +84,24 @@ document.addEventListener("DOMContentLoaded", function () {
     fileInput.value = "";
   });
 
+  // Thêm sự kiện drag & drop vào uploadBox
+  uploadBox.addEventListener("dragover", function (e) {
+    e.preventDefault();
+    uploadBox.style.backgroundColor = "#bbb"; // hiệu ứng khi kéo vào
+  });
+
+  uploadBox.addEventListener("dragleave", function (e) {
+    e.preventDefault();
+    uploadBox.style.backgroundColor = "#ddd"; // trở lại bình thường khi rời ra
+  });
+
+  uploadBox.addEventListener("drop", function (e) {
+    e.preventDefault();
+    uploadBox.style.backgroundColor = "#ddd"; // reset lại màu
+    const files = e.dataTransfer.files;
+    addFiles(files);
+  });
+
   uploadNextBtn.addEventListener("click", function () {
     // 1. Ẩn phần "upload", hiển thị phần "detail"
     document.getElementById("upload").classList.remove("active");
@@ -100,87 +118,119 @@ document.addEventListener("DOMContentLoaded", function () {
 
   nextButton.style.display = "none";
 
-  const subjectTypeInput = formDetail.querySelector('input[name="subjectTypeLabel"]');
-  const subjectNameInput = formDetail.querySelector('input[name="subjectNameLabel"]');
-  const documentTypeInput = formDetail.querySelector('input[name="documentType"]');
-  const titleInput = formDetail.querySelector('input[name="title"]');
-  const descriptionInput = formDetail.querySelector('textarea[name="description"]');
-
-  // Hidden input để lưu label (giữ lại)
-  let subjectTypeLabelInput = formDetail.querySelector('input[name="subjectTypeLabel"]');
-  let subjectNameLabelInput = formDetail.querySelector('input[name="subjectNameLabel"]');
-
-  if (!subjectTypeLabelInput) {
-    subjectTypeLabelInput = document.createElement('input');
-    subjectTypeLabelInput.type = 'hidden';
-    subjectTypeLabelInput.name = 'subjectTypeLabel';
-    formDetail.appendChild(subjectTypeLabelInput);
-  }
-  if (!subjectNameLabelInput) {
-    subjectNameLabelInput = document.createElement('input');
-    subjectNameLabelInput.type = 'hidden';
-    subjectNameLabelInput.name = 'subjectNameLabel';
-    formDetail.appendChild(subjectNameLabelInput);
-  }
+  const subjectTypeSelect = formDetail.querySelector('#subjectTypeSelect');  // select loại môn
+  const subjectNameSelect = formDetail.querySelector('#subjectNameSelect');  // select tên môn
+  const documentTypeSelect = formDetail.querySelector('#documentTypeSelect');  // select thể loại tài liệu
+  const descriptionInput = formDetail.querySelector('textarea[name="description"]');  // mô tả
+  
+  const subjectTypeLabel = formDetail.querySelector('#subjectTypeLabel');
+  const subjectNameLabel = formDetail.querySelector('#subjectNameLabel');
+  
+  fileInput.addEventListener("change", function () {
+    addFiles(fileInput.files);
+    fileInput.value = "";
+  });
   // Tải dữ liệu từ data.json
   let subjectNamesByType = {};
 
+  // Fetch data.json
   fetch('/json/data.json')
-    .then(response => {
-      if (!response.ok) throw new Error("Không tải được dữ liệu môn học");
-      return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
       subjectNamesByType = data;
-    })
-    .catch(error => {
-      console.error("Lỗi khi tải dữ liệu môn học:", error);
+      populateSubjectTypeSelect();
     });
-  // Hàm chuyển label về slug
-  function toSlug(str) {
-    return str.normalize('NFD') // chuẩn hóa unicode
-      .replace(/[\u0300-\u036f]/g, '') // loại bỏ dấu
-      .replace(/đ/g, 'd').replace(/Đ/g, 'D') // xử lý riêng tiếng Việt
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .trim()
-      .replace(/\s+/g, '-');
-  }
-  // Xác định label & slug dựa trên dữ liệu nhập
-  function updateLabels() {
-    const typeLabel = subjectTypeInput.value.trim();
-    const nameLabel = subjectNameInput.value.trim();
-    
-    const typeSlug = toSlug(typeLabel);
-    const nameSlug = toSlug(nameLabel);
-    
-    subjectTypeLabelInput.value = typeLabel;
-    subjectNameLabelInput.value = nameLabel;
 
-    subjectTypeInput.dataset.slug = typeSlug;
-    subjectNameInput.dataset.slug = nameSlug;
+  // Populate loại môn học
+  function populateSubjectTypeSelect() {
+    subjectTypeSelect.innerHTML = '<option value="">-- Chọn loại môn --</option>';
+    for (const typeSlug in subjectNamesByType) {
+      const option = document.createElement("option");
+      option.value = typeSlug;
+      option.textContent = subjectNamesByType[typeSlug].label;
+      subjectTypeSelect.appendChild(option);
+    }
   }
+
+  // Khi chọn loại môn học thì đổ tên môn học tương ứng
+  function updateSubjectNames() {
+    const selectedType = subjectTypeSelect.value;
+    subjectNameSelect.innerHTML = '<option value="">-- Chọn tên môn học --</option>';
+
+    if (selectedType && subjectNamesByType[selectedType]?.subjects) {
+      subjectNamesByType[selectedType].subjects.forEach(subject => {
+        const option = document.createElement("option");
+        option.value = subject.slug;
+        option.textContent = subject.label;
+        subjectNameSelect.appendChild(option);
+      });
+    }
+
+    // Thêm option khác
+    const otherOption = document.createElement("option");
+    otherOption.value = "other";
+    otherOption.textContent = "Khác...";
+    subjectNameSelect.appendChild(otherOption);
+  }
+
+  // Cập nhật label cho loại môn
+  function updateSubjectTypeLabel() {
+    const typeSlug = subjectTypeSelect.value;
+    if (typeSlug && subjectNamesByType[typeSlug]) {
+      subjectTypeLabel.value = subjectNamesByType[typeSlug].label;
+    } else {
+      subjectTypeLabel.value = '';
+    }
+  }
+
+  // Cập nhật label cho tên môn
+  function updateSubjectNameLabel() {
+    const typeSlug = subjectTypeSelect.value;
+    const nameSlug = subjectNameSelect.value;
+
+    if (nameSlug === "other") {
+      subjectNameLabel.value = document.getElementById("subjectNameCustomInput").value;
+    } else if (typeSlug && nameSlug && subjectNamesByType[typeSlug]?.subjects) {
+      const subject = subjectNamesByType[typeSlug].subjects.find(s => s.slug === nameSlug);
+      if (subject) {
+        subjectNameLabel.value = subject.label;
+      } else {
+        subjectNameLabel.value = '';
+      }
+    } else {
+      subjectNameLabel.value = '';
+    }
+  }
+
+  // Sự kiện
+  subjectTypeSelect.addEventListener("change", () => {
+    updateSubjectTypeLabel();
+    updateSubjectNames();
+    updateSubjectNameLabel();
+  });
+
+  subjectNameSelect.addEventListener("change", () => {
+    updateSubjectNameLabel();
+    const customDiv = document.getElementById("subjectNameCustomDiv");
+    if (subjectNameSelect.value === "other") {
+      customDiv.style.display = "block";
+    } else {
+      customDiv.style.display = "none";
+    }
+  });
 
   function validateDetailForm() {
     return (
       subjectTypeInput.value.trim() !== "" &&
       subjectNameInput.value.trim() !== "" &&
       documentTypeInput.value.trim() !== "" &&
-      titleInput.value.trim() !== ""
-      // descriptionInput.value.trim() !== ""
+      titleValue.trim() !== ""
     );
   }
 
-  function toggleDetailNextButton() {
-    updateLabels();
-    nextButton.style.display = validateDetailForm() ? "inline-block" : "none";
-  }
 
-  // Gắn event listener
-  [subjectTypeInput, subjectNameInput, documentTypeInput, titleInput, descriptionInput].forEach(el => {
-    el.addEventListener("input", toggleDetailNextButton);
-    el.addEventListener("change", toggleDetailNextButton);
-  });
+  document.getElementById("subjectNameCustomInput").addEventListener("input", updateSubjectNameLabel);
+
 
   // Lấy nút Quay lại
   const backButton = formDetail.querySelector(".back-button");
@@ -201,14 +251,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!validateDetailForm()) return;
 
-    const file = fileInput.files[0];
-    if (!file) {
+    if (fileInput.files.length === 0) {
       alert("Chưa có file được chọn.");
       return;
     }
 
     const formData = new FormData(formDetail);
-    formData.append("file", file);
+    for (const file of fileInput.files) {
+      formData.append("files", file);
+    }
 
     try {
       const response = await fetch(`https://backend-yl09.onrender.com/api/upload-documents/upload`, {
