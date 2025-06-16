@@ -19,6 +19,7 @@
   <!-- Existing global CSS -->
   <link rel="stylesheet" href="/css/main.css" />
   <link rel="stylesheet" href="/css/standard.css" />
+  <link rel="stylesheet" href="/css/notification.css">
 
   <!-- New CSS for dynamic course list -->
   <link rel="stylesheet" href="/css/dynamic-courses.css" />
@@ -47,6 +48,17 @@
           <a href="/blog">Blog</a>
           <a href="/document">Tài liệu</a>
         </nav>
+
+        <div class="notification-bell" id="notification-bell" style="display: none;">
+          <i class="fas fa-bell"></i>
+          <span class="notification-count">0</span>
+          <div class="notification-dropdown">
+            <div class="notification-header"></div>
+            <div class="notification-list">
+              <!-- Danh sách thông báo sẽ được thêm vào đây -->
+            </div>
+          </div>
+        </div>
 
         <div class="btn-login-signup" id="auth-buttons">
           <a href="/login">
