@@ -291,7 +291,7 @@ exports.createComment = async (req, res) => {
     if (parentComment) {
       // Nếu là reply, gửi thông báo cho người viết comment gốc
       const parentCommentDoc = await Comment.findById(parentComment);
-      if (parentCommentDoc) {
+      if (parentCommentDoc && parentCommentDoc.userId.toString() !== userId.toString()) {
         await notificationController.createNotification(
           parentCommentDoc.userId, // ID của người viết comment gốc
           'REPLY',
@@ -305,7 +305,7 @@ exports.createComment = async (req, res) => {
           'BLOG'
         );
       }
-    } else {
+    } else if (blog.authorId.toString() !== userId.toString()) {
       // Nếu là comment mới, gửi thông báo cho tác giả blog
       await notificationController.createNotification(
         blog.authorId, // ID của tác giả blog
