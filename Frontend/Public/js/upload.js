@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
   ];
 
   const MAX_FILES = 10;
-  let selectFiles = [];
+  let selectedFiles = [];
 
   // Render lại danh sách file
   function renderFileList() {
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
       fileListDisplay.appendChild(fileItem);
     });
 
-    afterUpload.style.display = selectedFiles.length > 0 ? "flex" : "none";
+    afterUpload.style.display = selectedFiles.length > 0 ? "block" : "none";
   }
 
   // Thêm file vào danh sách
