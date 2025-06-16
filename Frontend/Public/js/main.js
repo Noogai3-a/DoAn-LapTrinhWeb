@@ -172,16 +172,6 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
         });
     }
 
-    const input = document.getElementById('search-input');
-    const suggestions = document.getElementById('search-suggestions');
-    const typeSelect = document.getElementById('search-type');
-    let timeoutId;
-
-    if (!input || !suggestions || !typeSelect) {
-        console.warn('Search elements not found in DOM.');
-        return; // Không chạy tiếp nếu thiếu element
-    }
-
     notificationBell.addEventListener('click', () => {
         if (dropdown.style.display === 'block') {
             dropdown.style.display = 'none';
@@ -268,6 +258,16 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
             notificationList.innerHTML = '<div class="error-notification">Không thể tải thông báo</div>';
         });
     });
+
+    const input = document.getElementById('search-input');
+    const suggestions = document.getElementById('search-suggestions');
+    const typeSelect = document.getElementById('search-type');
+    let timeoutId;
+
+    if (!input || !suggestions || !typeSelect) {
+        console.warn('Search elements not found in DOM.');
+        return; // Không chạy tiếp nếu thiếu element
+    }
 
     const fetchSuggestions = (query = '') => {
         const type = typeSelect.value;
