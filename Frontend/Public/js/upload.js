@@ -230,12 +230,13 @@ document.addEventListener("DOMContentLoaded", function () {
       ? document.getElementById("subjectNameCustomInput").value.trim() !== ""
       : subjectNameSelect.value.trim() !== "";
 
-    return (
-      subjectTypeSelect.value.trim() !== "" &&
-      nameValid &&
-      documentTypeSelect.value.trim() !== ""
-    );
+      return (
+        subjectTypeSelect.value !== "" &&
+        nameValid &&
+        documentTypeSelect.value !== ""
+      );
   }
+
 
   function toggleDetailNextButton() {
     nextButton.style.display = validateDetailForm() ? "inline-block" : "none";
@@ -267,7 +268,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!validateDetailForm()) return;
 
-    if (fileInput.files.length === 0) {
+    if (selectedFiles.length === 0) {
       alert("Chưa có file được chọn.");
       return;
     }
