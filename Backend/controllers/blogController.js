@@ -4,6 +4,7 @@ const Comment = require('../models/Comment');
 const fs = require('fs');
 const { uploadFileToDrive } = require('../uploads/googleDrive');
 const { containsBadWords } = require('../utils/badWords');
+const notificationController = require('./notificationController');
 
 // --- Blog ---
 
@@ -87,6 +88,7 @@ exports.createBlog = async (req, res) => {
   try {
     const { title, content } = req.body;
     const author = req.session.user?.username ?? req.session.admin?.username;
+    const authorId = req.session.user?.id ?? req.session.admin?.id;
     const path = require('path');
     const fs = require('fs');
     const { uploadFileToDrive } = require('../uploads/googleDrive');
@@ -147,6 +149,7 @@ exports.createBlog = async (req, res) => {
     const newBlog = new Blog({
       title,
       author,
+      authorId,
       thumbnailImage,
       views: 0,
     });
@@ -248,6 +251,7 @@ exports.deleteBlog = async (req, res) => {
 exports.createComment = async (req, res) => {
   try {
     const { blogId, username, email, content, parentComment } = req.body;
+    const userId = req.session.user?.id ?? req.session.admin?.id;
 
     if (!blogId || !username || !email || !content) {
       return res.status(400).json({ msg: 'All fields are required' });
@@ -271,11 +275,51 @@ exports.createComment = async (req, res) => {
         blog: blogId,
         username,
         email,
+        userId,
         content,
         parentComment: parentComment || null
     });
 
     await newComment.save();
+
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      return res.status(404).json({ msg: 'Blog not found' });
+    }
+
+    // Tạo thông báo
+    if (parentComment) {
+      // Nếu là reply, gửi thông báo cho người viết comment gốc
+      const parentCommentDoc = await Comment.findById(parentComment);
+      if (parentCommentDoc) {
+        await notificationController.createNotification(
+          parentCommentDoc.userId, // ID của người viết comment gốc
+          'REPLY',
+          {
+            message: `${username} đã phản hồi bình luận của bạn`,
+            postId: blogId,
+            commentId: newComment._id,
+            replyId: newComment._id
+          },
+          blog.title,
+          'BLOG'
+        );
+      }
+    } else {
+      // Nếu là comment mới, gửi thông báo cho tác giả blog
+      await notificationController.createNotification(
+        blog.authorId, // ID của tác giả blog
+        'COMMENT',
+        {
+          message: `${username} đã bình luận vào bài viết của bạn`,
+          postId: blogId,
+          commentId: newComment._id
+        },
+        blog.title,
+        'BLOG'
+      );
+    }
+
     res.status(201).json({ msg: 'Comment added', comment: newComment });
   } catch (err) {
     console.error('Error creating comment:', err);
