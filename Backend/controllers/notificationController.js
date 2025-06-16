@@ -5,8 +5,14 @@ const path = require('path');
 // Lấy danh sách thông báo của user
 exports.getNotifications = async (req, res) => {
     try {
+        const userId = req.session.user?._id;
+        
+        if (!userId) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
         const notifications = await Notification.find({ 
-            userId: req.user._id 
+            userId: userId
         })
         .sort({ createdAt: -1 })  // Sắp xếp mới nhất lên đầu
         .limit(100);  // Giới hạn 100 thông báo

@@ -133,6 +133,10 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
                 userInfo.style.display = 'block';
                 notificationBell.style.display = 'block';
 
+                if (data._id) {
+                    localStorage.setItem('userId', data._id);
+                }
+
                 const dropdownMenu = document.querySelector('.dropdown-menu');
                 if (dropdownMenu && data.role === "admin") {
                     dropdownMenu.innerHTML = `
