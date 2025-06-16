@@ -203,9 +203,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Sự kiện
-  function toggleDetailNextButton() {
-    nextButton.style.display = validateDetailForm() ? "inline-block" : "none";
-  }
 
   subjectTypeSelect.addEventListener("change", () => {
     updateSubjectTypeLabel();
@@ -233,6 +230,10 @@ document.addEventListener("DOMContentLoaded", function () {
       subjectNameSelect.value.trim() !== "" &&
       documentTypeSelect.value.trim() !== ""
     );
+  }
+  
+  function toggleDetailNextButton() {
+    nextButton.style.display = validateDetailForm() ? "inline-block" : "none";
   }
 
 
