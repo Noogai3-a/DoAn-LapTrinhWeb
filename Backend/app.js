@@ -111,7 +111,6 @@ app.get('/api/documents/my', apiAuthMiddleware, documentController.getMyDocument
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
-app.use('/api', proxyRoutes)
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -214,6 +213,7 @@ app.get('/api/user-info', authMiddleware, (req, res) => {
         return res.status(401).json({ msg: 'Not logged in' });
     }
 });
+app.use('/api', proxyRoutes)
 // Thêm route đổi mật khẩu
 const bcrypt = require('bcryptjs');
 app.post('/api/change-password', authMiddleware, async (req, res) => {

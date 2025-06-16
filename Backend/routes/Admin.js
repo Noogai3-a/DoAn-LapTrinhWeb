@@ -15,6 +15,8 @@ router.get('/pending-blogs', requireAdmin, blogAdminController.getPendingBlogs);
 router.put('/approve-blog/:id', requireAdmin, blogAdminController.approveBlog);
 router.put('/approve-document/:id', documentController.approveDocument);
 
+router.delete('/reject-blog/:id', requireAdmin, blogAdminController.rejectBlog);
+
 // ✅ Route upload nhiều file
 router.post(
   '/upload-multiple',

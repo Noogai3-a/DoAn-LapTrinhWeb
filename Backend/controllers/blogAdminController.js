@@ -41,10 +41,52 @@ exports.approveBlog = async (req, res) => {
     blog.approved = true;
     await blog.save();
 
+    await notificationController.createNotification(
+      blog.authorId,
+      'APPROVE',
+      {
+        message: `Bài viết "${blog.title}" đã được duyệt`,
+        postId: blog._id
+      },
+      blog.title,
+      'BLOG'
+    );
+
     res.json({ msg: 'Duyệt bài thành công', blog });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Lỗi khi duyệt bài' });
+  }
+};
+
+exports.rejectBlog = async (req, res) => {
+  try {
+    const blogId = req.params.id;
+
+    const blog = await Blog.findById(blogId);
+    if (!blog) return res.status(404).json({ msg: 'Blog không tồn tại' });
+
+    // Thêm thông báo cho tác giả trước khi xóa
+    await notificationController.createNotification(
+      blog.authorId,
+      'REJECT',
+      {
+        message: `Bài viết "${blog.title}" không đạt tiêu chuẩn`,
+        postId: blog._id
+      },
+      blog.title,
+      'BLOG'
+    );
+
+    // Xóa blog và các nội dung liên quan
+    await BlogContent.deleteOne({ blog: blog._id });
+    await Comment.deleteMany({ blog: blog._id });
+    await Blog.deleteOne({ _id: blog._id });
+
+    res.json({ msg: 'Từ chối bài thành công' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Lỗi khi từ chối bài' });
   }
 };
 // Ví dụ trong blogAdminController.js
