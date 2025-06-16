@@ -66,6 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const usernameEl = document.getElementById('username');
     const loading = document.getElementById('loading');
     const mainContent = document.getElementById('main');
+    const notificationBell = document.querySelector('.notification-bell');
+    const notificationCount = document.querySelector('.notification-count');
     checkScreenSize();
     // 🔒 Nếu đang ở userql/usertk mà không có session → redirect về index
     if (window.location.pathname.includes('userql') || window.location.pathname.includes('usertk')) {
@@ -128,6 +130,7 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
                 usernameEl.textContent = data.username;
                 authButtons.style.display = 'none';
                 userInfo.style.display = 'block';
+                notificationBell.style.display = 'block';
 
                 const dropdownMenu = document.querySelector('.dropdown-menu');
                 if (dropdownMenu && data.role === "admin") {
@@ -163,76 +166,76 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
         });
     }
 
-const input = document.getElementById('search-input');
-const suggestions = document.getElementById('search-suggestions');
-const typeSelect = document.getElementById('search-type');
-let timeoutId;
+    const input = document.getElementById('search-input');
+    const suggestions = document.getElementById('search-suggestions');
+    const typeSelect = document.getElementById('search-type');
+    let timeoutId;
 
-if (!input || !suggestions || !typeSelect) {
-    console.warn('Search elements not found in DOM.');
-    return; // Không chạy tiếp nếu thiếu element
-}
-
-const fetchSuggestions = (query = '') => {
-    const type = typeSelect.value;
-    if (type !== 'blog') {
-        suggestions.style.display = 'none';
-        return;
+    if (!input || !suggestions || !typeSelect) {
+        console.warn('Search elements not found in DOM.');
+        return; // Không chạy tiếp nếu thiếu element
     }
 
-    // Gọi API tùy query hoặc default
-    const url = query
-        ? `https://backend-yl09.onrender.com/api/blogs/search?q=${encodeURIComponent(query)}`
-        : `https://backend-yl09.onrender.com/api/blogs/search?default=true`;
-
-    fetch(url)
-        .then(res => res.json())
-        .then(data => {
-            suggestions.innerHTML = '';
-            if (!data.length) {
-                suggestions.style.display = 'none';
-                return;
-            }
-
-            data.forEach(blog => {
-                const li = document.createElement('li');
-                li.textContent = blog.title;
-                li.addEventListener('click', () => {
-                    window.location.href = `/blog-read?post=${blog._id}`;
-                });
-                suggestions.appendChild(li);
-            });
-
-            suggestions.style.display = 'block';
-        })
-        .catch(err => {
-            console.error('Lỗi lấy blog:', err);
+    const fetchSuggestions = (query = '') => {
+        const type = typeSelect.value;
+        if (type !== 'blog') {
             suggestions.style.display = 'none';
-        });
-};
+            return;
+        }
 
-input.addEventListener('focus', () => {
-    if (typeSelect.value === 'blog') {
-        fetchSuggestions();
-    }
-});
+        // Gọi API tùy query hoặc default
+        const url = query
+            ? `https://backend-yl09.onrender.com/api/blogs/search?q=${encodeURIComponent(query)}`
+            : `https://backend-yl09.onrender.com/api/blogs/search?default=true`;
 
-input.addEventListener('input', () => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-        fetchSuggestions(input.value.trim());
-    }, 300);
-});
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                suggestions.innerHTML = '';
+                if (!data.length) {
+                    suggestions.style.display = 'none';
+                    return;
+                }
 
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-bar')) {
+                data.forEach(blog => {
+                    const li = document.createElement('li');
+                    li.textContent = blog.title;
+                    li.addEventListener('click', () => {
+                        window.location.href = `/blog-read?post=${blog._id}`;
+                    });
+                    suggestions.appendChild(li);
+                });
+
+                suggestions.style.display = 'block';
+            })
+            .catch(err => {
+                console.error('Lỗi lấy blog:', err);
+                suggestions.style.display = 'none';
+            });
+    };
+
+    input.addEventListener('focus', () => {
+        if (typeSelect.value === 'blog') {
+            fetchSuggestions();
+        }
+    });
+
+    input.addEventListener('input', () => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            fetchSuggestions(input.value.trim());
+        }, 300);
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-bar')) {
+            suggestions.style.display = 'none';
+        }
+    });
+
+    // Ẩn suggestion khi chọn loại khác
+    typeSelect.addEventListener('change', () => {
         suggestions.style.display = 'none';
-    }
-});
-
-// Ẩn suggestion khi chọn loại khác
-typeSelect.addEventListener('change', () => {
-    suggestions.style.display = 'none';
-});
+    });
 });
 
