@@ -209,6 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateSubjectTypeLabel();
     updateSubjectNames();
     updateSubjectNameLabel();
+    toggleDetailNextButton();
   });
 
   subjectNameSelect.addEventListener("change", () => {
@@ -225,9 +226,13 @@ document.addEventListener("DOMContentLoaded", function () {
   documentTypeSelect.addEventListener("change", toggleDetailNextButton);
 
   function validateDetailForm() {
+    const nameValid = subjectNameSelect.value === "other" 
+      ? document.getElementById("subjectNameCustomInput").value.trim() !== ""
+      : subjectNameSelect.value.trim() !== "";
+
     return (
       subjectTypeSelect.value.trim() !== "" &&
-      subjectNameSelect.value.trim() !== "" &&
+      nameValid &&
       documentTypeSelect.value.trim() !== ""
     );
   }
