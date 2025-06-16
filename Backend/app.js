@@ -6,7 +6,10 @@ if (process.env.GOOGLE_CREDENTIALS) {
   const decoded = Buffer.from(process.env.GOOGLE_CREDENTIALS, 'base64').toString('utf8');
   const outputPath = path.join(__dirname, 'credentials.json');
 
-  fs.writeFileSync(outputPath, decoded);
+  if (!fs.existsSync(outputPath)) {
+    fs.writeFileSync(outputPath, decoded);
+    console.log('✅ credentials.json written successfully');
+  }
 }
 
 const express = require('express');
