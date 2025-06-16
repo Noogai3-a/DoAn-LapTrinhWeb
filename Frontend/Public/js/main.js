@@ -183,7 +183,11 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
 
     notificationBell.addEventListener('click', () => {
         fetch('https://backend-yl09.onrender.com/api/notifications', {
-            credentials: 'include'
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         })
         .then(res => res.json())
         .then(data => {
