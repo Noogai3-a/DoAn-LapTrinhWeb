@@ -172,10 +172,13 @@ exports.updateBlog = async (req, res) => {
     const { title, content, thumbnailImage, imageUrls } = req.body;
 
     const blog = await Blog.findById(id);
-    if (!blog) return res.status(404).json({ msg: 'Blog not found' });
+    if (!blog) return res.status(404).json({ msg: 'Blog không tồn tại' });
 
-    if (blog.author !== req.session.user.username) {
-      return res.status(403).json({ msg: 'Not authorized to edit this blog' });
+    const isAdmin = req.session.user?.role === 'admin';
+    const isAuthor = blog.author === req.session.user?.username;
+
+    if (!isAdmin && !isAuthor) {
+      return res.status(403).json({ msg: 'Không có quyền chỉnh sửa blog này' });
     }
 
     blog.title = title || blog.title;
@@ -197,11 +200,13 @@ exports.updateBlog = async (req, res) => {
       await newBlogContent.save();
     }
 
-    res.json({ msg: 'Blog updated', blog });
+    res.json({ msg: 'Cập nhật blog thành công', blog });
   } catch (err) {
-    res.status(500).json({ msg: 'Server error' });
+    console.error('Lỗi updateBlog:', err);
+    res.status(500).json({ msg: 'Lỗi server' });
   }
 };
+
 
 exports.deleteBlog = async (req, res) => {
   try {
