@@ -92,8 +92,8 @@
     max-width: 1000px;
     margin: 0 auto;
 }
-  
-  /* Khung Drag and Drop */
+
+/* Khung Drag and Drop */
 .upload-box {
     display: flex;
     justify-content: center;
@@ -106,26 +106,26 @@
     max-width: 1000px;
     height: 300px; /* cố định chiều cao upload-box */
 }
-  
-  /* Icon trong phần upload */
+
+/* Icon trong phần upload */
 .upload-content i.icon {
     font-size: 50px;
     display: block;
     margin-bottom: 20px;
 }
-  
-  /* Nội dung text trong upload */
+
+/* Nội dung text trong upload */
 .upload-content p {
     font-size: 18px;
     margin: 10px 0;
 }
-  
+
 .upload-content span {
     display: block;
     margin: 10px 0;
     color: #777;
 }
-  
+
 /* Style cho button Browse */
 #browse-button {
     background-color: #009688;
@@ -136,37 +136,27 @@
     font-size: 16px;
     cursor: pointer;
 }
-  
+
 #browse-button:hover {
     background-color: #00796b;
 }
 
-.upload-box span{
+.upload-box span {
     padding-bottom: 10px;
 }
 
 #after-upload {
     display: flex;
+    flex-direction: column;
     width: 90%;
     max-width: 1000px;
-    justify-content: space-between; /* căn trái - phải */
+    justify-content: center;
     align-items: center;
     padding: 10px 20px;
     margin-top: 20px;
 }
-  
-.after-upload a {
-    display: block; /* Làm cho link file và nút Next nằm trên các dòng riêng biệt */
-    margin-bottom: 10px; /* Khoảng cách giữa file name và nút Next */
-    text-decoration: none; /* Bỏ gạch chân */
-    color: #000; 
-}
 
-.after-upload a:visited {
-    text-decoration: none; /* Bỏ gạch chân khi đã nhấp */
-    color: #000;            /* Giữ nguyên màu */
-}
-
+/* Danh sách file */
 .file-info {
     display: flex;
     justify-content: space-between;
@@ -176,37 +166,43 @@
     margin-bottom: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%;
 }
 
 .file-info div {
     flex: 1;
+    word-break: break-word;
 }
 
 .file-info button {
     background: #cccccc;
     border: none;
-    padding: 8px 12px;
-    color: white;
+    padding: 8px 16px;
+    color: #333;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .file-info button:hover {
-    background: #999999;
+    background: #999999; /* Xám đậm hơn khi hover */
+    color: white;
 }
 
 #next-btn {
     background-color: #009688;
     color: white;
-    padding: 8px 16px;
+    padding: 10px 20px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
+    margin-top: 20px;
 }
-  
+
 #next-btn:hover {
     background-color: #00796b;
 }
+
 
 /* detail */
 #detail.active {
