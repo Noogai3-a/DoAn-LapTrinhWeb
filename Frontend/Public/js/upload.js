@@ -171,6 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
     otherOption.value = "other";
     otherOption.textContent = "Khác...";
     subjectNameSelect.appendChild(otherOption);
+    toggleDetailNextButton();
   }
 
   // Cập nhật label cho loại môn
@@ -208,7 +209,6 @@ document.addEventListener("DOMContentLoaded", function () {
     updateSubjectTypeLabel();
     updateSubjectNames();
     updateSubjectNameLabel();
-    toggleDetailNextButton();
   });
 
   subjectNameSelect.addEventListener("change", () => {
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
       documentTypeSelect.value.trim() !== ""
     );
   }
-  
+
   function toggleDetailNextButton() {
     nextButton.style.display = validateDetailForm() ? "inline-block" : "none";
   }
