@@ -26,10 +26,21 @@ document.addEventListener("DOMContentLoaded", function () {
     selectedFiles.forEach((file, index) => {
       const fileItem = document.createElement("div");
       fileItem.classList.add("file-info");
-      fileItem.innerHTML = `
-        <div><i class="fas fa-file-alt"></i> ${file.name}</div>
-        <button onclick="removeFile(${index})">Xóa</button>
-      `;
+      // Tạo nội dung file
+      const fileNameDiv = document.createElement("div");
+      fileNameDiv.innerHTML = `<i class="fas fa-file-alt"></i> ${file.name}`;
+
+      // Tạo nút xóa
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Xóa";
+      deleteBtn.addEventListener("click", function() {
+        removeFile(index);
+      });
+
+      // Thêm vào item
+      fileItem.appendChild(fileNameDiv);
+      fileItem.appendChild(deleteBtn);
+
       fileListDisplay.appendChild(fileItem);
     });
 
