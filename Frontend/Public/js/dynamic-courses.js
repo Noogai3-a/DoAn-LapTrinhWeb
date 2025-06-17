@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.documents.forEach(doc => {
                   const fileLi = document.createElement('li');
                   const link = document.createElement('a');
-                  link.href = `/document.html?title=${encodeURIComponent(doc.title)}`;
+                  link.href = `/document.html?slug=${doc.slug}`;
                   link.textContent = doc.title;
 
                   fileLi.appendChild(link);

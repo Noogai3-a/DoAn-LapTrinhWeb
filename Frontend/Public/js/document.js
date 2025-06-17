@@ -1,13 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const pathParts = window.location.pathname.split('/');
-  const titleSlug = decodeURIComponent(pathParts[pathParts.length - 1]);
+  const params = new URLSearchParams(window.location.search);
+  const titleSlug = params.get('slug');
 
   if (!titleSlug) {
     document.getElementById('document-detail').innerHTML = '<p class="error">Không tìm thấy tiêu đề tài liệu.</p>';
     return;
   }
 
-  //Truy vấn theo title slug
   fetch(`https://backend-yl09.onrender.com/api/documents/by-slug/${titleSlug}`, {
     credentials: 'include'
   })
