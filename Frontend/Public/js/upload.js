@@ -245,7 +245,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   [subjectTypeSelect, subjectNameSelect, documentTypeSelect, descriptionInput].forEach(el => {
-  el.addEventListener("input", toggleDetailNextButton);
   el.addEventListener("change", toggleDetailNextButton);
   });
 
