@@ -22,12 +22,17 @@ async function analyzeSentiment(text) {
 
   if (!res.ok) throw new Error(`HF error: ${res.status}`);
 
-  const [arr] = await res.json(); // kết quả là mảng 2 cấp
-  const result = {};
-  arr.forEach(item => {
-    result[item.label] = item.score;
-  });
-  return result; // { 'Very Negative': 0.58, ... }
+  const data = await res.json();          // ← response: [ [ {label,score}, … ] ]
+  if (!Array.isArray(data) || !Array.isArray(data[0])) {
+    throw new Error('Unexpected HF response format');
+  }
+
+  const predictions = data[0];            // [{label,score}, …]
+  const scores = {};
+  for (const p of predictions) {
+    scores[p.label] = p.score;
+  }
+  return scores;
 }
 
 module.exports = { analyzeSentiment };
