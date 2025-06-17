@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .then(doc => {
       const container = document.getElementById('document-detail');
-      const safeUrl = doc.fileUrl;
+      const safeUrl = toDrivePreviewUrl(doc.fileUrl);
 
       container.innerHTML = `
         <h2>${doc.title}</h2>
@@ -32,3 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('document-detail').innerHTML = `<p class="error">Lỗi tải tài liệu: ${err.message}</p>`;
     });
 });
+
+function toDrivePreviewUrl(fileUrl) {
+  const match = fileUrl.match(/id=([^&]+)/); // lấy ID từ uc?id=...
+  if (!match) return fileUrl;
+  const fileId = match[1];
+  return `https://drive.google.com/file/d/${fileId}/preview`;
+}
