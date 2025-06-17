@@ -9,8 +9,7 @@ const {
   convertDocxToPdf,
   generateThumbnailFromPdf,
 } = require("../utils/uploadUtils");
-console.log("FILES:", req.files);
-console.log("BODY:", req.body);
+
 
 function slugifyTitle(filename) {
   // 1. Bỏ phần đuôi mở rộng file (.pdf, .docx, ...)
@@ -54,6 +53,8 @@ function getLabelsFromSlug(subjectTypeSlug, subjectNameSlug) {
 
 exports.uploadDocument = async (req, res) => {
   try {
+    console.log("FILES:", req.files);
+    console.log("BODY:", req.body);
     const uploader = req.session.user?.username ?? req.session.admin?.username;
     const { subjectTypeSlug, subjectNameSlug, documentType } = req.body;
 
