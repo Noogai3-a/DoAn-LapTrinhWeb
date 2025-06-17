@@ -103,10 +103,12 @@ exports.getDocumentBySlug = async (req, res) => {
   try {
     const slug = req.params.slug;
     const doc = await Document.findOne({ slug }).lean();
+    console.log('Received slug:', req.params.slug);
 
     if (!doc) {
       return res.status(404).json({ message: 'Tài liệu không tồn tại' });
     }
+    console.log('Tìm được:', doc);
 
     res.json(doc);
   } catch (error) {
