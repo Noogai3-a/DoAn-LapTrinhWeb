@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const blogListContainers = document.querySelectorAll(".blog-list");
+  const categoryBlogsContainer = document.querySelector(".category-blogs");
 
   function getDriveDirectLink(url) {
     const regex = /\/d\/([a-zA-Z0-9_-]+)/;
@@ -113,18 +114,41 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       blogListContainers[0].innerHTML = latestBlogs.map(createBlogItem).join('');
       blogListContainers[1].innerHTML = mostViewedBlogs.map(createBlogItem).join('');
-      blogListContainers[2].innerHTML = blogs.map(createBlogItem).join('');
-
-      lazyLoadImages(() => {
-        // Khi tất cả ảnh đã được preload xong
-        document.querySelectorAll("img.lazy-img").forEach(img => {
-          if (img._preloadedSrc) {
-            img.src = img._preloadedSrc;
-            img.classList.add("fade-in"); // optional: hiệu ứng fade
-          }
-        });
-      });
     }
+
+    const categoryBlogs = {};
+    blogs.forEach(blog => {
+      const category = blog.category === 'Chủ đề khác' ? blog.subCategory : blog.category;
+      if (!categoryBlogs[category]) {
+        categoryBlogs[category] = [];
+      }
+      categoryBlogs[category].push(blog);
+    });
+
+    categoryBlogsContainer.innerHTML = '';
+    Object.entries(categoryBlogs).forEach(([category, categoryBlogs]) => {
+      if (categoryBlogs.length > 0) {
+        const categorySection = document.createElement('div');
+        categorySection.className = 'category-section';
+        categorySection.innerHTML = `
+          <h2><i class="fas fa-folder"></i> ${category}</h2>
+          <div class="blog-list">
+            ${categoryBlogs.map(createBlogItem).join('')}
+          </div>
+        `;
+        categoryBlogsContainer.appendChild(categorySection);
+      }
+    });
+
+    // Load ảnh lazy
+    lazyLoadImages(() => {
+      document.querySelectorAll("img.lazy-img").forEach(img => {
+        if (img._preloadedSrc) {
+          img.src = img._preloadedSrc;
+          img.classList.add("fade-in");
+        }
+      });
+    });
   } catch (err) {
     console.error("Lỗi khi load blog:", err);
     blogListContainers.forEach(container => {
