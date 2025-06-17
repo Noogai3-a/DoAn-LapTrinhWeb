@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const categoryBlogs = {};
     blogs.forEach(blog => {
-      const category = blog.category === 'Chủ đề khác' ? blog.subCategory : blog.category;
+      const category = blog.category;
       if (!categoryBlogs[category]) {
         categoryBlogs[category] = [];
       }
