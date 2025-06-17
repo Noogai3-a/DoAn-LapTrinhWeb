@@ -86,69 +86,69 @@ exports.uploadDocument = async (req, res) => {
       let fileToUpload = file.path;
       const ext = path.extname(file.originalname).toLowerCase();
       const title = normalizeTitle(file.originalname);
-      const slug = slugifyTitle(file.originalname);
-
+      const baseSlug = slugifyTitle(title);
+      const slug = `${subjectNameSlug}-${baseSlug}`;
       let previewPath = null;
-    let previewFilename = null;
-    let previewDriveLink = null;
+      let previewFilename = null;
+      let previewDriveLink = null;
 
-    try {
-      if (ext === '.doc' || ext === '.docx') {
-        const pdfFilePath = file.path.replace(ext, '.pdf');
-        await convertDocxToPdf(file.path, pdfFilePath);
-        fs.unlinkSync(file.path);
-        fileToUpload = pdfFilePath;
-        fileNameToSave = path.basename(pdfFilePath);
+      try {
+        if (ext === '.doc' || ext === '.docx') {
+          const pdfFilePath = file.path.replace(ext, '.pdf');
+          await convertDocxToPdf(file.path, pdfFilePath);
+          fs.unlinkSync(file.path);
+          fileToUpload = pdfFilePath;
+          fileNameToSave = path.basename(pdfFilePath);
 
-        previewFilename = path.basename(pdfFilePath, '.pdf') + '.png';
-        previewPath = path.join('uploads/previews', previewFilename);
-        fs.mkdirSync('uploads/previews', { recursive: true });
+          previewFilename = path.basename(pdfFilePath, '.pdf') + '.png';
+          previewPath = path.join('uploads/previews', previewFilename);
+          fs.mkdirSync('uploads/previews', { recursive: true });
 
-        try {
-          await generateThumbnailFromPdf(pdfFilePath, previewPath);
-        } catch (err) {
-          console.error("Lỗi tạo thumbnail:", err);
+          try {
+            await generateThumbnailFromPdf(pdfFilePath, previewPath);
+          } catch (err) {
+            console.error("Lỗi tạo thumbnail:", err);
+          }
+
+          // Upload thumbnail nếu có
+          previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
+          fs.unlinkSync(previewPath);
         }
 
-        // Upload thumbnail nếu có
-        previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
-        fs.unlinkSync(previewPath);
+        const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
+        const driveLink = await uploadFileToDrive(fileToUpload, fileNameToSave, folderId);
+        fs.unlinkSync(fileToUpload);
+
+        filePathToSave = driveLink;
+
+        const newDoc = new Document({
+          title,
+          slug,
+          fileUrl: filePathToSave,
+          subjectTypeSlug,
+          subjectTypeLabel: labels.subjectTypeLabel,
+          subjectNameSlug,
+          subjectNameLabel: labels.subjectNameLabel,
+          documentType,
+          uploader,
+          previewUrl: previewDriveLink,
+          status: 'pending'
+        });
+
+        await newDoc.save();
+        savedDocuments.push(newDoc);
+        
+        } catch (err) {
+          console.error(`Lỗi xử lý file ${file.originalname}:`, err);
+          fs.existsSync(file.path) && fs.unlinkSync(file.path);
+          return res.status(500).json({ error: `Lỗi xử lý file ${file.originalname}.` });
+        }
       }
 
-      const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
-      const driveLink = await uploadFileToDrive(fileToUpload, fileNameToSave, folderId);
-      fs.unlinkSync(fileToUpload);
-
-      filePathToSave = driveLink;
-
-      const newDoc = new Document({
-        title,
-        slug,
-        fileUrl: filePathToSave,
-        subjectTypeSlug,
-        subjectTypeLabel: labels.subjectTypeLabel,
-        subjectNameSlug,
-        subjectNameLabel: labels.subjectNameLabel,
-        documentType,
-        uploader,
-        previewUrl: previewDriveLink,
-        status: 'pending'
+      return res.status(201).json({
+        message: `Upload ${savedDocuments.length} tài liệu thành công.`,
+        documents: savedDocuments
       });
-
-      await newDoc.save();
-      savedDocuments.push(newDoc);
-      
-      } catch (err) {
-        console.error(`Lỗi xử lý file ${file.originalname}:`, err);
-        fs.existsSync(file.path) && fs.unlinkSync(file.path);
-        return res.status(500).json({ error: `Lỗi xử lý file ${file.originalname}.` });
-      }
-    }
-
-    return res.status(201).json({
-      message: `Upload ${savedDocuments.length} tài liệu thành công.`,
-      documents: savedDocuments
-    });
 
   } catch (error) {
     console.error('Lỗi uploadDocument:', error);
