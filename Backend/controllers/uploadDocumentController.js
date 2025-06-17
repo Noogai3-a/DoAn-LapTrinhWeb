@@ -82,8 +82,8 @@ exports.uploadDocument = async (req, res) => {
     for (const file of req.files) {
       let filePathToSave = file.path;
       const ext = path.extname(file.originalname).toLowerCase();
-      const title = slugifyTitle(file.originalname);
-
+      const title = normalizeTitle(file.originalname);
+      const slug = slugifyTitle(file.originalname);
       try {
         // Nếu là doc/docx → chuyển sang PDF
         if (ext === '.doc' || ext === '.docx') {
@@ -106,6 +106,7 @@ exports.uploadDocument = async (req, res) => {
 
         const newDoc = new Document({
           title,
+          slug,
           fileUrl: filePathToSave,
           subjectTypeSlug,
           subjectTypeLabel: labels.subjectTypeLabel,

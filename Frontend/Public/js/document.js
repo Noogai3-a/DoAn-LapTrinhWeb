@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   //Truy vấn theo title slug
-  fetch(`https://backend-yl09.onrender.com/api/documents/by-title/${titleSlug}`, {
+  fetch(`https://backend-yl09.onrender.com/api/documents/by-slug/${titleSlug}`, {
     credentials: 'include'
   })
     .then(res => {

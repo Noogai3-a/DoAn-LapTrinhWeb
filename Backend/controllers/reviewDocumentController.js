@@ -99,10 +99,10 @@ exports.getDocumentById = async (req, res) => {
   }
 };
 
-exports.getDocumentByTitle = async (req, res) => {
+exports.getDocumentBySlug = async (req, res) => {
   try {
-    const title = req.params.title;
-    const doc = await Document.findOne({ title }).lean();
+    const slug = req.params.slug;
+    const doc = await Document.findOne({ slug }).lean();
 
     if (!doc) {
       return res.status(404).json({ message: 'Tài liệu không tồn tại' });

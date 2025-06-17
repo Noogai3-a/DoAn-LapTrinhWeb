@@ -3,7 +3,7 @@ const router = express.Router();
 const documentController = require('../controllers/reviewDocumentController');
 
 //Route đặc biệt trước
-router.get('/by-title/:title', documentController.getDocumentByTitle);
+router.get('/by-slug/:slug', documentController.getDocumentBySlug);
 
 //Các route khác
 router.get('/', documentController.getDocumentsForAdmin);

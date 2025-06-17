@@ -6,6 +6,9 @@ const documentSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  slug: { 
+    type: String,
+    unique: true },
   fileUrl: {
     type: String,
     required: true
