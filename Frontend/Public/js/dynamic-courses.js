@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
               .then(data => {
                 fileList.innerHTML = '';
                 fileList.dataset.loaded = 'true';
-
+                console.log("Danh sách tài liệu trả về:", data.documents);
                 if (!data.documents || data.documents.length === 0) {
                   const noFile = document.createElement('li');
                   noFile.textContent = 'Chưa có file tài liệu.';
