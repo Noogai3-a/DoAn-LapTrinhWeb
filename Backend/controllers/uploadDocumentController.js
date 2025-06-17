@@ -8,7 +8,6 @@ const {
   normalizeTitle,
   convertDocxToPdf,
   generateThumbnailFromPdf,
-  getLabelsFromSlug
 } = require("../utils/uploadUtils");
 function slugifyTitle(filename) {
   // 1. Bỏ phần đuôi mở rộng file (.pdf, .docx, ...)
