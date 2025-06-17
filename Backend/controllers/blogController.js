@@ -4,6 +4,7 @@ const Comment = require('../models/Comment');
 const fs = require('fs');
 const { uploadFileToDrive } = require('../uploads/googleDrive');
 const { containsBadWords } = require('../utils/badWords');
+const { analyzeSentiment } = require('../utils/sentiment');
 const notificationController = require('./notificationController');
 
 // --- Blog ---
