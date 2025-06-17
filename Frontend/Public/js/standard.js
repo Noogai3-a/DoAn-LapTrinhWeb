@@ -7,10 +7,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function createDocumentHTML(doc) {
   const fileUrl = `https://backend-yl09.onrender.com/${doc.fileUrl.replace(/\\/g, '/')}`;
   const subtitle = `${doc.subjectNameLabel || ''} • ${doc.subjectTypeLabel || ''}`;
+  const detailUrl = `/document.html?title=${encodeURIComponent(doc.title)}`;
 
   return `
     <div class="document-item">
-      <a href="${fileUrl}" target="_blank">
+      <a href="${detailUrl}">
         <img src="/assets/doc-default.png" alt="${doc.title}">
         <p class="doc-title">${doc.title}</p>
         <p class="doc-subtitle">${subtitle}</p>
