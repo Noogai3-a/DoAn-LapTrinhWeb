@@ -22,7 +22,7 @@ async function analyzeSentiment(text) {
 
   if (!res.ok) throw new Error(`HF error: ${res.status}`);
 
-  const [[arr]] = await res.json(); // kết quả là mảng 2 cấp
+  const [arr] = await res.json(); // kết quả là mảng 2 cấp
   const result = {};
   arr.forEach(item => {
     result[item.label] = item.score;
