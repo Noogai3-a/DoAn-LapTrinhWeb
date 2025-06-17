@@ -223,6 +223,11 @@ document.addEventListener('DOMContentLoaded', async function () {
           e.preventDefault();
           const textarea = replyForm.querySelector('textarea');
           const content = textarea.value.trim();
+
+          if (!userInfo || !userInfo.username || !userInfo.email) {
+            window.location.href = '/login'; 
+            return;
+          }
           
           if (!content) {
             showToast('Vui lòng nhập nội dung phản hồi', 'error');
@@ -360,6 +365,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     if (!userInfo || !userInfo.username || !userInfo.email) {
       window.location.href = '/login'; 
+      return;
+    }
+
+    if (containsBadWords(commentText)) {
+      showToast('Phản hồi chứa từ ngữ không phù hợp', 'error');
       return;
     }
 
