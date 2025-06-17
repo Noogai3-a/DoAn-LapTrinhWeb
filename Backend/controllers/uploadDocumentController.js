@@ -34,19 +34,25 @@ async function convertDocxToPdf(inputPath, outputPath) {
   await browser.close();
 }
 
-function normalizeTitle(filename) {
-  // Bỏ đuôi mở rộng
+function slugifyTitle(filename) {
+  // 1. Bỏ phần đuôi mở rộng file (.pdf, .docx, ...)
   let title = filename.replace(/\.[^/.]+$/, "");
 
-  // Chuẩn hóa dấu tiếng Việt về không dấu
+  // 2. Bỏ dấu tiếng Việt
   title = removeVietnameseTones(title);
 
-  // Thay các khoảng trắng hoặc ký tự đặc biệt bằng khoảng trắng duy nhất
-  title = title.replace(/[^a-zA-Z0-9\s]/g, " ");
-  title = title.replace(/\s+/g, " ").trim();
+  // 3. Chuyển về chữ thường
+  title = title.toLowerCase();
+
+  // 4. Thay ký tự đặc biệt, khoảng trắng thành dấu gạch ngang
+  title = title.replace(/[^a-z0-9]+/g, '-');
+
+  // 5. Bỏ dấu gạch ở đầu/cuối
+  title = title.replace(/^-+|-+$/g, '');
 
   return title;
 }
+
 
 function removeVietnameseTones(str) {
   return str.normalize('NFD')

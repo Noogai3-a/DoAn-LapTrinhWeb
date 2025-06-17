@@ -62,7 +62,7 @@ exports.rejectDocument = async (req, res) => {
     if (!doc) return res.status(404).json({ msg: 'Tài liệu không tồn tại' });
 
     // Normalize path: chuyển \ thành / nếu cần
-    const relativePath = doc.fileUrl.replace(/\\/g, '/'); // "uploads/1748674484684-23521296.pdf"
+    const relativePath = doc.fileUrl.replace(/\\/g, '/')
     const absolutePath = path.resolve(relativePath); // chuyển sang đường dẫn tuyệt đối
 
     // Xóa file khỏi ổ đĩa
@@ -82,10 +82,27 @@ exports.rejectDocument = async (req, res) => {
     res.status(500).json({ msg: 'Lỗi khi từ chối tài liệu' });
   }
 };
+
 exports.getDocumentById = async (req, res) => {
   try {
     const id = req.params.id;
     const doc = await Document.findById(id).lean();
+
+    if (!doc) {
+      return res.status(404).json({ message: 'Tài liệu không tồn tại' });
+    }
+
+    res.json(doc);
+  } catch (error) {
+    console.error('Lỗi khi lấy tài liệu:', error);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
+};
+
+exports.getDocumentByTitle = async (req, res) => {
+  try {
+    const title = req.params.title;
+    const doc = await Document.findOne({ title }).lean();
 
     if (!doc) {
       return res.status(404).json({ message: 'Tài liệu không tồn tại' });

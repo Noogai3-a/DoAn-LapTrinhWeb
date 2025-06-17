@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  // escapeHtml giống Blog
+  
   function escapeHtml(text) {
     if (!text) return '';
     return text.replace(/&/g, "&amp;")
