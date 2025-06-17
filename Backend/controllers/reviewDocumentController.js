@@ -54,6 +54,7 @@ exports.approveDocument = async (req, res) => {
 };
 
 exports.deleteDocumentById = async (req, res) => {
+  console.log('🔥 deleteDocumentById hit with ID:', req.params.id);
   try {
     const id = req.params.id;
     const doc = await Document.findById(id);
