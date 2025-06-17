@@ -188,6 +188,9 @@ async function submitPost() {
     const postContent = document.getElementById("postContent");
     const rawContent = postContent.innerHTML.trim();
 
+    const category = document.getElementById("category").value;
+    const subCategory = document.getElementById("subCategory").value;
+
     const thumbnailInput = document.getElementById('thumbnailUpload');
     const thumbnailFile = thumbnailInput.files[0];
 
@@ -234,7 +237,7 @@ async function submitPost() {
     if (category === 'Chủ đề khác') {
         formData.append('subCategory', subCategory);
     }
-    
+
     if (thumbnailFile) {
         formData.append('thumbnailImage', thumbnailFile);
     }
