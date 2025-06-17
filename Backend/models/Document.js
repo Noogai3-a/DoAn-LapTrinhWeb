@@ -36,6 +36,10 @@ const documentSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  previewUrl:{
+    type: String,
+    require: true
+  },
   documentType: {
     type: String,
     required: true

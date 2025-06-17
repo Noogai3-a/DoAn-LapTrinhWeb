@@ -109,6 +109,8 @@ exports.uploadDocument = async (req, res) => {
         }
         const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
         const driveLink = await uploadFileToDrive(fileToUpload, fileNameToSave, folderId);
+        const previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
+
         fs.unlinkSync(fileToUpload);
 
         filePathToSave = driveLink;
@@ -123,6 +125,7 @@ exports.uploadDocument = async (req, res) => {
           subjectNameLabel: labels.subjectNameLabel,
           documentType,
           uploader,
+          previewUrl: previewDriveLink,
           status: 'pending'
         });
 
