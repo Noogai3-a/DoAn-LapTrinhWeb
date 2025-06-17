@@ -213,8 +213,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const customDiv = document.getElementById("subjectNameCustomDiv");
     if (subjectNameSelect.value === "other") {
       customDiv.style.display = "block";
+      customDiv.classList.add("active");
     } else {
       customDiv.style.display = "none";
+      customDiv.classList.remove("active");
     }
     toggleDetailNextButton();
   });

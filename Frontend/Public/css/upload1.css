@@ -154,6 +154,8 @@
     align-items: center;
     padding: 10px 20px;
     margin-top: 20px;
+    max-height: 300px; /* Giới hạn chiều cao */
+    overflow-y: auto; /* Cho phép cuộn khi vượt quá chiều cao */
 }
 
 /* Danh sách file */
@@ -167,11 +169,14 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     width: 100%;
+    min-width: 0; /* Đảm bảo không bị tràn */
 }
 
 .file-info div {
     flex: 1;
-    word-break: break-word;
+    word-break: break-word; /* Ngắt từ khi cần thiết */
+    overflow: hidden; /* Ẩn phần vượt quá */
+    text-overflow: ellipsis; /* Thêm dấu ... khi tràn */
 }
 
 .file-info button {
@@ -182,6 +187,7 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    flex-shrink: 0;
 }
 
 .file-info button:hover {
@@ -216,6 +222,29 @@
     padding-right: 15px;
 }
 
+#subjectNameCustomDiv {
+    display: none; /* Ban đầu ẩn */
+    grid-column: 2; /* Đảm bảo nằm trong cột thứ 2 của grid */
+}
+
+#subjectNameCustomDiv.active {
+    display: contents; /* Hiển thị khi active */
+}
+
+#subjectNameCustomInput {
+    background-color: #d9d9d9;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 100%; /* Giới hạn chiều rộng tối đa */
+    word-break: break-word; /* Ngắt từ khi cần */
+    overflow: hidden; /* Ẩn phần vượt quá */
+    text-overflow: ellipsis; /* Thêm dấu ... khi tràn */
+}
+
 .form-container {
     display: grid;
     grid-template-columns: 100px 1fr;
@@ -223,6 +252,7 @@
     max-width: 600px;
     padding: 30px;
     margin: auto;
+    overflow: hidden; /* Ngăn tràn ngoài container */
 }
 
 .detail-label{
