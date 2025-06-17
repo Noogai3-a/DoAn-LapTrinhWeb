@@ -86,7 +86,7 @@ exports.getMostViewedBlogs = async (req, res) => {
 
 exports.createBlog = async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, category, subCategory } = req.body;
     const author = req.session.user?.username ?? req.session.admin?.username;
     const authorId = req.session.user?.id ?? req.session.admin?.id;
     const path = require('path');
