@@ -36,6 +36,26 @@
     margin-bottom: 10px;
     margin-left: 40px;
 }
+
+.post-category {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 10px;
+    margin-left: 40px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.post-category i {
+    color: #a5ded3;
+}
+
+.post-category .category-label {
+    font-weight: 500;
+    color: #356859;
+}
+
 .blog-post p {
     line-height: 1.6;
     margin-bottom: 15px;

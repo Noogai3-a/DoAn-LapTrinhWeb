@@ -26,6 +26,22 @@ window.addEventListener("DOMContentLoaded", async function () {
     document.getElementById("post-title").innerText = blog.title;
     document.getElementById("post-date").innerText = formatDate(blog.createdAt);
     document.getElementById("post-author").innerText = `Người viết: ${blog.author}`;
+
+    const categoryElement = document.getElementById("post-category");
+    if (blog.category === 'Chủ đề khác' && blog.subCategory) {
+        categoryElement.innerHTML = `
+            <i class="fas fa-tag"></i>
+            <span class="category-label">Chủ đề:</span>
+            ${blog.subCategory}
+        `;
+    } else {
+        categoryElement.innerHTML = `
+            <i class="fas fa-tag"></i>
+            <span class="category-label">Chủ đề:</span>
+            ${blog.category}
+        `;
+    }
+    
     document.getElementById("post-content").innerHTML = content;
 
     // Convert Google Drive link to direct download ID
