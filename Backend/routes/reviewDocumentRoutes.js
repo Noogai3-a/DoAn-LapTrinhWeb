@@ -3,7 +3,7 @@ const router = express.Router();
 const documentController = require('../controllers/reviewDocumentController');
 
 // 📌 ĐẶT route đặc biệt TRƯỚC:
-router.get('/documents/by-title/:title', documentController.getDocumentByTitle);
+router.get('/:title', documentController.getDocumentByTitle);
 router.get('/', documentController.getDocumentsForAdmin);
 router.put('/approve/:id', documentController.approveDocument);
 router.delete('/:id', documentController.rejectDocument);
