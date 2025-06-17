@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  fetch(`https://backend-yl09.onrender.com/api/review-documents/documents/by-slug/${slug}`, {
+  fetch(`https://backend-yl09.onrender.com/api/review-documents/by-slug/${slug}`, {
     credentials: 'include'
   })
     .then(res => {
