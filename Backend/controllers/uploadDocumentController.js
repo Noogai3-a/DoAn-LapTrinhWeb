@@ -9,6 +9,7 @@ const {
   convertDocxToPdf,
   generateThumbnailFromPdf,
 } = require("../utils/uploadUtils");
+
 function slugifyTitle(filename) {
   // 1. Bỏ phần đuôi mở rộng file (.pdf, .docx, ...)
   let title = filename.replace(/\.[^/.]+$/, "");
@@ -77,7 +78,7 @@ exports.uploadDocument = async (req, res) => {
     for (const file of req.files) {
       let filePathToSave = file.path;
       const ext = path.extname(file.originalname).toLowerCase();
-      const title = normalizeTitle(file.originalname);
+      const title = slugifyTitle(file.originalname);
 
       try {
         // Nếu là doc/docx → chuyển sang PDF
