@@ -4,7 +4,12 @@ const mammoth = require('mammoth');
 const puppeteer = require('puppeteer');
 const Document = require('../models/Document');
 const data = require('../data.json');
-
+const {
+  normalizeTitle,
+  convertDocxToPdf,
+  generateThumbnailFromPdf,
+  getLabelsFromSlug
+} = require("../utils/uploadUtils");
 async function generateThumbnailFromPdf(pdfPath, outputImagePath) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
