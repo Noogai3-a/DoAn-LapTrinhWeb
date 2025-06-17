@@ -1,6 +1,7 @@
 const Document = require('../models/Document');
 const fs = require('fs');
 const path = require('path');
+const { deleteFileFromDrive } = require('../uploads/googleDrive');
 
 exports.getDocumentsForAdmin = async (req, res) => {
   try {
@@ -52,8 +53,6 @@ exports.approveDocument = async (req, res) => {
   }
 };
 
-
-
 exports.rejectDocument = async (req, res) => {
   try {
     const id = req.params.id;
@@ -61,22 +60,24 @@ exports.rejectDocument = async (req, res) => {
 
     if (!doc) return res.status(404).json({ msg: 'Tài liệu không tồn tại' });
 
-    // Normalize path: chuyển \ thành / nếu cần
-    const relativePath = doc.fileUrl.replace(/\\/g, '/')
-    const absolutePath = path.resolve(relativePath); // chuyển sang đường dẫn tuyệt đối
-
-    // Xóa file khỏi ổ đĩa
-    fs.unlink(absolutePath, async (err) => {
-      if (err) {
-        console.warn('Không thể xóa file:', err.message);
-        // Vẫn tiếp tục xóa DB dù file không xóa được
+    if (doc.fileUrl.startsWith('https://drive.google.com/uc?id=')) {
+      // Extract fileId from URL
+      const match = doc.fileUrl.match(/id=([^&]+)/);
+      if (match) {
+        await deleteFileFromDrive(match[1]);
       }
+    } else {
+      // Old logic for local files
+      const relativePath = doc.fileUrl.replace(/\\/g, '/');
+      const absolutePath = path.resolve(relativePath);
+      fs.unlink(absolutePath, (err) => {
+        if (err) console.warn('Không thể xóa file:', err.message);
+      });
+    }
 
-      // Xóa document khỏi MongoDB
-      await Document.findByIdAndDelete(id);
-      res.json({ msg: 'Tài liệu đã bị từ chối và xóa thành công' });
-    });
-
+    // Xóa document khỏi MongoDB
+    await Document.findByIdAndDelete(id);
+    res.json({ msg: 'Tài liệu đã bị từ chối và xóa thành công' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Lỗi khi từ chối tài liệu' });
@@ -126,19 +127,23 @@ exports.deleteDocument = async (req, res) => {
       return res.status(404).json({ error: 'Document not found' });
     }
 
-    // Xóa file vật lý nếu tồn tại
-    const relativePath = doc.fileUrl.replace(/\\/g, '/');
-    const absolutePath = path.resolve(relativePath);
-
-    fs.unlink(absolutePath, async (err) => {
-      if (err) {
-        console.warn('Không thể xóa file:', err.message);
-        // Vẫn tiếp tục xóa trong DB
+    if (doc.fileUrl.startsWith('https://drive.google.com/uc?id=')) {
+      // Extract fileId from URL
+      const match = doc.fileUrl.match(/id=([^&]+)/);
+      if (match) {
+        await deleteFileFromDrive(match[1]);
       }
+    } else {
+      // Old logic for local files
+      const relativePath = doc.fileUrl.replace(/\\/g, '/');
+      const absolutePath = path.resolve(relativePath);
+      fs.unlink(absolutePath, (err) => {
+        if (err) console.warn('Không thể xóa file:', err.message);
+      });
+    }
 
-      await Document.findByIdAndDelete(id);
-      res.json({ success: true, message: 'Document deleted successfully' });
-    });
+    await Document.findByIdAndDelete(id);
+    res.json({ success: true, message: 'Document deleted successfully' });
   } catch (err) {
     console.error('Error deleting document:', err);
     res.status(500).json({ error: 'Server error' });

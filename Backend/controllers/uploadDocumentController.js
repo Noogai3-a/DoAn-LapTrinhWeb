@@ -3,6 +3,7 @@ const path = require('path');
 const mammoth = require('mammoth');
 const puppeteer = require('puppeteer');
 const Document = require('../models/Document');
+const { uploadFileToDrive } = require('../uploads/googleDrive');
 const data = require('../data.json');
 const {
   normalizeTitle,
@@ -81,6 +82,8 @@ exports.uploadDocument = async (req, res) => {
 
     for (const file of req.files) {
       let filePathToSave = file.path;
+      let fileNameToSave = file.originalname;
+      let fileToUpload = file.path;
       const ext = path.extname(file.originalname).toLowerCase();
       const title = normalizeTitle(file.originalname);
       const slug = slugifyTitle(file.originalname);
@@ -90,7 +93,8 @@ exports.uploadDocument = async (req, res) => {
           const pdfFilePath = file.path.replace(ext, '.pdf');
           await convertDocxToPdf(file.path, pdfFilePath);
           fs.unlinkSync(file.path); // xoá file gốc
-          filePathToSave = pdfFilePath;
+          fileToUpload = pdfFilePath;
+          fileNameToSave = path.basename(pdfFilePath);
 
           // Tạo thumbnail
           const previewFilename = path.basename(pdfFilePath, '.pdf') + '.png';
@@ -103,6 +107,11 @@ exports.uploadDocument = async (req, res) => {
           }
 
         }
+        const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
+        const driveLink = await uploadFileToDrive(fileToUpload, fileNameToSave, folderId);
+        fs.unlinkSync(fileToUpload);
+
+        filePathToSave = driveLink;
 
         const newDoc = new Document({
           title,
