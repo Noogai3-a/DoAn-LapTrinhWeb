@@ -35,7 +35,7 @@ exports.getDocumentsBySubject = async (req, res) => {
   console.log('[MongoDB Query]', query);
 
   try {
-    const documents = await Document.find(query).select('title fileUrl').lean();
+    const documents = await Document.find(query).select('title slug fileUrl').lean();
 
     if (!documents || documents.length === 0) {
       // Trả về mảng rỗng thay vì lỗi 404
