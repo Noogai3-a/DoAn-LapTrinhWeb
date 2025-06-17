@@ -275,7 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const formData = new FormData(formDetail);
-    for (const file of fileInput.files) {
+    for (const file of selectedFiles) {
       formData.append("files", file);
     }
 
