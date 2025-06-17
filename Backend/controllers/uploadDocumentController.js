@@ -9,6 +9,9 @@ const {
   convertDocxToPdf,
   generateThumbnailFromPdf,
 } = require("../utils/uploadUtils");
+console.log("FILES:", req.files);
+console.log("BODY:", req.body);
+
 function slugifyTitle(filename) {
   // 1. Bỏ phần đuôi mở rộng file (.pdf, .docx, ...)
   let title = filename.replace(/\.[^/.]+$/, "");
@@ -31,8 +34,8 @@ function slugifyTitle(filename) {
 
 function removeVietnameseTones(str) {
   return str.normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/đ/g, "d").replace(/Đ/g, "D");
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d").replace(/Đ/g, "D");
 }
 
 
@@ -91,7 +94,12 @@ exports.uploadDocument = async (req, res) => {
           const previewFilename = path.basename(pdfFilePath, '.pdf') + '.png';
           const previewPath = path.join('uploads/previews', previewFilename);
           fs.mkdirSync('uploads/previews', { recursive: true });
-          await generateThumbnailFromPdf(pdfFilePath, previewPath);
+          try {
+            await generateThumbnailFromPdf(pdfFilePath, previewPath);
+          } catch (err) {
+            console.error("Lỗi tạo thumbnail:", err);
+          }
+
         }
 
         const newDoc = new Document({
