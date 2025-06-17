@@ -277,6 +277,21 @@ exports.createComment = async (req, res) => {
       });
     }
 
+    const scores = await analyzeSentiment(content);
+    const V   = scores['Very Negative'] || 0;
+    const N   = scores['Negative'] || 0;
+    const Neu = scores['Neutral'] || 0;
+
+    const aggressive = (V + N) - Neu;
+    const HARD_BLOCK = 0.50;   // Ngưỡng chặn
+
+    if (aggressive >= HARD_BLOCK) {
+      return res.status(400).json({
+        msg: 'Comment bị đánh giá quá tiêu cực – vui lòng điều chỉnh!',
+        sentiment: { V, N, Neu, aggressive }
+      });
+    }
+
     const newComment = new Comment({
         blog: blogId,
         username,
