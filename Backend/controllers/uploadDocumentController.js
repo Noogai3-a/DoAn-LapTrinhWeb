@@ -87,51 +87,57 @@ exports.uploadDocument = async (req, res) => {
       const ext = path.extname(file.originalname).toLowerCase();
       const title = normalizeTitle(file.originalname);
       const slug = slugifyTitle(file.originalname);
-      try {
-        // Nếu là doc/docx → chuyển sang PDF
-        if (ext === '.doc' || ext === '.docx') {
-          const pdfFilePath = file.path.replace(ext, '.pdf');
-          await convertDocxToPdf(file.path, pdfFilePath);
-          fs.unlinkSync(file.path); // xoá file gốc
-          fileToUpload = pdfFilePath;
-          fileNameToSave = path.basename(pdfFilePath);
 
-          // Tạo thumbnail
-          const previewFilename = path.basename(pdfFilePath, '.pdf') + '.png';
-          const previewPath = path.join('uploads/previews', previewFilename);
-          fs.mkdirSync('uploads/previews', { recursive: true });
-          try {
-            await generateThumbnailFromPdf(pdfFilePath, previewPath);
-          } catch (err) {
-            console.error("Lỗi tạo thumbnail:", err);
-          }
+      let previewPath = null;
+    let previewFilename = null;
+    let previewDriveLink = null;
 
+    try {
+      if (ext === '.doc' || ext === '.docx') {
+        const pdfFilePath = file.path.replace(ext, '.pdf');
+        await convertDocxToPdf(file.path, pdfFilePath);
+        fs.unlinkSync(file.path);
+        fileToUpload = pdfFilePath;
+        fileNameToSave = path.basename(pdfFilePath);
+
+        previewFilename = path.basename(pdfFilePath, '.pdf') + '.png';
+        previewPath = path.join('uploads/previews', previewFilename);
+        fs.mkdirSync('uploads/previews', { recursive: true });
+
+        try {
+          await generateThumbnailFromPdf(pdfFilePath, previewPath);
+        } catch (err) {
+          console.error("Lỗi tạo thumbnail:", err);
         }
-        const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
-        const driveLink = await uploadFileToDrive(fileToUpload, fileNameToSave, folderId);
-        const previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
 
-        fs.unlinkSync(fileToUpload);
+        // Upload thumbnail nếu có
+        previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
+        fs.unlinkSync(previewPath);
+      }
 
-        filePathToSave = driveLink;
+      const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
+      const driveLink = await uploadFileToDrive(fileToUpload, fileNameToSave, folderId);
+      fs.unlinkSync(fileToUpload);
 
-        const newDoc = new Document({
-          title,
-          slug,
-          fileUrl: filePathToSave,
-          subjectTypeSlug,
-          subjectTypeLabel: labels.subjectTypeLabel,
-          subjectNameSlug,
-          subjectNameLabel: labels.subjectNameLabel,
-          documentType,
-          uploader,
-          previewUrl: previewDriveLink,
-          status: 'pending'
-        });
+      filePathToSave = driveLink;
 
-        await newDoc.save();
-        savedDocuments.push(newDoc);
+      const newDoc = new Document({
+        title,
+        slug,
+        fileUrl: filePathToSave,
+        subjectTypeSlug,
+        subjectTypeLabel: labels.subjectTypeLabel,
+        subjectNameSlug,
+        subjectNameLabel: labels.subjectNameLabel,
+        documentType,
+        uploader,
+        previewUrl: previewDriveLink,
+        status: 'pending'
+      });
 
+      await newDoc.save();
+      savedDocuments.push(newDoc);
+      
       } catch (err) {
         console.error(`Lỗi xử lý file ${file.originalname}:`, err);
         fs.existsSync(file.path) && fs.unlinkSync(file.path);
