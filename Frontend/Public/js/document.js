@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Lấy documentId từ URL query param ?id=...
   const pathParts = window.location.pathname.split('/');
   const titleSlug = decodeURIComponent(pathParts[pathParts.length - 1]);
 
@@ -8,8 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-
-  fetch(`https://backend-yl09.onrender.com/api/documents/${titleSlug}`,{credentials: 'include'})
+  //Truy vấn theo title slug
+  fetch(`https://backend-yl09.onrender.com/api/documents/by-title/${titleSlug}`, {
+    credentials: 'include'
+  })
     .then(res => {
       if (!res.ok) throw new Error('Không tải được tài liệu');
       return res.json();
@@ -31,5 +32,4 @@ document.addEventListener('DOMContentLoaded', () => {
     .catch(err => {
       document.getElementById('document-detail').innerHTML = `<p class="error">Lỗi tải tài liệu: ${err.message}</p>`;
     });
-  
 });

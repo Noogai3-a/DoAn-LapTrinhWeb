@@ -2,14 +2,17 @@ const express = require('express');
 const router = express.Router();
 const documentController = require('../controllers/reviewDocumentController');
 
-// 📌 ĐẶT route đặc biệt TRƯỚC:
-router.get('/:title', documentController.getDocumentByTitle);
+//Route đặc biệt trước
+router.get('/by-title/:title', documentController.getDocumentByTitle);
+
+//Các route khác
 router.get('/', documentController.getDocumentsForAdmin);
 router.put('/approve/:id', documentController.approveDocument);
 router.delete('/:id', documentController.rejectDocument);
 router.delete('/:id', documentController.deleteDocument);
 
-// ❗ CUỐI CÙNG: route bắt toàn bộ :id
+//Cuối cùng: bắt theo ID
 router.get('/:id', documentController.getDocumentById);
+
 
 module.exports = router;
