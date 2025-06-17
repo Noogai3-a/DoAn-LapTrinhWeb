@@ -157,6 +157,14 @@
 }
 
 /* Danh sách file */
+#file-list {
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
 .file-info {
     display: flex;
     justify-content: space-between;
@@ -166,15 +174,15 @@
     margin-bottom: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    width: 100%;
 }
 
 .file-info div {
     flex: 1;
-    word-break: break-word;
+    word-break: break-all;
 }
 
 .file-info button {
+    white-space: nowrap;
     background: #cccccc;
     border: none;
     padding: 8px 16px;
@@ -203,6 +211,12 @@
     background-color: #00796b;
 }
 
+#next-btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
 
 /* detail */
 #detail.active {
@@ -226,7 +240,9 @@
 }
 
 .detail-label{
-    display: contents;
+    display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
 }
  
 .detail-select,
@@ -347,6 +363,19 @@ textarea {
   
 .done-button:focus {
     outline: none;
+}
+/* Custom subject name input */
+#subjectNameCustomDiv {
+  grid-column: 1 / -1;
+  margin-top: -10px;
+}
+
+#subjectNameCustomInput {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 5px;
 }
 
 /* Responsive styles for Steps */
