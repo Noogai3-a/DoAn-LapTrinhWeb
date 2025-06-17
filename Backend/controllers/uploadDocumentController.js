@@ -84,10 +84,14 @@ exports.uploadDocument = async (req, res) => {
       let filePathToSave = file.path;
       let fileNameToSave = file.originalname;
       let fileToUpload = file.path;
+
       const ext = path.extname(file.originalname).toLowerCase();
-      const title = normalizeTitle(file.originalname);
+      const rawName = decodeURIComponent(file.originalname);
+      console.log("Original name:", file.originalname);
+      const title = normalizeTitle(rawName);
       const baseSlug = slugifyTitle(title);
       const slug = `${subjectNameSlug}-${baseSlug}`;
+
       let previewPath = null;
       let previewFilename = null;
       let previewDriveLink = null;
