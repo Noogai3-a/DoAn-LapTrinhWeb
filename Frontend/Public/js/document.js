@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <h2>${doc.title}</h2>
 
         <div class="file-preview" style="height: 800px; margin: 16px 0;">
-          <iframe src="/${safeUrl}#zoom=100" width="100%" height="100%" frameborder="0" allowfullscreen>
+          <iframe src="${safeUrl}#zoom=100" width="100%" height="100%" frameborder="0" allowfullscreen>
             Trình duyệt của bạn không hỗ trợ xem PDF.
           </iframe>
         </div>
