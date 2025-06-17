@@ -219,7 +219,7 @@ document.addEventListener("DOMContentLoaded", function () {
     toggleDetailNextButton();
   });
 
-  documentTypeSelect.addEventListener("change", toggleDetailNextButton());
+  documentTypeSelect.addEventListener("change", toggleDetailNextButton);
 
   function validateDetailForm() {
     const nameValid = subjectNameSelect.value === "other" 
@@ -245,7 +245,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   [subjectTypeSelect, subjectNameSelect, documentTypeSelect, descriptionInput].forEach(el => {
-  el.addEventListener("input", toggleDetailNextButton);
   el.addEventListener("change", toggleDetailNextButton);
   });
 
