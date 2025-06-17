@@ -97,6 +97,8 @@ exports.uploadDocument = async (req, res) => {
       let previewDriveLink = null;
 
       try {
+        const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
+        const previewFolderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
         if (ext === '.doc' || ext === '.docx') {
           const pdfFilePath = file.path.replace(ext, '.pdf');
           await convertDocxToPdf(file.path, pdfFilePath);
@@ -119,8 +121,7 @@ exports.uploadDocument = async (req, res) => {
           fs.unlinkSync(previewPath);
         }
 
-        const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
-        const previewFolderId = '1WmAvz9GxGdTPZ4SoZ_YourThumbnailFolderId';
+        
         const driveLink = await uploadFileToDrive(fileToUpload, fileNameToSave, folderId);
         fs.unlinkSync(fileToUpload);
 
