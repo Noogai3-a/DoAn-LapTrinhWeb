@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const slug = params.get('slug');
 
-  if (!titleSlug) {
+  if (!slug) {
     document.getElementById('document-detail').innerHTML = '<p class="error">Không tìm thấy tiêu đề tài liệu.</p>';
     return;
   }
