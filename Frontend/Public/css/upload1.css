@@ -272,6 +272,7 @@
 
 .detail-label {
     display: contents; /* Đảm bảo label không làm tràn layout */
+    align-items: center; /* Căn giữa theo chiều dọc */
 }
  
 .detail-select,
@@ -284,8 +285,9 @@ textarea {
     font-size: 16px;
     width: 100%; /* Đảm bảo chiều rộng đồng đều */
     box-sizing: border-box; /* Bao gồm padding trong chiều rộng */
-    height: 40px; /* Đặt chiều cao cố định để căn đều */
-    align-self: center; /* Căn giữa theo chiều dọc */
+    height: 40px; /* Chiều cao cố định để căn đều */
+    align-self: center; /* Căn giữa theo chiều dọc trong grid */
+    margin: 0; /* Loại bỏ margin mặc định */
 }
 
 .detail-select,
