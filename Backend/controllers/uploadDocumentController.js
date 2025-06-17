@@ -120,6 +120,7 @@ exports.uploadDocument = async (req, res) => {
         }
 
         const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
+        const previewFolderId = '1WmAvz9GxGdTPZ4SoZ_YourThumbnailFolderId';
         const driveLink = await uploadFileToDrive(fileToUpload, fileNameToSave, folderId);
         fs.unlinkSync(fileToUpload);
 

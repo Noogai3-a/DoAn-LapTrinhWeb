@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   return `
     <div class="document-item">
       <a href="${detailUrl}">
-        <img src="/assets/doc-default.png" alt="${doc.title}">
+        <img src="${doc.previewUrl || '/assets/doc-default.png'}" alt="${doc.title}" />
         <p class="doc-title">${doc.title}</p>
         <p class="doc-subtitle">${subtitle}</p>
       </a>
