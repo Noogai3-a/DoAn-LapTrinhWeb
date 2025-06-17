@@ -115,9 +115,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   nextButton.style.display = "none";
 
-  const subjectTypeSelect = formDetail.querySelector('#subjectTypeSelect');  // select loại môn
-  const subjectNameSelect = formDetail.querySelector('#subjectNameSelect');  // select tên môn
-  const documentTypeSelect = formDetail.querySelector('#documentTypeSelect');  // select thể loại tài liệu
+  const subjectTypeSelect = formDetail.querySelector('select[name="subjectTypeSlug"]');  // select loại môn
+  const subjectNameSelect = formDetail.querySelector('select[name="subjectNameSlug"]');  // select tên môn
+  const documentTypeSelect = formDetail.querySelector('select[name="documentType"]');  // select thể loại tài liệu
   const descriptionInput = formDetail.querySelector('textarea[name="description"]');  // mô tả
   
   const subjectTypeLabel = formDetail.querySelector('#subjectTypeLabel');
@@ -162,13 +162,13 @@ document.addEventListener("DOMContentLoaded", function () {
         subjectNameSelect.appendChild(option);
       });
     }
-
+    toggleDetailNextButton();
     // Thêm option khác
     const otherOption = document.createElement("option");
     otherOption.value = "other";
     otherOption.textContent = "Khác...";
     subjectNameSelect.appendChild(otherOption);
-    toggleDetailNextButton();
+    
   }
 
   // Cập nhật label cho loại môn
@@ -206,7 +206,6 @@ document.addEventListener("DOMContentLoaded", function () {
     updateSubjectTypeLabel();
     updateSubjectNames();
     updateSubjectNameLabel();
-    toggleDetailNextButton();
   });
 
   subjectNameSelect.addEventListener("change", () => {
@@ -225,7 +224,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function validateDetailForm() {
     const nameValid = subjectNameSelect.value === "other" 
       ? document.getElementById("subjectNameCustomInput").value.trim() !== ""
-      : subjectNameSelect.value.trim() !== "";
+      : subjectNameSelect.value !== "";
 
       return (
         subjectTypeSelect.value !== "" &&
@@ -243,6 +242,11 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("subjectNameCustomInput").addEventListener("input", () => {
     updateSubjectNameLabel();
     toggleDetailNextButton();
+  });
+
+  [subjectTypeSelect, subjectNameSelect, documentTypeSelect, descriptionInput].forEach(el => {
+  el.addEventListener("input", toggleDetailNextButton);
+  el.addEventListener("change", toggleDetailNextButton);
   });
 
 
@@ -300,25 +304,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // === PHẦN DONE ===
   const doneBtn = document.querySelector(".done-button");
-  // Bạn có thể thêm sự kiện cho doneBtn nếu muốn
 });
 
-// Nếu bạn vẫn muốn cho phép click trực tiếp vào step để chuyển page,
-// bạn có thể thêm hàm showPage như sau:
-function showPage(pageId, stepElement) {
-  // Bỏ active khỏi tất cả step
-  document.querySelectorAll('.steps .step').forEach(step => {
-    step.classList.remove('active');
-  });
-  // Thêm active cho step đang click
-  stepElement.classList.add('active');
-
-  // Ẩn hết các page, chỉ hiển thị pageId
-  ['upload', 'detail', 'done'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.style.display = (id === pageId) ? 'block' : 'none';
-      el.classList.toggle('active', id === pageId);
-    }
-  });
-}
