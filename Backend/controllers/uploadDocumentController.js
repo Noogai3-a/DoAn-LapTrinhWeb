@@ -10,6 +10,8 @@ const {
   generateThumbnailFromPdf,
 } = require("../utils/uploadUtils");
 
+
+
 function slugifyTitle(filename) {
   // 1. Bỏ phần đuôi mở rộng file (.pdf, .docx, ...)
   let title = filename.replace(/\.[^/.]+$/, "");
@@ -32,8 +34,8 @@ function slugifyTitle(filename) {
 
 function removeVietnameseTones(str) {
   return str.normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/đ/g, "d").replace(/Đ/g, "D");
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d").replace(/Đ/g, "D");
 }
 
 
@@ -52,6 +54,8 @@ function getLabelsFromSlug(subjectTypeSlug, subjectNameSlug) {
 
 exports.uploadDocument = async (req, res) => {
   try {
+    console.log("FILES:", req.files);
+    console.log("BODY:", req.body);
     const uploader = req.session.user?.username ?? req.session.admin?.username;
     const { subjectTypeSlug, subjectNameSlug, documentType } = req.body;
 
@@ -92,7 +96,12 @@ exports.uploadDocument = async (req, res) => {
           const previewFilename = path.basename(pdfFilePath, '.pdf') + '.png';
           const previewPath = path.join('uploads/previews', previewFilename);
           fs.mkdirSync('uploads/previews', { recursive: true });
-          await generateThumbnailFromPdf(pdfFilePath, previewPath);
+          try {
+            await generateThumbnailFromPdf(pdfFilePath, previewPath);
+          } catch (err) {
+            console.error("Lỗi tạo thumbnail:", err);
+          }
+
         }
 
         const newDoc = new Document({
