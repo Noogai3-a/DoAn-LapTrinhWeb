@@ -120,8 +120,25 @@ exports.uploadDocument = async (req, res) => {
           previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
           fs.unlinkSync(previewPath);
         }
+        else if (ext === '.pdf') {
+          previewFilename = path.basename(file.path, '.pdf') + '.png';
+          previewPath = path.join('uploads/previews', previewFilename);
+          fs.mkdirSync('uploads/previews', { recursive: true });
 
-        
+          try {
+            await generateThumbnailFromPdf(file.path, previewPath);
+          } catch (err) {
+            console.error("Lỗi tạo thumbnail từ PDF:", err);
+          }
+
+          try {
+            previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
+            fs.unlinkSync(previewPath);
+          } catch (err) {
+            console.error("Lỗi upload thumbnail PDF:", err);
+          }
+        }
+        console.log('📷 previewDriveLink:', previewDriveLink);
         const driveLink = await uploadFileToDrive(fileToUpload, fileNameToSave, folderId);
         fs.unlinkSync(fileToUpload);
 
