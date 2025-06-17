@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .then(doc => {
       const container = document.getElementById('document-detail');
-      const safeUrl = doc.fileUrl.replace(/\\/g, '/');
+      const safeUrl = 'https://backend-yl09.onrender.com/' + doc.fileUrl.replace(/\\/g, '/');
 
       container.innerHTML = `
         <h2>${doc.title}</h2>
