@@ -408,7 +408,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       textarea.value = '';
     } catch (err) {
       console.error('Gửi bình luận lỗi:', err);
-      showToast(err.msg, 'error')
+      showToast(err.message, 'error')
     }
   });
 });
