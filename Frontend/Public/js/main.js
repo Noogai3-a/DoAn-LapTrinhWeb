@@ -260,7 +260,6 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
                     </div>
                 `;
     
-                // Thêm sự kiện click để chuyển đến bài viết
                 if (!notification.isRead) {
                     notificationItem.addEventListener('mouseenter', () => {
                         // Gọi API để đánh dấu đã đọc
