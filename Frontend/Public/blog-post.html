@@ -211,6 +211,27 @@
                     <input id="postTitle" class="post-title" type="text" placeholder="Tiêu đề bài viết..." />
                 </div>
 
+                <div class="category-selector">
+                    <div class="category-box">
+                        <label for="category">Chủ đề:</label>
+                        <select id="category" required>
+                            <option value="">Chọn chủ đề</option>
+                            <option value="Kiến thức & Học thuật">Kiến thức & Học thuật</option>
+                            <option value="Kỹ năng & Phát triển bản thân">Kỹ năng & Phát triển bản thân</option>
+                            <option value="Kinh nghiệm học tập & Thi cử">Kinh nghiệm học tập & Thi cử</option>
+                            <option value="Trải nghiệm cá nhân & Cuộc sống">Trải nghiệm cá nhân & Cuộc sống</option>
+                            <option value="Định hướng nghề nghiệp & Việc làm">Định hướng nghề nghiệp & Việc làm</option>
+                            <option value="Hoạt động ngoại khóa & Cộng đồng">Hoạt động ngoại khóa & Cộng đồng</option>
+                            <option value="Chủ đề khác">Chủ đề khác</option>
+                        </select>
+                    </div>
+                    
+                    <div id="subCategoryBox" class="sub-category-box" style="display: none;">
+                        <label for="subCategory">Mô tả chủ đề:</label>
+                        <input type="text" id="subCategory" placeholder="Nhập mô tả chủ đề của bạn">
+                    </div>
+                </div>
+
                 <div class="post-box">
                     <div id="postContent" class="post-content" contenteditable="true" data-placeholder="Tạo bài viết ..."></div>
                 </div>
