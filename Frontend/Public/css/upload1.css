@@ -82,7 +82,9 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 50vh; /* Chiều cao 50% của cửa sổ */
+    min-height: 50vh; /* Sử dụng min-height thay vì height cố định */
+    max-height: 80vh; /* Giới hạn tối đa 80% chiều cao viewport */
+    overflow: hidden; /* Ngăn tràn ra ngoài */
 }
 
 .upload-wrapper {
@@ -91,6 +93,8 @@
     align-items: center;
     max-width: 1000px;
     margin: 0 auto;
+    width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng container */
+    flex-grow: 1; /* Cho phép co giãn để chứa nội dung */
 }
 
 /* Khung Drag and Drop */
@@ -104,7 +108,8 @@
     text-align: center;
     width: 90%;
     max-width: 1000px;
-    height: 300px; /* cố định chiều cao upload-box */
+    height: 300px; /* Giữ chiều cao cố định */
+    flex-shrink: 0; /* Ngăn co lại quá mức */
 }
 
 /* Icon trong phần upload */
@@ -155,10 +160,19 @@
     padding: 10px 20px;
     margin-top: 20px;
     max-height: 300px; /* Giới hạn chiều cao */
-    overflow-y: auto; /* Cho phép cuộn khi vượt quá chiều cao */
+    overflow-y: auto; /* Cuộn dọc khi vượt quá */
+    flex-grow: 1; /* Cho phép co giãn để chứa danh sách file */
+    box-sizing: border-box; /* Bao gồm padding trong chiều cao */
 }
 
 /* Danh sách file */
+#file-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Khoảng cách giữa các file-info */
+}
+
 .file-info {
     display: flex;
     justify-content: space-between;
@@ -224,7 +238,8 @@
 
 #subjectNameCustomDiv {
     display: none; /* Ban đầu ẩn */
-    grid-column: 2; /* Đảm bảo nằm trong cột thứ 2 của grid */
+    grid-column: 2; /* Nằm trong cột thứ 2 */
+    align-items: center; /* Căn giữa theo chiều dọc */
 }
 
 #subjectNameCustomDiv.active {
@@ -247,18 +262,32 @@
 
 .form-container {
     display: grid;
-    grid-template-columns: 100px 1fr;
-    gap: 15px 20px;
+    grid-template-columns: 100px 1fr; /* Cột 1 cố định 100px, cột 2 tự điều chỉnh */
+    gap: 15px 20px; /* Khoảng cách giữa các hàng và cột */
     max-width: 600px;
     padding: 30px;
-    margin: auto;
-    overflow: hidden; /* Ngăn tràn ngoài container */
+    margin: 0 auto; /* Căn giữa container */
+    overflow: hidden; /* Ngăn tràn */
 }
 
-.detail-label{
-    display: contents;
+.detail-label {
+    display: contents; /* Đảm bảo label không làm tràn layout */
 }
  
+.detail-select,
+#subjectNameCustomInput,
+textarea {
+    background-color: #d9d9d9;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 16px;
+    width: 100%; /* Đảm bảo chiều rộng đồng đều */
+    box-sizing: border-box; /* Bao gồm padding trong chiều rộng */
+    height: 40px; /* Đặt chiều cao cố định để căn đều */
+    align-self: center; /* Căn giữa theo chiều dọc */
+}
+
 .detail-select,
 textarea {
     background-color: #d9d9d9;
@@ -271,7 +300,7 @@ textarea {
 }
 
 textarea {
-    height: 120px;
+    height: 120px; /* Giữ nguyên chiều cao cho textarea */
     resize: none;
 }
 
@@ -473,11 +502,35 @@ textarea {
     }
     
     /* Upload section */
+    #upload.active {
+        min-height: 40vh; /* Giảm min-height trên màn hình nhỏ */
+        max-height: 70vh; /* Giảm max-height */
+    }
     .upload-box {
         padding: 20px 15px;
         width: 95%;
+        height: 200px; /* Giảm chiều cao trên màn hình nhỏ */
+    }
+    #after-upload {
+        max-height: 200px; /* Giảm chiều cao tối đa */
+        padding: 5px 10px;
     }
     
+    .file-info {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 5px;
+    }
+
+    .file-info div {
+        margin-bottom: 5px;
+    }
+
+    .file-info button {
+        margin-left: 0;
+        width: 100%;
+    }
+
     .upload-content i.icon {
         font-size: 30px;
         margin-bottom: 10px;
@@ -529,9 +582,12 @@ textarea {
         grid-template-columns: 1fr;
         gap: 10px;
         padding: 15px;
-        width: 100%;
     }
-    
+    .detail-select,
+    #subjectNameCustomInput {
+        height: 35px; /* Giảm chiều cao trên màn hình nhỏ */
+        font-size: 14px;
+    }
     .detail-label {
         display: block;
         margin-bottom: 5px;
