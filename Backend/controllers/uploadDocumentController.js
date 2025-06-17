@@ -86,8 +86,8 @@ exports.uploadDocument = async (req, res) => {
       let fileToUpload = file.path;
 
       const ext = path.extname(file.originalname).toLowerCase();
-      const rawName = decodeURIComponent(file.originalname);
-      console.log("Original name:", file.originalname);
+      const index = req.files.indexOf(file);
+      const rawName = req.body[`filename_${index}`] || file.originalname;
       const title = normalizeTitle(rawName);
       const baseSlug = slugifyTitle(title);
       const slug = `${subjectNameSlug}-${baseSlug}`;
