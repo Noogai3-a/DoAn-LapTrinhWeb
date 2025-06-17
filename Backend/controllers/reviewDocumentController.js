@@ -53,36 +53,33 @@ exports.approveDocument = async (req, res) => {
   }
 };
 
-exports.rejectDocument = async (req, res) => {
+exports.deleteDocumentById = async (req, res) => {
   try {
     const id = req.params.id;
     const doc = await Document.findById(id);
 
-    if (!doc) return res.status(404).json({ msg: 'Tài liệu không tồn tại' });
+    if (!doc) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
 
+    // Xoá file trên Google Drive nếu có
     if (doc.fileUrl.startsWith('https://drive.google.com/uc?id=')) {
-      // Extract fileId from URL
       const match = doc.fileUrl.match(/id=([^&]+)/);
       if (match) {
         await deleteFileFromDrive(match[1]);
       }
-    } else {
-      // Old logic for local files
-      const relativePath = doc.fileUrl.replace(/\\/g, '/');
-      const absolutePath = path.resolve(relativePath);
-      fs.unlink(absolutePath, (err) => {
-        if (err) console.warn('Không thể xóa file:', err.message);
-      });
     }
 
-    // Xóa document khỏi MongoDB
+    // Xoá khỏi database
     await Document.findByIdAndDelete(id);
-    res.json({ msg: 'Tài liệu đã bị từ chối và xóa thành công' });
+    res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: 'Lỗi khi từ chối tài liệu' });
+    console.error('Error deleting document:', err);
+    res.status(500).json({ error: 'Server error' });
   }
 };
+
+
 
 exports.getDocumentById = async (req, res) => {
   try {
@@ -115,37 +112,5 @@ exports.getDocumentBySlug = async (req, res) => {
   } catch (error) {
     console.error('Lỗi khi lấy tài liệu:', error);
     res.status(500).json({ message: 'Lỗi server' });
-  }
-};
-
-exports.deleteDocument = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const doc = await Document.findById(id);
-
-    if (!doc) {
-      return res.status(404).json({ error: 'Document not found' });
-    }
-
-    if (doc.fileUrl.startsWith('https://drive.google.com/uc?id=')) {
-      // Extract fileId from URL
-      const match = doc.fileUrl.match(/id=([^&]+)/);
-      if (match) {
-        await deleteFileFromDrive(match[1]);
-      }
-    } else {
-      // Old logic for local files
-      const relativePath = doc.fileUrl.replace(/\\/g, '/');
-      const absolutePath = path.resolve(relativePath);
-      fs.unlink(absolutePath, (err) => {
-        if (err) console.warn('Không thể xóa file:', err.message);
-      });
-    }
-
-    await Document.findByIdAndDelete(id);
-    res.json({ success: true, message: 'Document deleted successfully' });
-  } catch (err) {
-    console.error('Error deleting document:', err);
-    res.status(500).json({ error: 'Server error' });
   }
 };

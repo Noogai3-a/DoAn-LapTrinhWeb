@@ -105,6 +105,7 @@ exports.uploadDocument = async (req, res) => {
           if (!fs.existsSync(pdfFilePath)) {
             throw new Error(`Chuyển đổi sang PDF thất bại: không tìm thấy file ${pdfFilePath}`);
           }
+          
           fs.unlinkSync(file.path);
           fileToUpload = pdfFilePath;
           fileNameToSave = path.basename(pdfFilePath);
