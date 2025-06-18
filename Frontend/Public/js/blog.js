@@ -1,19 +1,21 @@
-let userInfo = null;
 try {
   const res = await fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include' });
   if (res.ok) {
-    userInfo = await res.json();
+    return await res.json();
   }
+  return null;
 } catch (err) {
   console.error('Lỗi lấy user info:', err);
 }
+
+let userInfo = null;
 
 async function checkAuth() {
   try {
     if (!userInfo || !userInfo.username || !userInfo.email) {
       window.location.href = '/login'; 
     } else {
-        window.location.href = '/login';
+        window.location.href = '/blog-post';
     }
   } catch (error) {
       window.location.href = '/login';
