@@ -32,13 +32,9 @@ const documentSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  fileUrl: {
-    type: String,
-    required: true
-  },
   previewUrl:{
     type: String,
-    require: true
+    required: false
   },
   documentType: {
     type: String,

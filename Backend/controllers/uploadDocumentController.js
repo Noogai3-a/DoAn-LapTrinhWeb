@@ -113,13 +113,23 @@ exports.uploadDocument = async (req, res) => {
           fs.mkdirSync('uploads/previews', { recursive: true });
 
           try {
+            console.log('🔄 Tạo thumbnail từ PDF:', pdfFilePath);
             await generateThumbnailFromPdf(pdfFilePath, previewPath);
-            previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
+            
+            if (fs.existsSync(previewPath)) {
+              console.log('✅ Thumbnail tạo thành công:', previewPath);
+              console.log('🔄 Upload thumbnail lên Google Drive...');
+              previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
+              console.log('✅ Thumbnail upload thành công:', previewDriveLink);
+            } else {
+              console.error('❌ Thumbnail không được tạo:', previewPath);
+            }
           } catch (err) {
-            console.error("Lỗi tạo thumbnail:", err);
+            console.error("❌ Lỗi tạo/upload thumbnail:", err);
           } finally {
             if (previewPath && fs.existsSync(previewPath)) {
               fs.unlinkSync(previewPath);
+              console.log('🧹 Đã xóa thumbnail tạm:', previewPath);
             }
           }
         }
@@ -129,19 +139,31 @@ exports.uploadDocument = async (req, res) => {
           fs.mkdirSync('uploads/previews', { recursive: true });
 
           try {
+            console.log('🔄 Tạo thumbnail từ PDF:', file.path);
             await generateThumbnailFromPdf(file.path, previewPath);
-            previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
+            
+            if (fs.existsSync(previewPath)) {
+              console.log('✅ Thumbnail tạo thành công:', previewPath);
+              console.log('🔄 Upload thumbnail lên Google Drive...');
+              previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
+              console.log('✅ Thumbnail upload thành công:', previewDriveLink);
+            } else {
+              console.error('❌ Thumbnail không được tạo:', previewPath);
+            }
           } catch (err) {
-            console.error("Lỗi tạo thumbnail từ PDF:", err);
+            console.error("❌ Lỗi tạo/upload thumbnail từ PDF:", err);
           } finally {
             if (previewPath && fs.existsSync(previewPath)) {
               fs.unlinkSync(previewPath);
+              console.log('🧹 Đã xóa thumbnail tạm:', previewPath);
             }
           }
         }
 
-        console.log('📷 previewDriveLink:', previewDriveLink);
+        console.log('📷 previewDriveLink cuối cùng:', previewDriveLink);
+        console.log('🔄 Upload file chính lên Google Drive...');
         const driveLink = await uploadFileToDrive(fileToUpload, fileNameToSave, folderId);
+        console.log('✅ File chính upload thành công:', driveLink);
         
         // Clean up the uploaded file
         if (fs.existsSync(fileToUpload)) {
@@ -160,15 +182,17 @@ exports.uploadDocument = async (req, res) => {
           subjectNameLabel: labels.subjectNameLabel,
           documentType,
           uploader,
-          previewUrl: previewDriveLink,
+          previewUrl: previewDriveLink || null,
           status: 'pending'
         });
 
+        console.log('💾 Lưu document vào MongoDB với previewUrl:', previewDriveLink);
         await newDoc.save();
         savedDocuments.push(newDoc);
+        console.log('✅ Document đã được lưu thành công');
         
       } catch (err) {
-        console.error(`Lỗi xử lý file ${file.originalname}:`, err);
+        console.error(`❌ Lỗi xử lý file ${file.originalname}:`, err);
         
         // Clean up any temporary files
         if (fs.existsSync(file.path)) {

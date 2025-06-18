@@ -36,12 +36,54 @@ async function convertDocxToPdf(docPath, outputPdfPath) {
 }
 
 async function generateThumbnailFromPdf(pdfPath, outputImagePath) {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto(`file://${path.resolve(pdfPath)}#page=1`, { waitUntil: "networkidle0" });
-  await page.setViewport({ width: 1280, height: 720 });
-  await page.screenshot({ path: outputImagePath });
-  await browser.close();
+  let browser;
+  try {
+    console.log('🔄 Khởi tạo Puppeteer browser...');
+    browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    });
+    
+    console.log('🔄 Tạo page mới...');
+    const page = await browser.newPage();
+    
+    console.log('🔄 Điều hướng đến PDF:', pdfPath);
+    await page.goto(`file://${path.resolve(pdfPath)}#page=1`, { 
+      waitUntil: "networkidle0",
+      timeout: 30000 
+    });
+    
+    console.log('🔄 Thiết lập viewport...');
+    await page.setViewport({ width: 1280, height: 720 });
+    
+    console.log('🔄 Chụp screenshot...');
+    await page.screenshot({ 
+      path: outputImagePath,
+      type: 'png',
+      quality: 90
+    });
+    
+    console.log('✅ Screenshot đã được lưu:', outputImagePath);
+    
+    // Verify the file was created
+    if (fs.existsSync(outputImagePath)) {
+      const stats = fs.statSync(outputImagePath);
+      console.log('✅ Thumbnail file size:', stats.size, 'bytes');
+      if (stats.size === 0) {
+        throw new Error('Thumbnail file is empty');
+      }
+    } else {
+      throw new Error('Thumbnail file was not created');
+    }
+    
+  } catch (error) {
+    console.error('❌ Lỗi trong generateThumbnailFromPdf:', error);
+    throw error;
+  } finally {
+    if (browser) {
+      console.log('🔄 Đóng browser...');
+      await browser.close();
+    }
+  }
 }
 
 function getLabelsFromSlug(typeSlug, nameSlug) {
