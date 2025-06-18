@@ -3,7 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const puppeteer = require("puppeteer");
 const data = require("../data.json"); // file data.json chứa thông tin subject
-const { fromPath } = require("pdf2pic");
+const { PDFDocument } = require("pdf-lib");
+const { createCanvas, loadImage } = require("canvas");
 
 function normalizeTitle(filename) {
   return path.basename(filename, path.extname(filename)).replace(/[_-]/g, ' ').trim();
@@ -126,73 +127,33 @@ async function convertDocxToPdf(docPath, outputPdfPath) {
 
 async function generateThumbnail(pdfPath, outputImagePath) {
   try {
-    console.log('🔄 Bắt đầu tạo thumbnail từ PDF:', pdfPath);
-    
-    // Validate input PDF
-    if (!fs.existsSync(pdfPath)) {
-      throw new Error(`File PDF không tồn tại: ${pdfPath}`);
-    }
-    
-    const pdfStats = fs.statSync(pdfPath);
-    if (pdfStats.size === 0) {
-      throw new Error('File PDF rỗng');
-    }
-    
-    console.log('📄 PDF file size:', pdfStats.size, 'bytes');
-    
-    // Ensure output directory exists
-    const outputDir = path.dirname(outputImagePath);
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
-      console.log('📁 Tạo thư mục output:', outputDir);
-    }
-    
-    console.log('🔄 Khởi tạo pdf2pic converter...');
-    const convert = fromPath(pdfPath, {
-      density: 150,
-      saveFilename: path.basename(outputImagePath, ".png"),
-      savePath: outputDir,
-      format: "png",
-      width: 600,
-      height: 800
-    });
+    const pdfBytes = fs.readFileSync(pdfPath);
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+    const page = pdfDoc.getPage(0); // chỉ lấy trang đầu
 
-    console.log('🔄 Chuyển đổi trang đầu tiên...');
-    const res = await convert(1); // chỉ trang đầu
-    
-    if (!res || !res.path) {
-      throw new Error('Không nhận được kết quả từ pdf2pic');
-    }
-    
-    console.log("✅ Thumbnail tạo thành công:", res.path);
-    
-    // Validate the generated thumbnail
-    if (!fs.existsSync(res.path)) {
-      throw new Error('File thumbnail không được tạo');
-    }
-    
-    const thumbnailStats = fs.statSync(res.path);
-    console.log('🖼️ Thumbnail file size:', thumbnailStats.size, 'bytes');
-    
-    if (thumbnailStats.size === 0) {
-      throw new Error('File thumbnail rỗng');
-    }
-    
-    console.log('✅ Tạo thumbnail thành công!');
-    
+    const width = 600;
+    const height = 800;
+
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext("2d");
+
+    // Không render vector gốc được, nên chỉ hiển thị placeholder
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 24px sans-serif";
+    ctx.fillText("📄 PDF Preview", 50, 100);
+    ctx.font = "16px sans-serif";
+    ctx.fillText(`Trang đầu của "${pdfPath.split("/").pop()}"`, 50, 140);
+
+    // Save canvas thành PNG
+    const buffer = canvas.toBuffer("image/png");
+    fs.writeFileSync(outputImagePath, buffer);
+    console.log("✅ Thumbnail đã lưu:", outputImagePath);
+
   } catch (err) {
-    console.error("❌ Lỗi khi tạo thumbnail:", err);
-    
-    // Clean up partial thumbnail if it exists
-    if (outputImagePath && fs.existsSync(outputImagePath)) {
-      try {
-        fs.unlinkSync(outputImagePath);
-        console.log('🧹 Đã xóa file thumbnail lỗi:', outputImagePath);
-      } catch (cleanupErr) {
-        console.error('❌ Lỗi khi xóa file thumbnail lỗi:', cleanupErr);
-      }
-    }
-    
+    console.error("❌ Lỗi tạo thumbnail PDF trên Vercel:", err);
     throw err;
   }
 }
