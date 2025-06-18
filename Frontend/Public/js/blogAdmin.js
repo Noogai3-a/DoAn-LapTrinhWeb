@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       let url;
       if(type === 'blog') url = `https://backend-yl09.onrender.com/api/admin/reject-blog/${id}`;
-      else if(type === 'document') url = `https://backend-yl09.onrender.com/api/admin/documents/reject/${id}`;
+      else if(type === 'document') url = `https://backend-yl09.onrender.com/api/documents/reject/${id}`;
       else throw new Error('Loại tài liệu không hợp lệ');
 
       const response = await fetch(url, {

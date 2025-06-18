@@ -53,22 +53,22 @@ exports.approveDocument = async (req, res) => {
 };
 
 exports.deleteDocumentById = async (req, res) => {
-  console.log('🔥 deleteDocumentById hit with ID:', req.params.id);
   try {
     const id = req.params.id;
-
     const doc = await Document.findById(id);
+
     if (!doc) {
-      return res.status(404).json({ error: 'Tài liệu không tồn tại' });
+      return res.status(404).json({ msg: 'Tài liệu không tồn tại' });
     }
 
-    await Document.findByIdAndDelete(id);
-    res.json({ msg: 'Xoá tài liệu thành công' });
+    await Document.deleteOne({ _id: id });
+    res.json({ msg: 'Tài liệu đã bị từ chối và xoá khỏi hệ thống.' });
   } catch (err) {
-    console.error('Lỗi khi xoá tài liệu:', err);
-    res.status(500).json({ msg: 'Lỗi server khi xoá tài liệu' });
+    console.error('Lỗi khi từ chối tài liệu:', err);
+    res.status(500).json({ msg: 'Lỗi server khi từ chối tài liệu.' });
   }
 };
+
 
 
 
