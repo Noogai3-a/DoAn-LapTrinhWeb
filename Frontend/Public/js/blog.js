@@ -1,6 +1,23 @@
+async function checkAuth() {
+  try {
+      const response = await fetch('https://backend-yl09.onrender.com/api/auth/check', {
+          credentials: 'include'
+      });
+      
+      if (response.ok) {
+          window.location.href = '/blog-post';
+      } else {
+          window.location.href = '/login';
+      }
+  } catch (error) {
+      window.location.href = '/login';
+  }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const blogListContainers = document.querySelectorAll(".blog-list");
   const categoryBlogsContainer = document.querySelector(".category-blogs");
+  
 
   function getDriveDirectLink(url) {
     const regex = /\/d\/([a-zA-Z0-9_-]+)/;
