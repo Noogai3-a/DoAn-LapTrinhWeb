@@ -114,7 +114,7 @@ exports.uploadDocument = async (req, res) => {
 
           try {
             console.log('🔄 Tạo thumbnail từ PDF:', pdfFilePath);
-            await generateThumbnailFromPdf(pdfFilePath, previewPath);
+            await generateThumbnail(pdfFilePath, previewPath);
             
             if (fs.existsSync(previewPath)) {
               console.log('✅ Thumbnail tạo thành công:', previewPath);
@@ -140,7 +140,7 @@ exports.uploadDocument = async (req, res) => {
 
           try {
             console.log('🔄 Tạo thumbnail từ PDF:', file.path);
-            await generateThumbnailFromPdf(file.path, previewPath);
+            await generateThumbnail(file.path, previewPath);
             
             if (fs.existsSync(previewPath)) {
               console.log('✅ Thumbnail tạo thành công:', previewPath);

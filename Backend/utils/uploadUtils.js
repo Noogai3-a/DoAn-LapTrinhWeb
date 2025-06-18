@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const puppeteer = require("puppeteer");
 const data = require("../data.json"); // file data.json chứa thông tin subject
+const { PdfConverter } = require('pdf-poppler');
 
 function normalizeTitle(filename) {
   return path.basename(filename, path.extname(filename)).replace(/[_-]/g, ' ').trim();
@@ -35,54 +36,20 @@ async function convertDocxToPdf(docPath, outputPdfPath) {
   }
 }
 
-async function generateThumbnailFromPdf(pdfPath, outputImagePath) {
-  let browser;
+async function generateThumbnail(pdfPath, outputPath) {
+  const options = {
+    format: 'png',
+    out_dir: path.dirname(outputPath),
+    out_prefix: path.basename(outputPath, '.png'),
+    page: 1
+  };
+
   try {
-    console.log('🔄 Khởi tạo Puppeteer browser...');
-    browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-    });
-    
-    console.log('🔄 Tạo page mới...');
-    const page = await browser.newPage();
-    
-    console.log('🔄 Điều hướng đến PDF:', pdfPath);
-    await page.goto(`file://${path.resolve(pdfPath)}#page=1`, { 
-      waitUntil: "networkidle0",
-      timeout: 30000 
-    });
-    
-    console.log('🔄 Thiết lập viewport...');
-    await page.setViewport({ width: 1280, height: 720 });
-    
-    console.log('🔄 Chụp screenshot...');
-    await page.screenshot({ 
-      path: outputImagePath,
-      type: 'png',
-      quality: 90
-    });
-    
-    console.log('✅ Screenshot đã được lưu:', outputImagePath);
-    
-    // Verify the file was created
-    if (fs.existsSync(outputImagePath)) {
-      const stats = fs.statSync(outputImagePath);
-      console.log('✅ Thumbnail file size:', stats.size, 'bytes');
-      if (stats.size === 0) {
-        throw new Error('Thumbnail file is empty');
-      }
-    } else {
-      throw new Error('Thumbnail file was not created');
-    }
-    
-  } catch (error) {
-    console.error('❌ Lỗi trong generateThumbnailFromPdf:', error);
-    throw error;
-  } finally {
-    if (browser) {
-      console.log('🔄 Đóng browser...');
-      await browser.close();
-    }
+    await PdfConverter.convert(pdfPath, options);
+    console.log('✅ Thumbnail đã tạo tại:', outputPath);
+  } catch (err) {
+    console.error('❌ Lỗi khi tạo thumbnail:', err);
+    throw err;
   }
 }
 
@@ -102,6 +69,6 @@ function getLabelsFromSlug(typeSlug, nameSlug) {
 module.exports = {
   normalizeTitle,
   convertDocxToPdf,
-  generateThumbnailFromPdf,
+  generateThumbnail,
   getLabelsFromSlug
 };
