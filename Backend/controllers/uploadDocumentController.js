@@ -6,7 +6,7 @@ const data = require('../data.json');
 const {
   normalizeTitle,
   convertDocxToPdf,
-  generateThumbnailFromPdf,
+  generateThumbnail,
 } = require("../utils/uploadUtils");
 
 
