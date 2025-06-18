@@ -90,36 +90,71 @@ async function convertDocxToPdf(docPath, outputPdfPath) {
 
 async function generateThumbnail(pdfPath, outputImagePath) {
   try {
-    const pdfBytes = fs.readFileSync(pdfPath);
-    const pdfDoc = await PDFDocument.load(pdfBytes);
-    const page = pdfDoc.getPage(0); // lấy trang đầu
+    console.log("🔄 Bắt đầu tạo thumbnail từ PDF:", pdfPath);
 
-    const width = 600;
-    const height = 800;
+    const job = await cloudConvert.jobs.create({
+      tasks: {
+        'upload': {
+          operation: 'import/upload'
+        },
+        'convert': {
+          operation: 'convert',
+          input: 'upload',
+          input_format: 'pdf',
+          output_format: 'png',
+          pages: '1',
+          scale: 1,
+          fit: "max",
+          width: 800
+        },
+        'export': {
+          operation: 'export/url',
+          input: 'convert'
+        }
+      }
+    });
 
-    const canvas = createCanvas(width, height);
-    const ctx = canvas.getContext("2d");
+    const uploadTask = job.tasks.find(task => task.name === 'upload');
+    const uploadUrl = uploadTask.result.form.url;
+    const uploadParameters = uploadTask.result.form.parameters;
 
-    // Chỉ hiển thị placeholder vì không render được vector
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, width, height);
+    const FormData = require("form-data");
+    const axios = require("axios");
 
-    ctx.fillStyle = "#333";
-    ctx.font = "bold 24px sans-serif";
-    ctx.fillText("📄 PDF Preview", 50, 100);
-    ctx.font = "16px sans-serif";
-    ctx.fillText(`Trang đầu của "${pdfPath.split("/").pop()}"`, 50, 140);
+    const form = new FormData();
+    Object.entries(uploadParameters).forEach(([key, value]) => {
+      form.append(key, value);
+    });
+    form.append("file", fs.createReadStream(pdfPath));
 
-    // Lưu thumbnail
-    const buffer = canvas.toBuffer("image/png");
-    fs.writeFileSync(outputImagePath, buffer);
-    console.log("✅ Thumbnail đã lưu:", outputImagePath);
+    console.log("⬆️ Upload PDF lên CloudConvert để tạo ảnh...");
+    await axios.post(uploadUrl, form, { headers: form.getHeaders() });
 
+    const completedJob = await cloudConvert.jobs.wait(job.id);
+    const exportTask = completedJob.tasks.find(task => task.name === 'export');
+    const fileUrl = exportTask.result.files[0].url;
+
+    console.log("⬇️ Tải ảnh thumbnail về:", fileUrl);
+    const response = await axios.get(fileUrl, { responseType: "stream" });
+
+    const writer = fs.createWriteStream(outputImagePath);
+    response.data.pipe(writer);
+
+    await new Promise((resolve, reject) => {
+      writer.on("finish", resolve);
+      writer.on("error", reject);
+    });
+
+    const imgStats = fs.statSync(outputImagePath);
+    if (imgStats.size === 0) throw new Error("❌ Ảnh thumbnail được tạo nhưng rỗng");
+
+    console.log("✅ Thumbnail tạo thành công:", outputImagePath);
   } catch (err) {
-    console.error("❌ Lỗi tạo thumbnail:", err);
+    console.error("❌ Lỗi tạo thumbnail bằng CloudConvert:", err.message);
     throw err;
   }
 }
+
 
 function getLabelsFromSlug(typeSlug, nameSlug) {
   const type = data[typeSlug];
