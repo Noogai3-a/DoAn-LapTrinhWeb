@@ -129,18 +129,6 @@ function md5(string) {
   return CryptoJS.MD5(string).toString();
 }
 
-function containsBadWords(text) {
-  const badWords = [
-      'fuck', 'shit', 'damn', 'bitch', 'ass',
-      'đụ', 'địt', 'đéo', 'đcm', 'đcmn', 'đít',
-      'lồn', 'cặc', 'đụ', 'đéo', 'đcm', 'đcmn',
-      // Thêm các từ cấm khác vào đây
-  ];
-    
-  const lowerText = text.toLowerCase();
-  return badWords.some(word => lowerText.includes(word.toLowerCase()));
-}
-
 document.addEventListener('DOMContentLoaded', async function () {
   const form = document.querySelector('.comment-form');
   const textarea = form.querySelector('textarea');
