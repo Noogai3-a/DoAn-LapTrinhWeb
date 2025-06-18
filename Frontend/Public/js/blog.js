@@ -15,6 +15,8 @@ let userInfo = null;
 
 async function checkAuth() {
   try {
+    userInfo = await getUserInfo();
+
     if (!userInfo || !userInfo.username || !userInfo.email) {
       window.location.href = '/login'; 
     } else {
@@ -26,11 +28,13 @@ async function checkAuth() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  userInfo = await getUserInfo();
+  
   const postBlogBtn = document.getElementById('postBlogBtn');
   if (postBlogBtn) {
     postBlogBtn.addEventListener('click', checkAuth);
   }
-  
+
   const blogListContainers = document.querySelectorAll(".blog-list");
   const categoryBlogsContainer = document.querySelector(".category-blogs");
   
