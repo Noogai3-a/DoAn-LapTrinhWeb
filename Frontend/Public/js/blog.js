@@ -1,11 +1,14 @@
-try {
-  const res = await fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include' });
-  if (res.ok) {
-    return await res.json();
+async function getUserInfo() {
+  try {
+    const res = await fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include' });
+    if (res.ok) {
+      return await res.json();
+    }
+    return null;
+  } catch (err) {
+    console.error('Lỗi lấy user info:', err);
+    return null;
   }
-  return null;
-} catch (err) {
-  console.error('Lỗi lấy user info:', err);
 }
 
 let userInfo = null;
@@ -23,6 +26,11 @@ async function checkAuth() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  const postBlogBtn = document.getElementById('postBlogBtn');
+  if (postBlogBtn) {
+    postBlogBtn.addEventListener('click', checkAuth);
+  }
+  
   const blogListContainers = document.querySelectorAll(".blog-list");
   const categoryBlogsContainer = document.querySelector(".category-blogs");
   
