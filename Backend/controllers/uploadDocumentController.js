@@ -120,7 +120,10 @@ exports.uploadDocument = async (req, res) => {
               console.log('Thumbnail tạo thành công:', previewPath);
               console.log('Upload thumbnail lên Google Drive...');
               previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
-              previewDriveLink = previewDriveLink.replace(/uc(?:\?export=view)?\?id=/, 'thumbnail?id=');
+              const match = previewDriveLink.match(/id=([^&]+)/);
+              if (match) {
+                previewDriveLink = `thumbnail?id=${match[1]}`;
+              }
               console.log('Thumbnail upload thành công:', previewDriveLink);
             } else {
               console.error('Thumbnail không được tạo:', previewPath);
@@ -147,7 +150,10 @@ exports.uploadDocument = async (req, res) => {
               console.log('Thumbnail tạo thành công:', previewPath);
               console.log('Upload thumbnail lên Google Drive...');
               previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
-              previewDriveLink = previewDriveLink.replace(/uc(?:\?export=view)?\?id=/, 'thumbnail?id=');
+              const match = previewDriveLink.match(/id=([^&]+)/);
+              if (match) {
+                previewDriveLink = `thumbnail?id=${match[1]}`;
+              }
               console.log('Thumbnail upload thành công:', previewDriveLink);
             } else {
               console.error('Thumbnail không được tạo:', previewPath);
