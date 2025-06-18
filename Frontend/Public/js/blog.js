@@ -1,14 +1,20 @@
+let userInfo = null;
+try {
+  const res = await fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include' });
+  if (res.ok) {
+    userInfo = await res.json();
+  }
+} catch (err) {
+  console.error('Lỗi lấy user info:', err);
+}
+
 async function checkAuth() {
   try {
-      const response = await fetch('https://backend-yl09.onrender.com/api/auth/check', {
-          credentials: 'include'
-      });
-      
-      if (response.ok) {
-          window.location.href = '/blog-post';
-      } else {
-          window.location.href = '/login';
-      }
+    if (!userInfo || !userInfo.username || !userInfo.email) {
+      window.location.href = '/login'; 
+    } else {
+        window.location.href = '/login';
+    }
   } catch (error) {
       window.location.href = '/login';
   }
