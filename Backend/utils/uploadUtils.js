@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const puppeteer = require("puppeteer");
 const data = require("../data.json"); // file data.json chứa thông tin subject
-const { PdfConverter } = require('pdf-poppler');
+const { fromPath } = require("pdf2pic");
 
 function normalizeTitle(filename) {
   return path.basename(filename, path.extname(filename)).replace(/[_-]/g, ' ').trim();
@@ -36,19 +36,21 @@ async function convertDocxToPdf(docPath, outputPdfPath) {
   }
 }
 
-async function generateThumbnail(pdfPath, outputPath) {
-  const options = {
-    format: 'png',
-    out_dir: path.dirname(outputPath),
-    out_prefix: path.basename(outputPath, '.png'),
-    page: 1
-  };
+async function generateThumbnail(pdfPath, outputImagePath) {
+  const convert = fromPath(pdfPath, {
+    density: 150,
+    saveFilename: outputImagePath.replace(/\.png$/, ''),
+    savePath: require('path').dirname(outputImagePath),
+    format: "png",
+    width: 600,
+    height: 800
+  });
 
   try {
-    await PdfConverter.convert(pdfPath, options);
-    console.log('✅ Thumbnail đã tạo tại:', outputPath);
+    const res = await convert(1); // chỉ trang đầu
+    console.log("✅ Thumbnail tạo thành công:", res.path);
   } catch (err) {
-    console.error('❌ Lỗi khi tạo thumbnail:', err);
+    console.error("❌ Lỗi khi tạo thumbnail:", err);
     throw err;
   }
 }
