@@ -1,7 +1,6 @@
 const Document = require('../models/Document');
 const fs = require('fs');
 const path = require('path');
-const { deleteFileFromDrive } = require('../uploads/googleDrive');
 
 exports.getDocumentsForAdmin = async (req, res) => {
   try {
@@ -57,26 +56,17 @@ exports.deleteDocumentById = async (req, res) => {
   console.log('🔥 deleteDocumentById hit with ID:', req.params.id);
   try {
     const id = req.params.id;
+
     const doc = await Document.findById(id);
-
     if (!doc) {
-      return res.status(404).json({ error: 'Document not found' });
+      return res.status(404).json({ error: 'Tài liệu không tồn tại' });
     }
 
-    // Xoá file trên Google Drive nếu có
-    if (doc.fileUrl.startsWith('https://drive.google.com/uc?id=')) {
-      const match = doc.fileUrl.match(/id=([^&]+)/);
-      if (match) {
-        await deleteFileFromDrive(match[1]);
-      }
-    }
-
-    // Xoá khỏi database
     await Document.findByIdAndDelete(id);
-    res.json({ success: true });
+    res.json({ msg: 'Xoá tài liệu thành công' });
   } catch (err) {
-    console.error('Error deleting document:', err);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Lỗi khi xoá tài liệu:', err);
+    res.status(500).json({ msg: 'Lỗi server khi xoá tài liệu' });
   }
 };
 
