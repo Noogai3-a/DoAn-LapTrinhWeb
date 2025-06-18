@@ -251,7 +251,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                   })
               });
 
-              if (!res.ok) throw new Error('Failed to post reply');
+              if (!res.ok) {
+                const contentType = res.headers.get('content-type') || '';
+                if (contentType.includes('application/json')) {
+                  const errData = await res.json();
+                  throw new Error(errData.msg || 'Lỗi gửi bình luận');
+                } else {
+                  const text = await res.text();
+                  console.error('Error response text:', text);
+                  throw new Error('Server trả về lỗi không phải JSON');
+                }
+              }
 
               const newReply = await res.json();
               await renderReply(newReply.comment, div.querySelector('.replies-container'));
@@ -355,10 +365,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     const commentText = textarea.value.trim();
     if (!commentText) return alert('Vui lòng nhập bình luận');
     if (!blogId) return alert('Không xác định được bài viết');
-    if (containsBadWords(commentText)) {
-        showToast('Comment chứa từ ngữ không phù hợp', 'error');
-        return;
-    }
 
     if (!userInfo || !userInfo.username || !userInfo.email) {
       window.location.href = '/login'; 
