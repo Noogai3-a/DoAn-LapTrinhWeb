@@ -233,10 +233,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             showToast('Vui lòng nhập nội dung phản hồi', 'error');
             return;          
           }
-          if (containsBadWords(content)) {
-            showToast('Phản hồi chứa từ ngữ không phù hợp', 'error');
-            return;
-          }
+
           submitButton.disabled = true;
           submitButton.textContent = 'Đang gửi...';
           
@@ -263,7 +260,7 @@ document.addEventListener('DOMContentLoaded', async function () {
               showToast('Gửi phản hồi thành công!', 'success');
           } catch (err) {
               console.error('Error posting reply:', err);
-              showToast('Lỗi khi gửi phản hồi', 'error');
+              showToast(err.message, 'error');
           } finally {
             // Enable lại form
             submitButton.disabled = false;
@@ -368,11 +365,6 @@ document.addEventListener('DOMContentLoaded', async function () {
       return;
     }
 
-    if (containsBadWords(commentText)) {
-      showToast('Phản hồi chứa từ ngữ không phù hợp', 'error');
-      return;
-    }
-
     try {
       const res = await fetch(`https://backend-yl09.onrender.com/api/blogs/${blogId}/comments`, {
         method: 'POST',
@@ -408,7 +400,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       textarea.value = '';
     } catch (err) {
       console.error('Gửi bình luận lỗi:', err);
-      alert(err.message);
+      showToast(err.message, 'error')
     }
   });
 });

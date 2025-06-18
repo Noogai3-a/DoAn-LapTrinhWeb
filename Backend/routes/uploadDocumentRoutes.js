@@ -10,6 +10,7 @@ const { ensureAuthenticated } = require('../middleware/authMiddleware');
 // [POST] /api/documents/upload
 router.post(
   '/upload',
+  ensureAuthenticated,
   upload.array('files', 10),         
   uploadController.uploadDocument
 );

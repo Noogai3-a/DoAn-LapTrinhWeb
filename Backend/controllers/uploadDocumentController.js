@@ -84,30 +84,65 @@ exports.uploadDocument = async (req, res) => {
       let filePathToSave = file.path;
       let fileNameToSave = file.originalname;
       let fileToUpload = file.path;
+
       const ext = path.extname(file.originalname).toLowerCase();
-      const title = normalizeTitle(file.originalname);
-      const slug = slugifyTitle(file.originalname);
+      const index = req.files.indexOf(file);
+      const rawName = req.body[`filename_${index}`] || file.originalname;
+      const title = normalizeTitle(rawName);
+      const baseSlug = slugifyTitle(title);
+      const slug = `${subjectNameSlug}-${baseSlug}`;
+
+      let previewPath = null;
+      let previewFilename = null;
+      let previewDriveLink = null;
+
       try {
-        // Nếu là doc/docx → chuyển sang PDF
+        const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
+        const previewFolderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
         if (ext === '.doc' || ext === '.docx') {
           const pdfFilePath = file.path.replace(ext, '.pdf');
           await convertDocxToPdf(file.path, pdfFilePath);
-          fs.unlinkSync(file.path); // xoá file gốc
+          if (!fs.existsSync(pdfFilePath)) {
+            throw new Error(`Chuyển đổi sang PDF thất bại: không tìm thấy file ${pdfFilePath}`);
+          }
+          
+          fs.unlinkSync(file.path);
           fileToUpload = pdfFilePath;
           fileNameToSave = path.basename(pdfFilePath);
 
-          // Tạo thumbnail
-          const previewFilename = path.basename(pdfFilePath, '.pdf') + '.png';
-          const previewPath = path.join('uploads/previews', previewFilename);
+          previewFilename = path.basename(pdfFilePath, '.pdf') + '.png';
+          previewPath = path.join('uploads/previews', previewFilename);
           fs.mkdirSync('uploads/previews', { recursive: true });
+
           try {
             await generateThumbnailFromPdf(pdfFilePath, previewPath);
           } catch (err) {
             console.error("Lỗi tạo thumbnail:", err);
           }
 
+          // Upload thumbnail nếu có
+          previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
+          fs.unlinkSync(previewPath);
         }
-        const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
+        else if (ext === '.pdf') {
+          previewFilename = path.basename(file.path, '.pdf') + '.png';
+          previewPath = path.join('uploads/previews', previewFilename);
+          fs.mkdirSync('uploads/previews', { recursive: true });
+
+          try {
+            await generateThumbnailFromPdf(file.path, previewPath);
+          } catch (err) {
+            console.error("Lỗi tạo thumbnail từ PDF:", err);
+          }
+
+          try {
+            previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
+            fs.unlinkSync(previewPath);
+          } catch (err) {
+            console.error("Lỗi upload thumbnail PDF:", err);
+          }
+        }
+        console.log('📷 previewDriveLink:', previewDriveLink);
         const driveLink = await uploadFileToDrive(fileToUpload, fileNameToSave, folderId);
         fs.unlinkSync(fileToUpload);
 
@@ -123,23 +158,24 @@ exports.uploadDocument = async (req, res) => {
           subjectNameLabel: labels.subjectNameLabel,
           documentType,
           uploader,
+          previewUrl: previewDriveLink,
           status: 'pending'
         });
 
         await newDoc.save();
         savedDocuments.push(newDoc);
-
-      } catch (err) {
-        console.error(`Lỗi xử lý file ${file.originalname}:`, err);
-        fs.existsSync(file.path) && fs.unlinkSync(file.path);
-        return res.status(500).json({ error: `Lỗi xử lý file ${file.originalname}.` });
+        
+        } catch (err) {
+          console.error(`Lỗi xử lý file ${file.originalname}:`, err);
+          fs.existsSync(file.path) && fs.unlinkSync(file.path);
+          return res.status(500).json({ error: `Lỗi xử lý file ${file.originalname}.` });
+        }
       }
-    }
 
-    return res.status(201).json({
-      message: `Upload ${savedDocuments.length} tài liệu thành công.`,
-      documents: savedDocuments
-    });
+      return res.status(201).json({
+        message: `Upload ${savedDocuments.length} tài liệu thành công.`,
+        documents: savedDocuments
+      });
 
   } catch (error) {
     console.error('Lỗi uploadDocument:', error);

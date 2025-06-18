@@ -274,9 +274,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const formData = new FormData(formDetail);
-    for (const file of selectedFiles) {
-      formData.append("files", file);
-    }
+    selectedFiles.forEach((file, index) => {
+      formData.append('files', file);
+      formData.append(`filename_${index}`, file.name); // gửi tên gốc có dấu
+    });
+
+formData.append('fileCount', selectedFiles.length);
 
     try {
       const response = await fetch(`https://backend-yl09.onrender.com/api/upload-documents/upload`, {
