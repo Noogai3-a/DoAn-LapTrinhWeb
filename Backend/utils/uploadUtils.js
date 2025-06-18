@@ -1,127 +1,92 @@
-const mammoth = require("mammoth");
 const fs = require("fs");
 const path = require("path");
-const puppeteer = require("puppeteer");
-const data = require("../data.json"); // file data.json chứa thông tin subject
+const CloudConvert = require("cloudconvert");
 const { PDFDocument } = require("pdf-lib");
-const { createCanvas, loadImage } = require("canvas");
+const { createCanvas } = require("canvas");
+const data = require("../data.json");
+
+const cloudConvert = new CloudConvert(process.env.CLOUDCONVERT_API_KEY);
 
 function normalizeTitle(filename) {
   return path.basename(filename, path.extname(filename)).replace(/[_-]/g, ' ').trim();
 }
 
 async function convertDocxToPdf(docPath, outputPdfPath) {
-  let browser;
   try {
-    console.log('🔄 Bắt đầu chuyển đổi DOCX sang PDF:', docPath);
-    
-    // Validate input file
+    console.log("🔄 Bắt đầu chuyển đổi DOCX sang PDF bằng CloudConvert:", docPath);
+
     if (!fs.existsSync(docPath)) {
-      throw new Error(`File DOCX không tồn tại: ${docPath}`);
+      throw new Error(`❌ File DOCX không tồn tại: ${docPath}`);
     }
-    
+
     const fileStats = fs.statSync(docPath);
     if (fileStats.size === 0) {
-      throw new Error('File DOCX rỗng');
-    }
-    
-    console.log('📄 File size:', fileStats.size, 'bytes');
-    
-    // Convert DOCX to HTML
-    console.log('🔄 Chuyển DOCX sang HTML...');
-    const { value: html, messages } = await mammoth.convertToHtml({ path: docPath });
-
-    if (!html || html.trim() === '') {
-      throw new Error(`Không thể chuyển .docx sang HTML: file rỗng hoặc lỗi.`);
-    }
-    
-    console.log('✅ Chuyển sang HTML thành công, length:', html.length);
-    
-    // Log any conversion warnings
-    if (messages && messages.length > 0) {
-      console.log('⚠️ Conversion warnings:', messages);
+      throw new Error("❌ File DOCX rỗng");
     }
 
-    // Launch browser with proper configuration
-    console.log('🔄 Khởi tạo browser...');
-    browser = await puppeteer.launch({
-      args: [
-        '--no-sandbox', 
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu',
-        '--no-first-run',
-        '--no-zygote',
-        '--single-process'
-      ],
-      headless: true
-    });
+    console.log("📄 Kích thước file DOCX:", fileStats.size, "bytes");
 
-    console.log('🔄 Tạo page mới...');
-    const page = await browser.newPage();
-    
-    // Set viewport for consistent rendering
-    await page.setViewport({ width: 1200, height: 1600 });
-    
-    console.log('🔄 Đặt nội dung HTML...');
-    await page.setContent(html, { 
-      waitUntil: 'networkidle0',
-      timeout: 30000 
-    });
-
-    console.log('🔄 Tạo PDF...');
-    await page.pdf({ 
-      path: outputPdfPath, 
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '20mm',
-        right: '20mm',
-        bottom: '20mm',
-        left: '20mm'
+    // Tạo job chuyển đổi DOCX -> PDF
+    const job = await cloudConvert.jobs.create({
+      tasks: {
+        'upload': {
+          operation: 'import/upload'
+        },
+        'convert': {
+          operation: 'convert',
+          input: 'upload',
+          input_format: 'docx',
+          output_format: 'pdf'
+        },
+        'export': {
+          operation: 'export/url',
+          input: 'convert'
+        }
       }
     });
-    
-    console.log('✅ PDF đã được tạo:', outputPdfPath);
 
-    // Validate the generated PDF
-    if (!fs.existsSync(outputPdfPath)) {
-      throw new Error(`Không tạo được file PDF: ${outputPdfPath}`);
-    }
-    
+    const uploadTask = job.tasks.find(task => task.name === 'upload');
+
+    const uploadUrl = uploadTask.result.form.url;
+    const uploadParameters = uploadTask.result.form.parameters;
+
+    const FormData = require("form-data");
+    const axios = require("axios");
+
+    const form = new FormData();
+    Object.entries(uploadParameters).forEach(([key, value]) => {
+      form.append(key, value);
+    });
+    form.append("file", fs.createReadStream(docPath));
+
+    console.log("⬆️ Đang upload file DOCX lên CloudConvert...");
+    await axios.post(uploadUrl, form, { headers: form.getHeaders() });
+
+    console.log("✅ Upload hoàn tất. Đang chờ job xử lý...");
+
+    // Chờ job hoàn tất
+    const completedJob = await cloudConvert.jobs.wait(job.id);
+    const exportTask = completedJob.tasks.find(task => task.name === 'export');
+    const fileUrl = exportTask.result.files[0].url;
+
+    console.log("⬇️ Tải file PDF đã xử lý...");
+    const response = await axios.get(fileUrl, { responseType: "stream" });
+
+    const writer = fs.createWriteStream(outputPdfPath);
+    response.data.pipe(writer);
+
+    await new Promise((resolve, reject) => {
+      writer.on("finish", resolve);
+      writer.on("error", reject);
+    });
+
     const pdfStats = fs.statSync(outputPdfPath);
-    console.log('📄 PDF file size:', pdfStats.size, 'bytes');
-    
-    if (pdfStats.size === 0) {
-      throw new Error('File PDF được tạo nhưng rỗng');
-    }
-    
-    console.log('✅ Chuyển đổi DOCX sang PDF thành công!');
-    
+    if (pdfStats.size === 0) throw new Error("❌ PDF được tạo nhưng rỗng");
+
+    console.log("✅ Tạo PDF thành công:", outputPdfPath);
   } catch (err) {
-    console.error('❌ Lỗi trong convertDocxToPdf:', err);
-    
-    // Clean up partial PDF if it exists
-    if (outputPdfPath && fs.existsSync(outputPdfPath)) {
-      try {
-        fs.unlinkSync(outputPdfPath);
-        console.log('🧹 Đã xóa file PDF lỗi:', outputPdfPath);
-      } catch (cleanupErr) {
-        console.error('❌ Lỗi khi xóa file PDF lỗi:', cleanupErr);
-      }
-    }
-    
+    console.error("❌ Lỗi trong convertDocxToPdf:", err.message);
     throw err;
-  } finally {
-    // Always close browser
-    if (browser) {
-      try {
-        console.log('🔄 Đóng browser...');
-        await browser.close();
-      } catch (closeErr) {
-        console.error('❌ Lỗi khi đóng browser:', closeErr);
-      }
-    }
   }
 }
 
@@ -129,7 +94,7 @@ async function generateThumbnail(pdfPath, outputImagePath) {
   try {
     const pdfBytes = fs.readFileSync(pdfPath);
     const pdfDoc = await PDFDocument.load(pdfBytes);
-    const page = pdfDoc.getPage(0); // chỉ lấy trang đầu
+    const page = pdfDoc.getPage(0); // lấy trang đầu
 
     const width = 600;
     const height = 800;
@@ -137,7 +102,7 @@ async function generateThumbnail(pdfPath, outputImagePath) {
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext("2d");
 
-    // Không render vector gốc được, nên chỉ hiển thị placeholder
+    // Chỉ hiển thị placeholder vì không render được vector
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, width, height);
 
@@ -147,13 +112,13 @@ async function generateThumbnail(pdfPath, outputImagePath) {
     ctx.font = "16px sans-serif";
     ctx.fillText(`Trang đầu của "${pdfPath.split("/").pop()}"`, 50, 140);
 
-    // Save canvas thành PNG
+    // Lưu thumbnail
     const buffer = canvas.toBuffer("image/png");
     fs.writeFileSync(outputImagePath, buffer);
     console.log("✅ Thumbnail đã lưu:", outputImagePath);
 
   } catch (err) {
-    console.error("❌ Lỗi tạo thumbnail PDF trên Vercel:", err);
+    console.error("❌ Lỗi tạo thumbnail:", err);
     throw err;
   }
 }
