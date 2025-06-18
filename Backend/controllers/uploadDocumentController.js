@@ -1,7 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const mammoth = require('mammoth');
-const puppeteer = require('puppeteer');
 const Document = require('../models/Document');
 const { uploadFileToDrive } = require('../uploads/googleDrive');
 const data = require('../data.json');
@@ -79,6 +77,8 @@ exports.uploadDocument = async (req, res) => {
     }
 
     const savedDocuments = [];
+    const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
+    const previewFolderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9'; // Consider using a different folder for previews
 
     for (const file of req.files) {
       let filePathToSave = file.path;
@@ -97,8 +97,6 @@ exports.uploadDocument = async (req, res) => {
       let previewDriveLink = null;
 
       try {
-        const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
-        const previewFolderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
         if (ext === '.doc' || ext === '.docx') {
           const pdfFilePath = file.path.replace(ext, '.pdf');
           await convertDocxToPdf(file.path, pdfFilePath);
@@ -116,13 +114,14 @@ exports.uploadDocument = async (req, res) => {
 
           try {
             await generateThumbnailFromPdf(pdfFilePath, previewPath);
+            previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
           } catch (err) {
             console.error("Lỗi tạo thumbnail:", err);
+          } finally {
+            if (previewPath && fs.existsSync(previewPath)) {
+              fs.unlinkSync(previewPath);
+            }
           }
-
-          // Upload thumbnail nếu có
-          previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
-          fs.unlinkSync(previewPath);
         }
         else if (ext === '.pdf') {
           previewFilename = path.basename(file.path, '.pdf') + '.png';
@@ -131,20 +130,23 @@ exports.uploadDocument = async (req, res) => {
 
           try {
             await generateThumbnailFromPdf(file.path, previewPath);
+            previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
           } catch (err) {
             console.error("Lỗi tạo thumbnail từ PDF:", err);
-          }
-
-          try {
-            previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
-            fs.unlinkSync(previewPath);
-          } catch (err) {
-            console.error("Lỗi upload thumbnail PDF:", err);
+          } finally {
+            if (previewPath && fs.existsSync(previewPath)) {
+              fs.unlinkSync(previewPath);
+            }
           }
         }
+
         console.log('📷 previewDriveLink:', previewDriveLink);
         const driveLink = await uploadFileToDrive(fileToUpload, fileNameToSave, folderId);
-        fs.unlinkSync(fileToUpload);
+        
+        // Clean up the uploaded file
+        if (fs.existsSync(fileToUpload)) {
+          fs.unlinkSync(fileToUpload);
+        }
 
         filePathToSave = driveLink;
 
@@ -165,17 +167,25 @@ exports.uploadDocument = async (req, res) => {
         await newDoc.save();
         savedDocuments.push(newDoc);
         
-        } catch (err) {
-          console.error(`Lỗi xử lý file ${file.originalname}:`, err);
-          fs.existsSync(file.path) && fs.unlinkSync(file.path);
-          return res.status(500).json({ error: `Lỗi xử lý file ${file.originalname}.` });
+      } catch (err) {
+        console.error(`Lỗi xử lý file ${file.originalname}:`, err);
+        
+        // Clean up any temporary files
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
         }
+        if (previewPath && fs.existsSync(previewPath)) {
+          fs.unlinkSync(previewPath);
+        }
+        
+        return res.status(500).json({ error: `Lỗi xử lý file ${file.originalname}: ${err.message}` });
       }
+    }
 
-      return res.status(201).json({
-        message: `Upload ${savedDocuments.length} tài liệu thành công.`,
-        documents: savedDocuments
-      });
+    return res.status(201).json({
+      message: `Upload ${savedDocuments.length} tài liệu thành công.`,
+      documents: savedDocuments
+    });
 
   } catch (error) {
     console.error('Lỗi uploadDocument:', error);

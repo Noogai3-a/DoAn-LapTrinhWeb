@@ -5,14 +5,9 @@ const router = express.Router();
 
 const upload = require('../middleware/upload');
 const uploadController = require('../controllers/uploadDocumentController');
-const { ensureAuthenticated } = require('../middleware/authMiddleware');
+const apiAuthMiddleware = require('../middleware/apiAuthMiddleware');
 
 // [POST] /api/documents/upload
-router.post(
-  '/upload',
-  ensureAuthenticated,
-  upload.array('files', 10),         
-  uploadController.uploadDocument
-);
+router.post('/upload', apiAuthMiddleware, upload.array('files', 10), uploadController.uploadDocument);
 
 module.exports = router;
