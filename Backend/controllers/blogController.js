@@ -39,6 +39,7 @@ exports.getBlogById = async (req, res) => {
   try {
     const { preview, noView } = req.query;
     const isPreview = preview === 'true';
+    const shouldNotIncrementView = noView === 'true';
     const session = req.session;
 
     let blog;
@@ -56,7 +57,7 @@ exports.getBlogById = async (req, res) => {
 
     if (!blog) return res.status(404).json({ msg: 'Blog not found' });
 
-    if (!isPreview && !req.query.noView) {
+    if (!isPreview && !shouldNotIncrementView) {
       blog.views += 1;
       await blog.save();
     }
