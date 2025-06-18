@@ -113,23 +113,23 @@ exports.uploadDocument = async (req, res) => {
           fs.mkdirSync('uploads/previews', { recursive: true });
 
           try {
-            console.log('🔄 Tạo thumbnail từ PDF:', pdfFilePath);
+            console.log('Tạo thumbnail từ PDF:', pdfFilePath);
             await generateThumbnail(pdfFilePath, previewPath);
             
             if (fs.existsSync(previewPath)) {
-              console.log('✅ Thumbnail tạo thành công:', previewPath);
-              console.log('🔄 Upload thumbnail lên Google Drive...');
+              console.log('Thumbnail tạo thành công:', previewPath);
+              console.log('Upload thumbnail lên Google Drive...');
               previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
-              console.log('✅ Thumbnail upload thành công:', previewDriveLink);
+              console.log('Thumbnail upload thành công:', previewDriveLink);
             } else {
-              console.error('❌ Thumbnail không được tạo:', previewPath);
+              console.error('Thumbnail không được tạo:', previewPath);
             }
           } catch (err) {
-            console.error("❌ Lỗi tạo/upload thumbnail:", err);
+            console.error(" Lỗi tạo/upload thumbnail:", err);
           } finally {
             if (previewPath && fs.existsSync(previewPath)) {
               fs.unlinkSync(previewPath);
-              console.log('🧹 Đã xóa thumbnail tạm:', previewPath);
+              console.log('Đã xóa thumbnail tạm:', previewPath);
             }
           }
         }
@@ -139,19 +139,19 @@ exports.uploadDocument = async (req, res) => {
           fs.mkdirSync('uploads/previews', { recursive: true });
 
           try {
-            console.log('🔄 Tạo thumbnail từ PDF:', file.path);
+            console.log('Tạo thumbnail từ PDF:', file.path);
             await generateThumbnail(file.path, previewPath);
             
             if (fs.existsSync(previewPath)) {
-              console.log('✅ Thumbnail tạo thành công:', previewPath);
-              console.log('🔄 Upload thumbnail lên Google Drive...');
+              console.log('Thumbnail tạo thành công:', previewPath);
+              console.log('Upload thumbnail lên Google Drive...');
               previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
-              console.log('✅ Thumbnail upload thành công:', previewDriveLink);
+              console.log('Thumbnail upload thành công:', previewDriveLink);
             } else {
-              console.error('❌ Thumbnail không được tạo:', previewPath);
+              console.error('Thumbnail không được tạo:', previewPath);
             }
           } catch (err) {
-            console.error("❌ Lỗi tạo/upload thumbnail từ PDF:", err);
+            console.error("Lỗi tạo/upload thumbnail từ PDF:", err);
           } finally {
             if (previewPath && fs.existsSync(previewPath)) {
               fs.unlinkSync(previewPath);
@@ -160,10 +160,10 @@ exports.uploadDocument = async (req, res) => {
           }
         }
 
-        console.log('📷 previewDriveLink cuối cùng:', previewDriveLink);
-        console.log('🔄 Upload file chính lên Google Drive...');
+        console.log('previewDriveLink cuối cùng:', previewDriveLink);
+        console.log('Upload file chính lên Google Drive...');
         const driveLink = await uploadFileToDrive(fileToUpload, fileNameToSave, folderId);
-        console.log('✅ File chính upload thành công:', driveLink);
+        console.log('File chính upload thành công:', driveLink);
         
         // Clean up the uploaded file
         if (fs.existsSync(fileToUpload)) {
@@ -186,13 +186,13 @@ exports.uploadDocument = async (req, res) => {
           status: 'pending'
         });
 
-        console.log('💾 Lưu document vào MongoDB với previewUrl:', previewDriveLink);
+        console.log('Lưu document vào MongoDB với previewUrl:', previewDriveLink);
         await newDoc.save();
         savedDocuments.push(newDoc);
-        console.log('✅ Document đã được lưu thành công');
+        console.log('Document đã được lưu thành công');
         
       } catch (err) {
-        console.error(`❌ Lỗi xử lý file ${file.originalname}:`, err);
+        console.error(`Lỗi xử lý file ${file.originalname}:`, err);
         
         // Clean up any temporary files
         if (fs.existsSync(file.path)) {
