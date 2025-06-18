@@ -1,8 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const CloudConvert = require("cloudconvert");
-const { PDFDocument } = require("pdf-lib");
-const { createCanvas } = require("canvas");
 const data = require("../data.json");
 
 const cloudConvert = new CloudConvert(process.env.CLOUDCONVERT_API_KEY);
