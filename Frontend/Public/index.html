@@ -298,26 +298,19 @@
     </div>
     </div>
     </div>
-    <div id="webchat" style="width: 500px; height: 500px;"></div>
-    <!-- In your <body> tag -->
-    <script src="https://files.bpcontent.cloud/2025/06/20/08/20250620085538-6XFVM7WV.js"></script>
+    <script src="https://cdn.botpress.cloud/webchat/v1/inject.js"></script>
     <script>
-    window.botpress.on("webchat:ready", () => {
-        window.botpress.open();
-    });
-    window.botpress.init({
-    "botId": "24a8489a-7e83-4ba0-8e83-03f78d1de039",
-    "configuration": {
-        "website": {},
-        "email": {},
-        "phone": {},
-        "termsOfService": {},
-        "privacyPolicy": {}
-    },
-    "clientId": "f346f23b-6429-4042-a262-e2f545e092e1",
-    "selector": "#webchat"
+    window.botpressWebChat.init({
+        botId: "24a8489a-7e83-4ba0-8e83-03f78d1de039",
+        clientId: "f346f23b-6429-4042-a262-e2f545e092e1",
+        hostUrl: "https://cdn.botpress.cloud/webchat/v1",
+        messagingUrl: "https://messaging.botpress.cloud",
+        botName: "WeShare Bot",
+        composerPlaceholder: "Bạn cần gì?",
+        lazySocket: true
     });
     </script>
+
 </body>
 
 </html>
