@@ -1,6 +1,6 @@
 /* Blog section */
 .post-creator {
-    max-width: 1500px; /* Rộng hơn một chút cho thoải mái */
+    max-width: 2000px; /* Rộng hơn một chút cho thoải mái */
     margin: 40px auto; /* Tăng khoảng cách trên dưới */
     background: #ffffff;
     border-radius: 12px; /* Bo góc mềm mại hơn */
@@ -81,7 +81,7 @@
     outline: none;
     padding: 1rem;
     font-size: 1rem;
-    min-height: 300px;
+    min-height: 400px;
     background: #f8f9fc;
     border: 1px solid #d1d3e2;
     border-radius: 6px;
