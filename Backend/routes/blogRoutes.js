@@ -4,6 +4,7 @@ const multer = require('multer');
 
 const blogController = require('../controllers/blogController');
 const authMiddleware = require('../middleware/authMiddleware');
+const requireAdmin = require('../middleware/requireAdmin');
 
 // Cấu hình multer để lưu trong bộ nhớ (có thể đổi sang diskStorage nếu muốn lưu file ra ổ cứng)
 const storage = multer.memoryStorage();
@@ -36,5 +37,7 @@ router.put('/:id', authMiddleware, blogController.updateBlog);
 router.delete('/:id', authMiddleware, blogController.deleteBlog);
 
 router.post('/:blogId/comments', authMiddleware, blogController.createComment);
+
+router.post('/admin', requireAdmin, upload.single('thumbnailImage'), blogController.createBlogAdmin);
 
 module.exports = router;

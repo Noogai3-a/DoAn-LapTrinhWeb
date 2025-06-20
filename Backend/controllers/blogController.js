@@ -405,3 +405,95 @@ exports.searchBlogs = async (req, res) => {
     res.status(500).json({ message: 'Lỗi server' });
   }
 };
+
+exports.createBlogAdmin = async (req, res) => {
+  try {
+    const { title, content, category, subCategory } = req.body;
+    const author = req.session.user?.username ?? req.session.admin?.username;
+    const authorId = req.session.user?.id ?? req.session.admin?.id;
+    const path = require('path');
+    const fs = require('fs');
+    const { uploadFileToDrive } = require('../uploads/googleDrive');
+
+    const folderId = '185Efbd-izYwsA4r41TXgVMu_rGoWDXf9';
+    const siteUrl = process.env.SITE_URL || 'http://localhost:5500'; // Dùng để tạo link proxy
+
+    if (!title || !content || !category) {
+      return res.status(400).json({ msg: 'Title, content and category are required' });
+    }
+
+    if (category === 'Chủ đề khác' && !subCategory) {
+      return res.status(400).json({ msg: 'Sub category is required when category is Other' });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ msg: 'Thumbnail image is required' });
+    }
+
+    // === Xử lý ảnh thumbnail ===
+    const tempPath = path.join(__dirname, '..', 'uploads', 'Img', `${Date.now()}-${req.file.originalname}`);
+    fs.writeFileSync(tempPath, req.file.buffer);
+    const thumbnailImage = await uploadFileToDrive(tempPath, req.file.originalname, folderId);
+    fs.unlinkSync(tempPath);
+
+    // === Xử lý ảnh trong content ===
+    async function uploadBase64Image(base64String, fileNamePrefix = 'img') {
+      const matches = base64String.match(/^data:(image\/\w+);base64,(.+)$/);
+      if (!matches) return null;
+
+      const mimeType = matches[1];
+      const base64Data = matches[2];
+      const extension = mimeType.split('/')[1];
+      const fileName = `${fileNamePrefix}-${Date.now()}.${extension}`;
+      const filePath = path.join(__dirname, '..', 'uploads', 'Img', fileName);
+
+      fs.mkdirSync(path.dirname(filePath), { recursive: true });
+      fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+
+      const driveUrl = await uploadFileToDrive(filePath, fileName, folderId);
+      fs.unlinkSync(filePath);
+
+      return driveUrl;
+    }
+
+    let newContent = content;
+    const imageUrls = [];
+    const imgBase64Regex = /<img[^>]+src="(data:image\/[^">]+)"/g;
+    const base64Images = [...content.matchAll(imgBase64Regex)];
+
+    for (const match of base64Images) {
+      const base64Image = match[1];
+      const driveUrl = await uploadBase64Image(base64Image);
+      if (driveUrl) {
+        // GIỮ LẠI link Google Drive gốc
+        newContent = newContent.replace(base64Image, driveUrl);
+        imageUrls.push(driveUrl);
+      }
+    }
+
+    // === Lưu blog ===
+    const newBlog = new Blog({
+      title,
+      author,
+      authorId,
+      thumbnailImage,
+      views: 0,
+      category,
+      subCategory: category === 'Chủ đề khác' ? subCategory : undefined,
+      approved: true
+    });
+    await newBlog.save();
+
+    const newBlogContent = new BlogContent({
+      blog: newBlog._id,
+      content: newContent,
+      imageUrls,
+    });
+    await newBlogContent.save();
+
+    res.status(201).json({ msg: 'Blog created', blog: newBlog });
+  } catch (err) {
+    console.error('createBlog error:', err.message || err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};

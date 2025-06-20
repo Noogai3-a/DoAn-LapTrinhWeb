@@ -1,0 +1,130 @@
+/* Khung đăng blog cho admin */
+.admin-blog-upload-wrapper {
+    padding: 32px 0;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.admin-blog-upload-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #4e73df;
+}
+
+.admin-blog-upload-title h1 {
+    font-size: 2rem;
+    color: #4e73df;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-blog-upload-form {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.13);
+    padding: 36px 32px;
+    margin-bottom: 32px;
+}
+
+.admin-blog-upload-form h3 {
+    font-size: 1.2rem;
+    color: #4e73df;
+    margin-bottom: 18px;
+    font-weight: 600;
+}
+
+.admin-blog-upload-form .form-label {
+    font-weight: 600;
+    color: #4e73df;
+    margin-bottom: 6px;
+}
+
+.admin-blog-upload-form .form-control {
+    padding: 10px 14px;
+    border: 1.5px solid #d1d3e2;
+    border-radius: 7px;
+    margin-bottom: 18px;
+    font-size: 1rem;
+    background: #f8f9fc;
+    transition: border-color 0.2s;
+}
+
+.admin-blog-upload-form .form-control:focus {
+    border-color: #4e73df;
+    background: #fff;
+    outline: none;
+}
+
+.admin-blog-upload-form .btn-primary {
+    background-color: #4e73df;
+    border: none;
+    padding: 12px 28px;
+    font-size: 1.1rem;
+    border-radius: 7px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    box-shadow: 0 2px 8px rgba(58, 59, 69, 0.10);
+}
+
+.admin-blog-upload-form .btn-primary:hover {
+    background-color: #375ab5;
+}
+
+.admin-blog-upload-form input[type="file"] {
+    background: #f8f9fc;
+    border: 1.5px solid #d1d3e2;
+    border-radius: 7px;
+    padding: 8px;
+}
+
+/* Khung preview ảnh minh họa */
+.admin-blog-upload-form .thumbnail-preview {
+    margin-top: 10px;
+    background: #f8f9fc;
+    border: 1px solid #d1d3e2;
+    border-radius: 7px;
+    padding: 10px;
+    font-size: 0.95rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    max-height: 350px;
+    overflow: hidden;
+}
+
+/* Khung nội dung blog (contenteditable) */
+.admin-blog-upload-form #postContent {
+    min-height: 220px;
+    background: #f8f9fc;
+    border: 1.5px solid #d1d3e2;
+    border-radius: 7px;
+    padding: 16px 12px;
+    font-size: 1rem;
+    margin-bottom: 18px;
+    transition: border-color 0.2s;
+}
+
+.admin-blog-upload-form #postContent:focus {
+    border-color: #4e73df;
+    background: #fff;
+    outline: none;
+}
+
+@media (max-width: 576px) {
+    .admin-blog-upload-wrapper {
+        padding: 10px 0;
+    }
+    .admin-blog-upload-form {
+        padding: 16px 8px;
+    }
+    .admin-blog-upload-title h1 {
+        font-size: 1.2rem;
+    }
+}

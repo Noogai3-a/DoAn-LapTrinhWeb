@@ -19,6 +19,7 @@
     { "source": "/standard", "destination": "/standard.html" },
     { "source": "/template", "destination": "/template.html" },
     { "source": "/document-edit", "destination": "/document-edit.html"},
+    { "source": "/admin-blog-upload", "destination": "/admin-blog-upload.html" },
     {
       "source": "/api/:path*",
       "destination": "https://backend-yl09.onrender.com/api/:path*"
