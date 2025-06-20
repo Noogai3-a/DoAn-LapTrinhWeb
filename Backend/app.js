@@ -118,7 +118,6 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../Frontend/Public/index.html'));
 });
 
-
 //Đăng nhập
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, '../Frontend/Public/login.html'));
