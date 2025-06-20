@@ -31,48 +31,121 @@ function toggleMenu() {
 }
 
 //side bar
-const nav = document.getElementById('side-nav');
+document.addEventListener('DOMContentLoaded', () => {
+  const sideNav = document.getElementById('side-nav');
 
-fetch('/json/data.json')
-.then(res => {
-    if (!res.ok) throw new Error('Không tải được data.json');
-    return res.json();
+  fetch('/json/data.json')
+    .then(res => {
+      if (!res.ok) throw new Error('Không tải được data.json');
+      return res.json();
     })
-.then(data => {
-Object.entries(data).forEach(([categoryKey, category]) => {
-    const menuItem = document.createElement('div');
-    menuItem.className = 'menu-item';
+    .then(data => {
+      const categories = Object.keys(data);
 
-    const menuItemTitle = document.createElement('div');
-    menuItemTitle.className = 'menu-item-title';
-    menuItemTitle.innerHTML = `${category.label} <i class="fa-solid fa-chevron-down"></i>`;
-    menuItemTitle.onclick = function () {
-    const submenu = this.nextElementSibling;
-    submenu.classList.toggle('show');
-    };
+      if (categories.length === 0) {
+        const li = document.createElement('div');
+        li.innerHTML = `<div class="menu-item-title">Không có môn học nào.</div>`;
+        sideNav.appendChild(li);
+        return;
+      }
 
-    const subMenu = document.createElement('div');
-    subMenu.className = 'sub-menu';
+      categories.forEach(categoryKey => {
+        const category = data[categoryKey];
+        const categoryLabel = category.label || categoryKey;
 
-    (category.subjects || []).forEach(subject => {
-    const a = document.createElement('a');
-    a.href = `/subject.html?type=${categoryKey}&slug=${subject.slug}`;
-    a.textContent = `${subject.slug.toUpperCase()} - ${subject.label}`;
-    subMenu.appendChild(a);
+        // Tạo phần tử menu-item
+        const menuItem = document.createElement('div');
+        menuItem.className = 'menu-item';
+
+        // Tiêu đề nhóm môn học
+        const menuItemTitle = document.createElement('div');
+        menuItemTitle.className = 'menu-item-title';
+        menuItemTitle.innerHTML = `${categoryLabel} <i class="fa-solid fa-chevron-down"></i>`;
+        menuItemTitle.style.cursor = 'pointer';
+
+        // Sub menu chứa các môn học con
+        const subMenu = document.createElement('div');
+        subMenu.className = 'sub-menu';
+
+        // Toggle submenu khi click vào title
+        menuItemTitle.addEventListener('click', () => {
+          subMenu.classList.toggle('show'); // bạn có thể dùng .show hoặc .collapse tùy CSS bạn viết
+        });
+
+        // Duyệt qua từng môn học trong nhóm
+        (category.subjects || []).forEach(subject => {
+          const subjectLink = document.createElement('a');
+          subjectLink.href = 'javascript:void(0)';
+          subjectLink.textContent = `${subject.slug.toUpperCase()} - ${subject.label}`;
+
+          // Danh sách file bên trong mỗi môn học
+          const fileList = document.createElement('div');
+          fileList.className = 'sub-menu file-list';
+          fileList.style.marginLeft = '15px';
+          fileList.style.display = 'none'; // ẩn ban đầu
+
+          subjectLink.addEventListener('click', () => {
+            // Toggle hiện/ẩn fileList
+            fileList.style.display = fileList.style.display === 'none' ? 'block' : 'none';
+
+            // Nếu đã load rồi thì không fetch lại
+            if (fileList.dataset.loaded === 'true') return;
+
+            fileList.innerHTML = '<div>Đang tải...</div>';
+
+            const subjectTypeSlug = categoryKey;
+            const subjectSlug = subject.slug;
+
+            fetch(`https://backend-yl09.onrender.com/api/documents/by-subject/${encodeURIComponent(subjectTypeSlug)}/${encodeURIComponent(subjectSlug)}`, { credentials: 'include' })
+              .then(res => {
+                if (!res.ok) throw new Error('Lỗi tải tài liệu');
+                return res.json();
+              })
+              .then(data => {
+                fileList.innerHTML = '';
+                fileList.dataset.loaded = 'true';
+
+                if (!data.documents || data.documents.length === 0) {
+                  const noFile = document.createElement('div');
+                  noFile.textContent = 'Chưa có file tài liệu.';
+                  fileList.appendChild(noFile);
+                  return;
+                }
+
+                data.documents.forEach(doc => {
+                  const fileDiv = document.createElement('div');
+                  const link = document.createElement('a');
+                  link.href = `/document.html?slug=${doc.slug}`;
+                  link.textContent = doc.title;
+                  fileDiv.appendChild(link);
+                  fileList.appendChild(fileDiv);
+                });
+              })
+              .catch(err => {
+                fileList.innerHTML = `<div style="color:red;">Lỗi: ${err.message}</div>`;
+              });
+          });
+
+          // Gắn vào sub-menu
+          subMenu.appendChild(subjectLink);
+          subMenu.appendChild(fileList);
+        });
+
+        // Gắn vào menu-item rồi vào nav
+        menuItem.appendChild(menuItemTitle);
+        menuItem.appendChild(subMenu);
+        sideNav.appendChild(menuItem);
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'alert alert-danger';
+      errorDiv.textContent = `Lỗi tải danh sách môn học: ${err.message}`;
+      sideNav.appendChild(errorDiv);
     });
+});
 
-    menuItem.appendChild(menuItemTitle);
-    menuItem.appendChild(subMenu);
-    nav.appendChild(menuItem);
-});
-})
-.catch(err => {
-    console.error(err);
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'alert alert-danger';
-    errorDiv.textContent = `Lỗi tải danh sách môn học: ${err.message}`;
-    nav.appendChild(errorDiv);
-});
 
 function toggleSubmenu(element) {
     const subMenu = element.nextElementSibling;
