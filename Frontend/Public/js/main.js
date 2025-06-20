@@ -1,4 +1,4 @@
-/*function toggleMenu() {
+function toggleMenu() {
     const menu = document.getElementById("side-nav");
     const mainContent = document.querySelector('.main-content');
 
@@ -29,7 +29,7 @@
     }
 
 }
-*/
+
 
 //side bar
 document.addEventListener('DOMContentLoaded', () => {
@@ -69,9 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         subMenu.className = 'sub-menu';
 
         // Toggle submenu khi click vào title
-        menuItemTitle.addEventListener('click', () => {
-          subMenu.classList.toggle('show'); // bạn có thể dùng .show hoặc .collapse tùy CSS bạn viết
-        });
+        menuItemTitle.setAttribute('onclick', 'toggleSubmenu(this)');
 
         // Duyệt qua từng môn học trong nhóm
         (category.subjects || []).forEach(subject => {
@@ -147,6 +145,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function toggleSubmenu(element) {
+  const subMenu = element.nextElementSibling;
+  if (!subMenu || !subMenu.classList.contains('sub-menu')) return;
+
+  const isShown = subMenu.classList.toggle('show');
+
+  // Thay đổi icon chevron
+  const icon = element.querySelector('i');
+  if (icon) {
+    icon.classList.toggle('fa-chevron-down', !isShown);
+    icon.classList.toggle('fa-chevron-up', isShown);
+  }
+}
 /*
 function toggleSubmenu(element) {
     const subMenu = element.nextElementSibling;
@@ -160,7 +171,6 @@ function toggleSubmenu(element) {
         }
     }
 }
-
 */
 // Kiểm tra kích thước màn hình và áp dụng overlay nếu cần
 const checkScreenSize = () => {
