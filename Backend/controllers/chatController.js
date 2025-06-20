@@ -11,10 +11,8 @@ const handleChatQuery = async (req, res) => {
   const needsAPI =
     /blog.*(nhiều lượt xem|xem nhiều|hot|được xem)|blog.*(?:về|chủ đề)\s+.+|chủ đề blog|danh mục blog|blog có những gì|các chủ đề/.test(message);
 
-  if (kbAnswer) {
-    return res.json({
-      reply: kbAnswer,
-    });
+  if (!needsAPI && kbAnswer) {
+    return res.json({ reply: kbAnswer });
   }
 
   // 🎯 Trường hợp 1: hỏi blog được xem nhiều
