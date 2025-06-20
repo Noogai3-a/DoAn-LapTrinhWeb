@@ -15,53 +15,13 @@ function getLocalStorage(key) {
     }
 }
 
-// Chỉ gán click vào label thôi:
-document.getElementById('thumbnailLabel').addEventListener('click', (e) => {
-  e.preventDefault();
-  document.getElementById('thumbnailUpload').click();
-});
-
-function previewThumbnail(event) {
-  const fileInput = event.target;
-  const file = fileInput.files[0];
-  const previewDiv = document.getElementById('thumbnailPreview');
-  const label = document.getElementById('thumbnailLabel');
-  const picker = document.querySelector('.thumbnail-picker');
-  previewDiv.innerHTML = '';
-
-  if (file) {
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-
-    img.onload = () => {
-      const naturalHeight = img.naturalHeight;
-      const naturalWidth = img.naturalWidth;
-      const maxHeight = 500;
-      const pickerWidth = picker.clientWidth;
-      let newHeight = (naturalHeight / naturalWidth) * pickerWidth;
-
-      if (newHeight > maxHeight) newHeight = maxHeight;
-
-      picker.style.height = newHeight + 'px';
-
-      img.style.maxWidth = '100%';
-      img.style.maxHeight = '100%';
-      img.style.objectFit = 'contain';
-      img.style.display = 'block';
-
-      previewDiv.appendChild(img);
-      if (label) {
-        label.style.opacity = '0';
-        label.style.pointerEvents = 'auto';
-      }
-    };
-  } else {
-    picker.style.height = '120px';
-    if (label) label.style.display = 'flex';
-  }
-}
-
 document.addEventListener("DOMContentLoaded", function () {
+    // Chỉ gán click vào label thôi:
+    document.getElementById('thumbnailLabel').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('thumbnailUpload').click();
+    });
+
     const postContent = document.getElementById("postContent");
     const emojiBtn = document.querySelector('.fa-smile');
     const emojiPicker = document.getElementById('emojiPicker');
@@ -134,6 +94,46 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+function previewThumbnail(event) {
+  const fileInput = event.target;
+  const file = fileInput.files[0];
+  const previewDiv = document.getElementById('thumbnailPreview');
+  const label = document.getElementById('thumbnailLabel');
+  const picker = document.querySelector('.thumbnail-picker');
+  previewDiv.innerHTML = '';
+
+  if (file) {
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+
+    img.onload = () => {
+      const naturalHeight = img.naturalHeight;
+      const naturalWidth = img.naturalWidth;
+      const maxHeight = 500;
+      const pickerWidth = picker.clientWidth;
+      let newHeight = (naturalHeight / naturalWidth) * pickerWidth;
+
+      if (newHeight > maxHeight) newHeight = maxHeight;
+
+      picker.style.height = newHeight + 'px';
+
+      img.style.maxWidth = '100%';
+      img.style.maxHeight = '100%';
+      img.style.objectFit = 'contain';
+      img.style.display = 'block';
+
+      previewDiv.appendChild(img);
+      if (label) {
+        label.style.opacity = '0';
+        label.style.pointerEvents = 'auto';
+      }
+    };
+  } else {
+    picker.style.height = '120px';
+    if (label) label.style.display = 'flex';
+  }
+}
 
 // Hàm chèn ảnh
 function insertImage() {
