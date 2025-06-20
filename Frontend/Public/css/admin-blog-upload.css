@@ -1,6 +1,7 @@
 /* Blog section */
 .post-creator {
-    max-width: 2000px; /* Rộng hơn một chút cho thoải mái */
+    max-width: 1000px; /* Rộng hơn một chút cho thoải mái */
+    min-width: 400px;
     margin: 40px auto; /* Tăng khoảng cách trên dưới */
     background: #ffffff;
     border-radius: 12px; /* Bo góc mềm mại hơn */
