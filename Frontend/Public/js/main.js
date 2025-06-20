@@ -1,4 +1,4 @@
-function toggleMenu() {
+/*function toggleMenu() {
     const menu = document.getElementById("side-nav");
     const mainContent = document.querySelector('.main-content');
 
@@ -29,6 +29,7 @@ function toggleMenu() {
     }
 
 }
+*/
 
 //side bar
 document.addEventListener('DOMContentLoaded', () => {
@@ -146,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-
+/*
 function toggleSubmenu(element) {
     const subMenu = element.nextElementSibling;
     if (subMenu && subMenu.classList.contains('sub-menu')) {
@@ -159,6 +160,8 @@ function toggleSubmenu(element) {
         }
     }
 }
+
+*/
 // Kiểm tra kích thước màn hình và áp dụng overlay nếu cần
 const checkScreenSize = () => {
     const menu = document.getElementById("side-nav");
