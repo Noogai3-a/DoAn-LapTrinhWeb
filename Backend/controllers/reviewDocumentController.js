@@ -56,8 +56,10 @@ exports.deleteDocumentById = async (req, res) => {
   try {
     const id = req.params.id;
     const doc = await Document.findById(id);
+    
 
     if (!doc) {
+      console.log("ID nhận được:", req.params.id);
       return res.status(404).json({ msg: 'Tài liệu không tồn tại' });
     }
 
