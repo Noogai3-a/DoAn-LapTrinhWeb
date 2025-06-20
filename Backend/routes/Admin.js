@@ -16,7 +16,7 @@ router.put('/approve-blog/:id', requireAdmin, blogAdminController.approveBlog);
 router.put('/approve-document/:id', documentController.approveDocument);
 
 router.delete('/reject-blog/:id', requireAdmin, blogAdminController.rejectBlog);
-
+router.delete('/reject-document/:id', documentController.deleteDocumentById);
 // ✅ Route upload nhiều file
 router.post(
   '/upload-multiple',

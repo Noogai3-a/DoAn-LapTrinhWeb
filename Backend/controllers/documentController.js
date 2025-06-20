@@ -100,6 +100,25 @@ exports.approveDocument = async (req, res) => {
   }
 };
 
+exports.deleteDocumentById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const objectId = new mongoose.Types.ObjectId(id);
+    const doc = await Document.findById(objectId);
+
+    if (!doc) {
+      console.log("Không tìm thấy document ID:", objectId);
+      return res.status(404).json({ msg: 'Tài liệu không tồn tại' });
+    }
+
+    await Document.deleteOne({ _id: objectId });
+    res.json({ msg: 'Tài liệu đã bị từ chối và xoá khỏi hệ thống.' });
+  } catch (err) {
+    console.error('Lỗi khi từ chối tài liệu:', err);
+    res.status(500).json({ msg: 'Lỗi server khi từ chối tài liệu.' });
+  }
+};
+
 exports.getMyDocuments = async (req, res) => {
   try {
     const username = req.session.user?.username || req.session.admin?.username;

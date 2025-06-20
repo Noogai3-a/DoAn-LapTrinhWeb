@@ -55,15 +55,15 @@ exports.approveDocument = async (req, res) => {
 exports.deleteDocumentById = async (req, res) => {
   try {
     const id = req.params.id;
-    const doc = await Document.findById(id);
-    
+    const objectId = new mongoose.Types.ObjectId(id);
+    const doc = await Document.findById(objectId);
 
     if (!doc) {
-      console.log("ID nhận được:", req.params.id);
+      console.log("Không tìm thấy document ID:", objectId);
       return res.status(404).json({ msg: 'Tài liệu không tồn tại' });
     }
 
-    await Document.deleteOne({ _id: id });
+    await Document.deleteOne({ _id: objectId });
     res.json({ msg: 'Tài liệu đã bị từ chối và xoá khỏi hệ thống.' });
   } catch (err) {
     console.error('Lỗi khi từ chối tài liệu:', err);
