@@ -96,6 +96,12 @@
     opacity: 0.9;
 }
 
+a,
+a:visited {
+  color: black; /* hoặc bất kỳ màu nào bạn chọn */
+  text-decoration: none; /* nếu muốn bỏ gạch chân */
+}
+
 /* Responsive styles */
 @media (max-width: 780px) {
     .breadcrumb {
