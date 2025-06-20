@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(type === 'blog') {
           window.location.href = `/blog-read?post=${id}&preview=true`;
         } else if(type === 'document') {
-          window.location.href = `/document-view?id=${id}&preview=true`; // giả định url xem document
+          window.location.href = `/document.html?slug=${doc.slug}`;
         }
       });
     });
