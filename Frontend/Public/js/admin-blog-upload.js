@@ -62,13 +62,6 @@ function previewThumbnail(event) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const usernameE2 = document.getElementById('username2');
-    const userInfo = getLocalStorage('user');
-    if (usernameE2 && userInfo?.username) {
-        usernameE2.innerHTML = userInfo.username;
-    }
-
-
     const postContent = document.getElementById("postContent");
     const emojiBtn = document.querySelector('.fa-smile');
     const emojiPicker = document.getElementById('emojiPicker');

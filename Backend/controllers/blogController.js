@@ -409,7 +409,6 @@ exports.searchBlogs = async (req, res) => {
 exports.createBlogAdmin = async (req, res) => {
   try {
     const { title, content, category, subCategory } = req.body;
-    const author = req.session.user?.username ?? req.session.admin?.username;
     const authorId = req.session.user?.id ?? req.session.admin?.id;
     const path = require('path');
     const fs = require('fs');
@@ -474,7 +473,7 @@ exports.createBlogAdmin = async (req, res) => {
     // === Lưu blog ===
     const newBlog = new Blog({
       title,
-      author,
+      author: 'Admin',
       authorId,
       thumbnailImage,
       views: 0,
