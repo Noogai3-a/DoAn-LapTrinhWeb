@@ -496,3 +496,32 @@ exports.createBlogAdmin = async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
+// [NEW] Lấy blog được xem nhiều nhất theo category
+exports.getTopBlogsByCategory = async (req, res) => {
+  try {
+    const { category } = req.query;
+    if (!category) return res.status(400).json({ msg: 'Thiếu category' });
+
+    const blogs = await Blog.find({
+      approved: true,
+      category: { $regex: category, $options: 'i' }
+    }).sort({ views: -1 }).limit(5);
+
+    res.json(blogs);
+  } catch (err) {
+    console.error('Lỗi getTopBlogsByCategory:', err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+// [NEW] Lấy danh sách tất cả category
+exports.getAllBlogCategories = async (req, res) => {
+  try {
+    const categories = await Blog.distinct('category');
+    res.json(categories);
+  } catch (err) {
+    console.error('Lỗi getAllBlogCategories:', err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
