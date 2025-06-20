@@ -185,3 +185,36 @@ exports.getSession = async(req, res) => {
         return res.json({ loggedIn: false });
     }
 }
+
+exports.resetPassword = async (req, res) => {
+    try {
+        // 1. Lấy email và mật khẩu mới từ request body
+        const { email, newPassword } = req.body;
+
+        // 2. Kiểm tra dữ liệu đầu vào
+        if (!email || !newPassword) {
+            return res.status(400).json({ msg: 'Vui lòng cung cấp email và mật khẩu mới.' });
+        }
+
+        // 3. Tìm người dùng trong database bằng email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ msg: 'Không tìm thấy người dùng với email này.' });
+        }
+
+        // 4. Mã hóa mật khẩu mới
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // 5. Cập nhật mật khẩu mới cho người dùng
+        user.password = hashedPassword;
+        await user.save();
+
+        // 6. Gửi phản hồi thành công
+        res.status(200).json({ msg: 'Đặt lại mật khẩu thành công!' });
+
+    } catch (error) {
+        console.error('Lỗi khi đặt lại mật khẩu:', error);
+        res.status(500).json({ msg: 'Lỗi máy chủ.' });
+    }
+};
