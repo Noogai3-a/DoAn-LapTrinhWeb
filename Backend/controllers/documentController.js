@@ -1,5 +1,7 @@
 const Document = require('../models/Document');
 const data = require('../data.json');
+const mongoose = require('mongoose');
+
 
 // Trả lại cả label (hiển thị cho client), không dùng để query
 function getLabelsFromSlug(subjectTypeSlug, subjectNameSlug) {
