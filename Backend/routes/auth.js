@@ -29,5 +29,7 @@ router.get('/dashboard', authMiddleware, (req, res) => {
 
 // Trả thông tin người dùng
 
+router.post('/reset-password', authController.resetPassword);
+
 
 module.exports = router;
