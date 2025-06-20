@@ -8,11 +8,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const fileUrl = `https://backend-yl09.onrender.com/${doc.fileUrl.replace(/\\/g, '/')}`;
     const subtitle = `${doc.subjectNameLabel || ''} • ${doc.subjectTypeLabel || ''}`;
     const title = doc.title || 'Tài liệu';
-    const thumbnail = doc.previewImage || '/assets/doc-default.png';
-
+    let thumbnailSrc = '/assets/doc-default.png';
+    if (doc.previewUrl) {
+      if (doc.previewUrl.startsWith('http')) {
+        thumbnailSrc = doc.previewUrl; // là URL đầy đủ rồi
+      } else {
+        // chỉ là phần đuôi như "thumbnail?id=abcxyz"
+        thumbnailSrc = 'https://drive.google.com/' + doc.previewUrl;
+      }
+    }
     return `
       <a href="${fileUrl}" class="doc-item" target="_blank">
-        <img src="${thumbnail}" alt="${title}" class="doc-image">
+        <img src="${thumbnailSrc}" alt="${title}" class="doc-image">
         <h3>${title}</h3>
         <h6>${subtitle}</h6>
         <p>${doc.description || ''}</p>

@@ -253,6 +253,10 @@
     background-color: #b5d0c7;
 }
 
+.sub-menu.show {
+  display: flex;
+}
+
 /* Side bar */
 .side-nav {
     position: absolute;
