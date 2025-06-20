@@ -1,3 +1,12 @@
+function slugify(str) {
+  return str
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // bỏ dấu
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, "") // chỉ giữ chữ, số, khoảng trắng
+    .trim()
+    .replace(/\s+/g, "-"); // đổi khoảng trắng thành dấu gạch
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   // === PHẦN UPLOAD ===
   const fileInput = document.getElementById("fileUpload");
@@ -271,6 +280,34 @@ document.addEventListener("DOMContentLoaded", function () {
     if (selectedFiles.length === 0) {
       alert("Chưa có file được chọn.");
       return;
+    }
+
+    // Nếu là môn mới được nhập tay
+    if (subjectNameSelect.value === "other") {
+      const customInput = document.getElementById("subjectNameCustomInput").value.trim();
+      const newSlug = slugify(customInput);
+      const typeSlug = subjectTypeSelect.value;
+
+      if (customInput && typeSlug) {
+        const newSubject = { label: customInput, slug: newSlug };
+
+        try {
+          await fetch('https://backend-yl09.onrender.com/api/add-subject', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ typeSlug, newSubject })
+          });
+
+          subjectNamesByType[typeSlug].subjects.push(newSubject);
+
+          subjectNameSelect.insertBefore(new Option(customInput, newSlug), subjectNameSelect.querySelector('option[value="other"]'));
+          subjectNameSelect.value = newSlug;
+          subjectNameLabel.value = customInput;
+        } catch (err) {
+          console.error("Lỗi khi thêm môn mới:", err);
+          return;
+        }
+      }
     }
 
     const formData = new FormData(formDetail);
