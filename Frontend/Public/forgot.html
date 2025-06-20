@@ -20,7 +20,12 @@
         <input class="detail-info" type="email" id="forgotEmail" name="email" placeholder="Email" required>
       </div>
       <div class="form-group">
-        <button type="submit" class="btn-send">Gửi yêu cầu</button>
+        <button type="button" id="sendOtpBtn" class="btn-send">Gửi yêu cầu</button>
+      </div>
+      <div class="form-group" id="otpSection" style="display: none;">
+        <span class="subtitle" style="display: block; margin-bottom: 10px; text-align: left;">Nhập mã OTP vừa gửi đến email của bạn</span>
+        <input class="detail-info" type="tel" id="forgotOtp" name="otp" placeholder="OTP" required>
+        <button type="button" id="verifyOtpBtn" class="btn-send" style="margin-top:10px;">Xác nhận OTP</button>
       </div>
       <div class="form-group">
         <a href="login.html" class="back-login">← Quay lại đăng nhập</a>

@@ -255,9 +255,6 @@ async function submitPost() {
         document.getElementById("thumbnailUpload").value = '';
         document.getElementById("thumbnailPreview").innerHTML = '';
 
-        setTimeout(() => {
-            window.location.href = '/blog';
-        }, 500);
 
     } catch (err) {
         showToast('Đã xảy ra lỗi: ' + err.message, 'error');
