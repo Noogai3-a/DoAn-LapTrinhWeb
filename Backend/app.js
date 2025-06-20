@@ -103,11 +103,15 @@ const reviewDocRoutes = require('./routes/documentRoutes');
 const apiAuthMiddleware = require('./middleware/apiAuthMiddleware');
 const documentController = require('./controllers/documentController');
 const notificationRoutes = require('./routes/notificationRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 
+//Chat
+app.use('/api', chatRoutes);
+
+//Doc
 app.get('/api/documents/my', apiAuthMiddleware, documentController.getMyDocuments);
 
-
-
+//Auth
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);

@@ -24,6 +24,13 @@ router.get('/top/viewed', blogController.getMostViewedBlogs);
 
 router.get('/search', blogController.searchBlogs);
 
+//Lấy blog được xem nhiều nhất theo category
+router.get('/top-category', blogController.getTopBlogsByCategory);
+
+// Lấy danh sách tất cả category
+router.get('/categories', blogController.getAllBlogCategories);
+
+
 // Lấy blog theo ID
 router.get('/:id', blogController.getBlogById);
 
