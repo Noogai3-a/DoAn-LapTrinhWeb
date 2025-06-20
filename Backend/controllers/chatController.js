@@ -1,62 +1,64 @@
-const axios = require('axios');
+const Blog = require('../models/Blog');
 
-// Domain gốc dùng để tạo link blog
 const BLOG_BASE_URL = 'https://nhom11nt208p24.vercel.app/blog-read?post=';
 
-// Hàm xử lý chat
 const handleChatQuery = async (req, res) => {
   const message = req.body.message?.toLowerCase() || '';
   const kbAnswer = req.body.kbAnswer || null;
   let apiReply = null;
 
-  // 🎯 Trường hợp 1: Hỏi blog nhiều lượt xem
+  // 🎯 Trường hợp 1: hỏi blog được xem nhiều
   if (/blog.*(nhiều lượt xem|xem nhiều|hot|được xem)/i.test(message)) {
     try {
-      const { data } = await axios.get('https://backend-yl09.onrender.com/api/blogs/top-viewed');
-      if (!data.length) {
+      const blogs = await Blog.find({ approved: true }).sort({ views: -1 }).limit(5).lean();
+      if (!blogs.length) {
         apiReply = '📭 Hiện chưa có blog nào được xem nhiều.';
       } else {
         apiReply = '🔥 **Top blog được xem nhiều nhất:**\n\n' +
-          data.map(b =>
+          blogs.map(b =>
             `• [${b.title}](${BLOG_BASE_URL}${b._id}) — 👁 ${b.views} lượt xem`
           ).join('\n');
       }
     } catch (err) {
-      console.error('Lỗi khi lấy top-viewed blog:', err);
-      apiReply = '⚠️ Đã xảy ra lỗi khi lấy blog hot.';
+      console.error('Lỗi truy vấn blog nhiều lượt xem:', err);
+      apiReply = '⚠️ Đã xảy ra lỗi khi lấy blog.';
     }
   }
 
-  // 🎯 Trường hợp 2: Hỏi blog theo chủ đề cụ thể
+  // 🎯 Trường hợp 2: hỏi blog theo chủ đề
   else if (/blog.*(?:về|chủ đề)\s+(.+)/i.test(message)) {
     const match = message.match(/blog.*(?:về|chủ đề)\s+(.+)/i);
     const category = match?.[1]?.trim();
     if (category) {
       try {
-        const { data } = await axios.get(`https://backend-yl09.onrender.com/api/blogs/top-category?category=${encodeURIComponent(category)}`);
-        if (!data.length) {
+        const blogs = await Blog.find({
+          approved: true,
+          category: { $regex: category, $options: 'i' }
+        }).sort({ views: -1 }).limit(5).lean();
+
+        if (!blogs.length) {
           apiReply = `📭 Không tìm thấy blog nào về chủ đề “${category}”.`;
         } else {
           apiReply = `📚 **Blog nổi bật về chủ đề “${category}”**:\n\n` +
-            data.map(b =>
+            blogs.map(b =>
               `• [${b.title}](${BLOG_BASE_URL}${b._id}) — 👁 ${b.views} lượt xem`
             ).join('\n');
         }
       } catch (err) {
-        console.error('Lỗi khi truy vấn blog theo chủ đề:', err);
+        console.error('Lỗi truy vấn blog theo chủ đề:', err);
         apiReply = '⚠️ Không thể lấy blog theo chủ đề.';
       }
     }
   }
 
-  // 🎯 Trường hợp 3: Hỏi về danh sách chủ đề blog
+  // 🎯 Trường hợp 3: hỏi về danh mục blog
   else if (/chủ đề blog|danh mục blog|blog có những gì|các chủ đề/i.test(message)) {
     try {
-      const { data } = await axios.get('https://backend-yl09.onrender.com/api/blogs/categories');
-      if (!data.length) {
+      const categories = await Blog.distinct('category');
+      if (!categories.length) {
         apiReply = 'Hiện tại chưa có chủ đề blog nào.';
       } else {
-        apiReply = '🗂️ **Các chủ đề blog hiện có:**\n' + data.map(c => `• ${c}`).join('\n');
+        apiReply = '🗂️ **Các chủ đề blog hiện có:**\n' + categories.map(c => `• ${c}`).join('\n');
       }
     } catch (err) {
       console.error('Lỗi khi lấy danh mục blog:', err);
@@ -64,7 +66,6 @@ const handleChatQuery = async (req, res) => {
     }
   }
 
-  // 📌 Nếu không khớp câu nào ở trên
   const finalReply = apiReply || kbAnswer || '❓ Xin lỗi, tôi chưa hiểu câu hỏi của bạn.';
   return res.json({ reply: finalReply });
 };
