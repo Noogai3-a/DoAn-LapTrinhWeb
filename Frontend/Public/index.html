@@ -13,6 +13,19 @@
     <script src="/js/main.js"></script>
     <script src="/js/indexblog.js"></script>
     <script src="/js/indexdocument.js"></script>
+    <style>
+    #webchat .bpWebchat {
+        position: unset;
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        max-width: 100%;
+    }
+
+    #webchat .bpFab {
+        display: none;
+    }
+    </style>
     <!-- SEO Meta -->
     <meta name="description" content="Thư viện tài liệu học tập, đề thi, bài giảng cho sinh viên NT208P24.">
     <meta name="keywords" content="tài liệu học tập, đề thi, bài giảng, NT208P24, đại học">
@@ -285,29 +298,9 @@
     </div>
     </div>
     </div>
-
-</body>
-
-    <!-- In your <head> tag -->
-    <script src="https://cdn.botpress.cloud/webchat/v3.0/inject.js"></script>
-    <style>
-    #webchat .bpWebchat {
-        position: unset;
-        width: 100%;
-        height: 100%;
-        max-height: 100%;
-        max-width: 100%;
-    }
-
-    #webchat .bpFab {
-        display: none;
-    }
-    </style>
-
-    <!-- Put this on your page BEFORE the script below -->
     <div id="webchat" style="width: 500px; height: 500px;"></div>
-
     <!-- In your <body> tag -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.0/inject.js"></script>
     <script>
     window.botpress.on("webchat:ready", () => {
         window.botpress.open();
@@ -325,5 +318,6 @@
     "selector": "#webchat"
     });
     </script>
+</body>
 
 </html>
