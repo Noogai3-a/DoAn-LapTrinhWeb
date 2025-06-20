@@ -8,7 +8,7 @@ router.get('/by-slug/:slug', documentController.getDocumentBySlug);
 //Các route khác
 router.get('/', documentController.getDocumentsForAdmin);
 router.put('/approve/:id', documentController.approveDocument);
-router.delete('/reject/:id', documentController.deleteDocumentById);
+router.delete('/documents/reject/:id', documentController.deleteDocumentById);
 
 //Cuối cùng: bắt theo ID
 router.get('/:id', documentController.getDocumentById);
