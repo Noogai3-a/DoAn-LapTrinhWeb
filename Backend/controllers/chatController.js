@@ -5,7 +5,6 @@ const BLOG_BASE_URL = 'https://nhom11nt208p24.vercel.app/blog-read?post=';
 const handleChatQuery = async (req, res) => {
   const message = req.body.message?.toLowerCase() || '';
   const kbAnswer = req.body.kbAnswer || null;
-  console.log(kbAnswer)
   let apiReply = null;
 
   // 🔍 Kiểm tra có cần API không
