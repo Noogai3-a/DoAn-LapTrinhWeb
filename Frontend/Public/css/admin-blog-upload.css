@@ -1,130 +1,185 @@
-/* Khung đăng blog cho admin */
-.admin-blog-upload-wrapper {
-    padding: 32px 0;
+/* Blog section */
+.post-creator {
     max-width: 700px;
-    margin: 0 auto;
-}
-
-.admin-blog-upload-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 28px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #4e73df;
-}
-
-.admin-blog-upload-title h1 {
-    font-size: 2rem;
-    color: #4e73df;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.admin-blog-upload-form {
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.13);
-    padding: 36px 32px;
-    margin-bottom: 32px;
-}
-
-.admin-blog-upload-form h3 {
-    font-size: 1.2rem;
-    color: #4e73df;
-    margin-bottom: 18px;
-    font-weight: 600;
-}
-
-.admin-blog-upload-form .form-label {
-    font-weight: 600;
-    color: #4e73df;
-    margin-bottom: 6px;
-}
-
-.admin-blog-upload-form .form-control {
-    padding: 10px 14px;
-    border: 1.5px solid #d1d3e2;
-    border-radius: 7px;
-    margin-bottom: 18px;
-    font-size: 1rem;
-    background: #f8f9fc;
-    transition: border-color 0.2s;
-}
-
-.admin-blog-upload-form .form-control:focus {
-    border-color: #4e73df;
-    background: #fff;
-    outline: none;
-}
-
-.admin-blog-upload-form .btn-primary {
-    background-color: #4e73df;
-    border: none;
-    padding: 12px 28px;
-    font-size: 1.1rem;
-    border-radius: 7px;
-    font-weight: 600;
-    transition: background-color 0.2s;
-    box-shadow: 0 2px 8px rgba(58, 59, 69, 0.10);
-}
-
-.admin-blog-upload-form .btn-primary:hover {
-    background-color: #375ab5;
-}
-
-.admin-blog-upload-form input[type="file"] {
-    background: #f8f9fc;
-    border: 1.5px solid #d1d3e2;
-    border-radius: 7px;
-    padding: 8px;
-}
-
-/* Khung preview ảnh minh họa */
-.admin-blog-upload-form .thumbnail-preview {
-    margin-top: 10px;
-    background: #f8f9fc;
-    border: 1px solid #d1d3e2;
-    border-radius: 7px;
-    padding: 10px;
-    font-size: 0.95rem;
-    color: #555;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 120px;
-    max-height: 350px;
+    margin: 20px auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     overflow: hidden;
+    min-height: 500px;
 }
 
-/* Khung nội dung blog (contenteditable) */
-.admin-blog-upload-form #postContent {
-    min-height: 220px;
-    background: #f8f9fc;
-    border: 1.5px solid #d1d3e2;
-    border-radius: 7px;
-    padding: 16px 12px;
-    font-size: 1rem;
-    margin-bottom: 18px;
-    transition: border-color 0.2s;
+.user-info {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
 }
 
-.admin-blog-upload-form #postContent:focus {
-    border-color: #4e73df;
-    background: #fff;
+.user-info .avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.user-info strong {
+    font-size: 20px;
+}
+.post-title {
+    width: 100%;
     outline: none;
+    padding: 15px 20px;
+    font-size: 20px;
+    font-weight: none;
+    background: #eee;
+    border: none;
+    box-sizing: border-box;
+    margin-bottom: 10px;
 }
 
-@media (max-width: 576px) {
-    .admin-blog-upload-wrapper {
-        padding: 10px 0;
+.post-title::placeholder {
+    color: #aaa;
+}
+
+.category-selector {
+    padding: 0 20px;
+    margin-bottom: 15px;
+}
+
+.category-box, .sub-category-box {
+    margin-bottom: 10px;
+}
+
+.category-box label, .sub-category-box label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.category-box select, .sub-category-box input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.category-box select:focus, .sub-category-box input:focus {
+    outline: none;
+    border-color: #a5ded3;
+}
+
+.sub-category-box {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
     }
-    .admin-blog-upload-form {
-        padding: 16px 8px;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-    .admin-blog-upload-title h1 {
-        font-size: 1.2rem;
-    }
+}
+
+.post-content {
+    width: 100%;
+    outline: none;
+    padding: 20px;
+    font-size: 16px;
+    resize: none;
+    min-height: 400px;
+    background: #eee;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.post-content:empty::before {
+    content: attr(data-placeholder);
+    color: #aaa;
+    pointer-events: none;
+    display: block;
+}
+
+.options-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f5f5f5;
+    padding: 12px 20px;
+    font-size: 15px;
+    border-top: 1px solid #ddd;
+}
+
+.options-bar .icons i {
+    font-size: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.options-bar .icons label {
+    cursor: pointer;
+}
+
+.options-bar .icons label i {
+    font-size: 20px;
+    color: #007bff;
+}
+
+.post-button {
+    width: 100%;
+    border: none;
+    padding: 14px 0;
+    background: #a5ded3;
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    border-top: 1px solid #ddd;
+}
+
+.post-button:hover {
+    background: #8dcfc1;
+}
+
+.thumbnail-picker {
+  position: relative;
+  margin-bottom: 12px;
+  height: 120px;
+  max-height: 500px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#thumbnailLabel {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  z-index: 2;
+  background-color: rgba(255, 255, 255, 0.7);
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+#thumbnailUpload {
+  display: none;
+}
+
+#thumbnailPreview {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
