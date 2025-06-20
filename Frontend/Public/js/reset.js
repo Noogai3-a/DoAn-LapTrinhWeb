@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await res.json();
 
             if (res.ok) {
-                showToast("Đặt lại mật khẩu thành công! Bạn có thể đăng nhập.", 'success');
+                showToast("Đặt lại mật khẩu thành công!", 'success');
                 // Xóa email khỏi localStorage để bảo mật
                 localStorage.removeItem('resetPasswordEmail');
                 setTimeout(() => { window.location.href = "/login"; }, 2000);
