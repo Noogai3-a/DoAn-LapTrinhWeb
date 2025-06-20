@@ -1,6 +1,43 @@
+async function getUserInfo() {
+  try {
+    const res = await fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include' });
+    if (res.ok) {
+      return await res.json();
+    }
+    return null;
+  } catch (err) {
+    console.error('Lỗi lấy user info:', err);
+    return null;
+  }
+}
+
+let userInfo = null;
+
+async function checkAuth() {
+  try {
+    userInfo = await getUserInfo();
+
+    if (!userInfo || !userInfo.username || !userInfo.email) {
+      window.location.href = '/login'; 
+    } else {
+        window.location.href = '/blog-post';
+    }
+  } catch (error) {
+      window.location.href = '/login';
+  }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
+  userInfo = await getUserInfo();
+  
+  const postBlogBtn = document.getElementById('postBlogBtn');
+  if (postBlogBtn) {
+    postBlogBtn.addEventListener('click', checkAuth);
+  }
+
   const blogListContainers = document.querySelectorAll(".blog-list");
   const categoryBlogsContainer = document.querySelector(".category-blogs");
+  
 
   function getDriveDirectLink(url) {
     const regex = /\/d\/([a-zA-Z0-9_-]+)/;

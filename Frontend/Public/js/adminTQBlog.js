@@ -69,7 +69,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         </td>
         <td>
           <button class="action-btn view" data-id="${item._id}" data-type="${item.type}" title="Xem"><i class="fas fa-eye"></i></button>
-          <button class="action-btn edit" data-id="${item._id}" data-type="${item.type}" title="Sửa"><i class="fas fa-edit"></i></button>
+          ${item.type === 'document' ? `
+            <button class="action-btn edit" data-id="${item._id}" data-type="${item.type}" title="Sửa"><i class="fas fa-edit"></i></button>
+          ` : ''}
           <button class="action-btn delete" data-id="${item._id}" data-type="${item.type}" title="Xóa"><i class="fas fa-trash"></i></button>
         </td>
       </tr>
@@ -144,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ? `${BACKEND}/api/blogs/${id}`
         : `${BACKEND}/api/documents/${id}`;
 
-      const res = await fetch(`https://backend-yl09.onrender.com/api/review-documents/${id}`, {
+      const res = await fetch(endpoint, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -249,7 +251,16 @@ function showConfirmModal(message, onConfirm) {
   newConfirmBtn.addEventListener("click", () => {
     bsModal.hide();
     onConfirm();
+
+    // ✅ Xoá lớp backdrop của Bootstrap nếu còn tồn tại
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) backdrop.remove();
+
+    // ✅ Cho phép body scroll trở lại
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = ''; // reset overflow
   });
+
 }
 // Cuối file adminTQBlog.js
 (async function testDebug() {

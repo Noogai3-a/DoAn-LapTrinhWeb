@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       let url;
       if(type === 'blog') url = `https://backend-yl09.onrender.com/api/admin/reject-blog/${id}`;
-      else if(type === 'document') url = `https://backend-yl09.onrender.com/api/admin/documents/${id}`;
+      else if(type === 'document') url = `https://backend-yl09.onrender.com/api/documents/reject/${id}`;
       else throw new Error('Loại tài liệu không hợp lệ');
 
       const response = await fetch(url, {
@@ -324,16 +324,16 @@ function showConfirmModal(message, onConfirm) {
   confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
 
   newConfirmBtn.addEventListener("click", () => {
-  bsModal.hide();
-  onConfirm();
+    bsModal.hide();
+    onConfirm();
 
-  // ✅ Xoá lớp backdrop của Bootstrap nếu còn tồn tại
-  const backdrop = document.querySelector('.modal-backdrop');
-  if (backdrop) backdrop.remove();
+    // ✅ Xoá lớp backdrop của Bootstrap nếu còn tồn tại
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) backdrop.remove();
 
-  // ✅ Cho phép body scroll trở lại
-  document.body.classList.remove('modal-open');
-  document.body.style.overflow = ''; // reset overflow
-});
+    // ✅ Cho phép body scroll trở lại
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = ''; // reset overflow
+  });
 
 }
