@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         (category.subjects || []).forEach(subject => {
           const subjectLink = document.createElement('a');
           subjectLink.href = 'javascript:void(0)';
-          subjectLink.textContent = `${subject.slug.toUpperCase()} - ${subject.label}`;
+          subjectLink.textContent = subject.label;
 
           // Danh sách file bên trong mỗi môn học
           const fileList = document.createElement('div');
