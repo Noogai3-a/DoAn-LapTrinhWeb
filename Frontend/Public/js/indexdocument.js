@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     return `
-      <div class="document-item">
       <a href="${detailUrl}" style="text-decoration: none;">
         <img 
           src="${thumbnailSrc || '/assets/doc-default.png'}" 
@@ -28,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <p class="doc-title">${doc.title}</p>
         <p class="doc-subtitle">${subtitle}</p>
       </a>
-    </div>
     `;
   }
 
