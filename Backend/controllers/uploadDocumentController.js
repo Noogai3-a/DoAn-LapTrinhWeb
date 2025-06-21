@@ -100,13 +100,24 @@ exports.uploadDocument = async (req, res) => {
 
       try {
         if (ext === '.doc' || ext === '.docx') {
+          console.log('📁 Bắt đầu xử lý file DOCX:', file.path);
+
           const pdfFilePath = file.path.replace(ext, '.pdf');
+          console.log('🛠️ File PDF sẽ được lưu tại:', pdfFilePath);
+
+          console.log('🔄 Gọi hàm convertDocxToPdf...');
           await convertDocxToPdf(file.path, pdfFilePath);
+
+          console.log('✅ Chuyển đổi DOCX -> PDF xong');
+
           if (!fs.existsSync(pdfFilePath)) {
+            console.error('❌ Không tìm thấy file PDF sau khi convert:', pdfFilePath);
             throw new Error(`Chuyển đổi sang PDF thất bại: không tìm thấy file ${pdfFilePath}`);
           }
-          
+
+          console.log('🧹 Xóa file DOCX gốc:', file.path);
           fs.unlinkSync(file.path);
+
           fileToUpload = pdfFilePath;
           fileNameToSave = path.basename(pdfFilePath);
 
@@ -115,31 +126,32 @@ exports.uploadDocument = async (req, res) => {
           fs.mkdirSync('uploads/previews', { recursive: true });
 
           try {
-            console.log('Tạo thumbnail từ PDF:', pdfFilePath);
+            console.log('🖼️ Tạo thumbnail từ PDF:', pdfFilePath);
             await generateThumbnail(pdfFilePath, previewPath);
-            
+
             if (fs.existsSync(previewPath)) {
-              console.log('Thumbnail tạo thành công:', previewPath);
-              console.log('Upload thumbnail lên Google Drive...');
+              console.log('✅ Thumbnail tạo thành công:', previewPath);
+              console.log('☁️ Upload thumbnail lên Google Drive...');
               previewDriveLink = await uploadFileToDrive(previewPath, previewFilename, previewFolderId);
+
               const match = previewDriveLink.match(/id=([^&]+)/);
               if (match) {
                 previewDriveLink = `thumbnail?id=${match[1]}`;
               }
-              console.log('Thumbnail upload thành công:', previewDriveLink);
+
+              console.log('✅ Upload thumbnail thành công:', previewDriveLink);
             } else {
-              console.error('Thumbnail không được tạo:', previewPath);
+              console.error('❌ Thumbnail không được tạo:', previewPath);
             }
           } catch (err) {
-            console.error(" Lỗi tạo/upload thumbnail:", err);
+            console.error('❌ Lỗi tạo/upload thumbnail:', err);
           } finally {
             if (previewPath && fs.existsSync(previewPath)) {
               fs.unlinkSync(previewPath);
-              console.log('Đã xóa thumbnail tạm:', previewPath);
+              console.log('🧹 Đã xóa thumbnail tạm:', previewPath);
             }
           }
-        }
-        else if (ext === '.pdf') {
+        }else if (ext === '.pdf') {
           previewFilename = path.basename(file.path, '.pdf') + '.png';
           previewPath = path.join('uploads/previews', previewFilename);
           fs.mkdirSync('uploads/previews', { recursive: true });
