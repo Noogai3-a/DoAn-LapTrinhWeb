@@ -12,12 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     for (const type of subjectTypes) {
-      const { typeSlug, typeLabel } = type;
-
-      // Fetch danh sách môn học cho mỗi loại
-      const subjectsRes = await fetch(`https://backend-yl09.onrender.com/api/subject-types/${typeSlug}/subjects`);
-      if (!subjectsRes.ok) continue;
-      const subjects = await subjectsRes.json();
+      const { typeSlug, typeLabel, subjects } = type;
 
       const li = document.createElement('li');
       li.className = 'course-group';
@@ -31,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const subList = document.createElement('ul');
       subList.className = 'sub-course-list collapse';
 
-      subjects.forEach(subject => {
+      (subjects || []).forEach(subject => {
         const subLi = document.createElement('li');
         subLi.className = 'sub-course-item';
 

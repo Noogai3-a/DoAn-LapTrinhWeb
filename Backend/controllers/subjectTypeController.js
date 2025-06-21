@@ -2,13 +2,22 @@ const SubjectType = require('../models/SubjectType');
 
 // Lấy danh sách tất cả loại môn
 exports.getAllSubjectTypes = async (req, res) => {
-  console.log('[GET] /api/subject-types - Lấy tất cả loại môn');
   try {
     const types = await SubjectType.find({}, { _id: 0, typeSlug: 1, typeLabel: 1, subjects: 1 });
-    console.log('→ Kết quả truy vấn:', types);
-    res.json(types);
+
+    // Đảm bảo định dạng subjects chuẩn
+    const result = types.map(type => ({
+      typeSlug: type.typeSlug,
+      typeLabel: type.typeLabel,
+      subjects: (type.subjects || []).map(s => ({
+        subjectSlug: s.subjectSlug,
+        subjectLabel: s.subjectLabel
+      }))
+    }));
+
+    res.json(result);
   } catch (err) {
-    console.error('❌ Lỗi khi lấy tất cả loại môn:', err);
+    console.error('[getAllSubjectTypes ERROR]', err);
     res.status(500).json({ error: 'Lỗi server khi lấy danh sách loại môn.' });
   }
 };

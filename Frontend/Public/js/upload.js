@@ -141,23 +141,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Fetch danh sách môn
   fetch('https://backend-yl09.onrender.com/api/subject-types')
-    .then(response => response.json())
-    .then(data => {
-      // Chuyển data từ mảng thành object kiểu { [typeSlug]: { label, subjects } }
-      const map = {};
-      for (const item of data) {
-        map[item.typeSlug] = {
-          label: item.typeLabel,
-          subjects: item.subjects.map(s => ({
-            slug: s.subjectSlug,
-            label: s.subjectLabel
-          }))
-        };
-      }
-      subjectNamesByType = map;
-      populateSubjectTypeSelect();
-    });
-
+  .then(res => res.json())
+  .then(data => {
+    // Không cần chuyển đổi nữa vì data đã có typeLabel và subjects
+    const map = {};
+    for (const item of data) {
+      map[item.typeSlug] = {
+        label: item.typeLabel,
+        subjects: item.subjects // đã đúng định dạng
+      };
+    }
+    subjectNamesByType = map;
+    populateSubjectTypeSelect();
+  });
 
   // Populate loại môn học
   function populateSubjectTypeSelect() {
