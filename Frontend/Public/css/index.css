@@ -78,80 +78,95 @@ a:visited {
     padding-left: 20px;
 }
 
-
-.document-box{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+/* Document Section - Giống với Blog */
+.document-box .section {
+  margin-bottom: 40px;
 }
 
-.breadcrumb {
-    font-size: 30px;
-    font-weight: bold;
-    text-align: center;
-    align-self: center; /* Đẩy riêng nó sang trái */
-    padding-top: 20px;
-    padding-left: 20px;
+.document-box .section-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+  position: relative;
+  padding-bottom: 10px;
 }
 
-.document-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-top: 20px;
-  align-items: stretch;
+.document-box .section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: #4a6bff;
 }
 
 .doc-list {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-top: 20px;
-    align-items: stretch;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
 }
 
 .doc-item {
-  background-color: white;
-  border: 1px solid #e0e0e0;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   text-decoration: none;
-
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  color: #333;
 }
 
 .doc-item:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .doc-image {
   width: 100%;
-  max-height: 250px;
+  height: 180px;
   object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 15px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
 }
 
-.doc-item h3 {
-  font-size: 20px;
-  color: #333;
+.doc-image.fade-in {
+  opacity: 1;
+}
+
+.doc-info {
+  padding: 15px;
+}
+
+.doc-info h3 {
+  font-size: 18px;
+  margin: 0 0 10px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.doc-meta {
+  font-size: 14px;
+  color: #666;
   margin-bottom: 10px;
 }
 
-.doc-item h6 {
-  color: silver;
+.doc-stats {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 13px;
+  color: #888;
 }
 
-.doc-item p {
-  font-size: 14px;
-  color: #777;
+.doc-stats span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.doc-stats i {
+  font-size: 12px;
 }
 
 .blog-meta {

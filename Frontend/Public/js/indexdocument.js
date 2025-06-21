@@ -4,18 +4,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const latestContainer = document.getElementById("latest-documents");
   const popularContainer = document.getElementById("popular-documents");
 
-  // Lấy link Google Drive ảnh gốc
-  function getDriveDirectLink(url) {
-    const regex = /\/d\/([a-zA-Z0-9_-]+)/;
-    const match = url.match(regex);
-    return match ? `https://drive.google.com/uc?export=view&id=${match[1]}` : url;
-  }
-
-  // Gắn proxy để tránh CORS
-  function proxyImageURL(url) {
-    return `/api/proxy-image?url=${encodeURIComponent(url)}`;
-  }
-
   // Tạo từng document-item
   function createDocumentItem(doc) {
     const fileUrl = `https://backend-yl09.onrender.com/${doc.fileUrl.replace(/\\/g, '/')}`;
@@ -36,7 +24,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         <img 
           src="${thumbnailSrc || '/assets/doc-default.png'}" 
           alt="${doc.title}" 
-          style="width: 150px; height: 200px; object-fit: cover; border-radius: 4px;" 
         />
         <p class="doc-title">${doc.title}</p>
         <p class="doc-subtitle">${subtitle}</p>
