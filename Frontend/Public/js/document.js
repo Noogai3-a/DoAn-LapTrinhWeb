@@ -1,3 +1,6 @@
+let currentUser = null;
+let currentDocumentId = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const slug = params.get('slug');
@@ -31,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .catch(err => {
       document.getElementById('document-detail').innerHTML = `<p class="error">Lỗi tải tài liệu: ${err.message}</p>`;
     });
+    
 });
 
 function toDrivePreviewUrl(fileUrl) {
