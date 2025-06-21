@@ -24,9 +24,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         <img 
           src="${thumbnailSrc || '/assets/doc-default.png'}" 
           alt="${doc.title}" 
+          class="doc-image lazy-img"
         />
-        <p class="doc-title">${doc.title}</p>
-        <p class="doc-subtitle">${subtitle}</p>
+        <div class="doc-info">
+          <h3>${doc.title}</h3>
+          <p class="doc-meta">${subtitle}</p>
+          </div>
       </a>
     </div>
   `;
