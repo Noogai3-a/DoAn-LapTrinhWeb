@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // Giới hạn 5 tài liệu xem nhiều nhất
     if (Array.isArray(popularDocs)) {
-      popularDocs.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+      popularDocs.sort((a, b) => (b.views || 0) - (a.views || 0));
       popularDocs = popularDocs.slice(0, 5);
     }
 
