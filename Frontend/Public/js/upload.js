@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
     addFiles(fileInput.files);
     fileInput.value = "";
   });
-  // Tải dữ liệu từ data.json
+
   let subjectNamesByType = {};
 
   // Fetch danh sách môn

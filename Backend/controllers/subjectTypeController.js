@@ -4,7 +4,7 @@ const SubjectType = require('../models/SubjectType');
 exports.getAllSubjectTypes = async (req, res) => {
   console.log('[GET] /api/subject-types - Lấy tất cả loại môn');
   try {
-    const types = await SubjectType.find({}, { _id: 0, typeSlug: 1, typeLabel: 1 });
+    const types = await SubjectType.find({}, { _id: 0, typeSlug: 1, typeLabel: 1, subjects: 1 });
     console.log('→ Kết quả truy vấn:', types);
     res.json(types);
   } catch (err) {

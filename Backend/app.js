@@ -222,54 +222,41 @@ app.get('/api/user-info', authMiddleware, (req, res) => {
 app.use('/api', proxyRoutes)
 
 // Thêm môn mới
-app.post('/api/add-subject', (req, res) => {
+app.post('/api/add-subject', async (req, res) => {
   const { typeSlug, newSubject } = req.body;
+
   if (!typeSlug || !newSubject?.label || !newSubject?.slug) {
     return res.status(400).json({ error: 'Thiếu thông tin.' });
   }
 
-  const backendPath = path.join(__dirname, 'data.json');
-  const frontendPath = path.join(__dirname, '..', 'frontend', 'public', 'json', 'data.json');
-
   try {
-    const backendData = JSON.parse(fs.readFileSync(backendPath, 'utf8'));
-    const frontendData = JSON.parse(fs.readFileSync(frontendPath, 'utf8'));
+    let type = await SubjectType.findOne({ typeSlug });
 
-    // Nếu chưa có typeSlug thì tạo mới
-    if (!backendData[typeSlug]) {
-      backendData[typeSlug] = {
-        label: typeSlug,
-        subjects: []
-      };
+    if (!type) {
+      // Tạo mới loại môn nếu chưa có
+      const newType = new SubjectType({
+        typeSlug,
+        typeLabel: typeSlug,
+        subjects: [newSubject]
+      });
+      await newType.save();
+    } else {
+      // Kiểm tra trùng môn học
+      const exists = type.subjects.some(s => s.subjectSlug === newSubject.slug);
+      if (!exists) {
+        type.subjects.push(newSubject);
+        await type.save();
+      }
     }
 
-    if (!frontendData[typeSlug]) {
-      frontendData[typeSlug] = {
-        label: typeSlug,
-        subjects: []
-      };
-    }
-
-    // Kiểm tra xem đã có slug này chưa
-    const existsInBackend = backendData[typeSlug].subjects.some(s => s.slug === newSubject.slug);
-    if (!existsInBackend) {
-      backendData[typeSlug].subjects.push(newSubject);
-    }
-
-    const existsInFrontend = frontendData[typeSlug].subjects.some(s => s.slug === newSubject.slug);
-    if (!existsInFrontend) {
-      frontendData[typeSlug].subjects.push(newSubject);
-    }
-
-    fs.writeFileSync(backendPath, JSON.stringify(backendData, null, 2), 'utf8');
-    fs.writeFileSync(frontendPath, JSON.stringify(frontendData, null, 2), 'utf8');
-
-    res.json({ message: 'Thêm môn học thành công.' });
+    return res.json({ success: true, message: 'Đã xử lý môn học.' });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Lỗi ghi file.' });
+    console.error('[add-subject ERROR]', err);
+    return res.status(500).json({ error: 'Lỗi máy chủ.' });
   }
 });
+
+
 // Thêm route đổi mật khẩu
 const bcrypt = require('bcryptjs');
 app.post('/api/change-password', authMiddleware, async (req, res) => {
