@@ -73,19 +73,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         fileList.style.display = 'none';
 
         subjectLink.addEventListener('click', () => {
-          fileList.style.display = fileList.style.display === 'none' ? 'block' : 'none';
+          // Toggle hiển thị
+          const isVisible = fileList.style.display === 'block';
+          fileList.style.display = isVisible ? 'none' : 'block';
+
+          // Nếu đã tải thì không fetch lại
           if (fileList.dataset.loaded === 'true') return;
 
           fileList.innerHTML = '<div>Đang tải...</div>';
 
-          fetch(`https://backend-yl09.onrender.com/api/documents/by-subject/${encodeURIComponent(typeSlug)}/${encodeURIComponent(subjectSlug)}`, {
-            credentials: 'include'
-          })
+          fetch(`https://backend-yl09.onrender.com/api/documents/by-subject/${encodeURIComponent(typeSlug)}/${encodeURIComponent(subjectSlug)}`)
             .then(res => {
               if (!res.ok) throw new Error('Lỗi tải tài liệu');
               return res.json();
             })
             .then(data => {
+              console.log('[Tài liệu nhận được]', data);
               fileList.dataset.loaded = 'true';
               fileList.innerHTML = '';
 
@@ -126,8 +129,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     sideNav.appendChild(errorDiv);
   }
 });
-
-
 
 function toggleSubmenu(element) {
   const subMenu = element.nextElementSibling;
