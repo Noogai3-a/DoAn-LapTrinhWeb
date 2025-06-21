@@ -8,6 +8,40 @@ const User = require('../models/User');
 const Admin = require('../models/Admin');
 const SubjectType = require('../models/SubjectType');
 
+exports.searchDocuments = async (req, res) => {
+  try {
+    const query = req.query.q?.trim();
+
+    if (!query) {
+      // Nếu không có query và client yêu cầu mặc định
+      if (req.query.default === 'true') {
+        const docs = await Document.find({ status: 'approved' })
+          .sort({ createdAt: -1 }) // mới nhất
+          .limit(5)
+          .select('title slug');
+
+        return res.json(docs);
+      }
+
+      return res.status(400).json({ error: 'Thiếu tham số tìm kiếm (q).' });
+    }
+
+    // Tìm kiếm theo tiêu đề (không phân biệt hoa thường, không dấu)
+    const regex = new RegExp(query, 'i');
+
+    const docs = await Document.find({
+      title: { $regex: regex },
+      status: 'approved'
+    })
+      .limit(10)
+      .select('title slug');
+
+    res.json(docs);
+  } catch (err) {
+    console.error('Lỗi tìm kiếm tài liệu:', err);
+    res.status(500).json({ error: 'Lỗi server khi tìm kiếm tài liệu.' });
+  }
+};
 
 exports.getDocumentsBySubject = async (req, res) => {
   const { subjectTypeSlug, subjectNameSlug } = req.params;

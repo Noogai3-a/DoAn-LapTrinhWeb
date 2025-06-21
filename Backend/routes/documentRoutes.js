@@ -10,7 +10,7 @@ router.get('/popular', documentController.getPopularDocuments);
 router.get('/by-subject/:subjectTypeSlug/:subjectNameSlug', documentController.getDocumentsBySubject);
 // routes/reviewDocumentRoutes.js
 router.put('/:id',  documentController.updateDocument);
-
+router.get('/search', documentController.searchDocuments);
 // Lấy tài liệu do user hiện tại đăng
 router.get('/my', apiAuth, documentController.getMyDocuments);
 

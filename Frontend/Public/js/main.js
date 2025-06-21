@@ -143,20 +143,7 @@ function toggleSubmenu(element) {
     icon.classList.toggle('fa-chevron-up', isShown);
   }
 }
-/*
-function toggleSubmenu(element) {
-    const subMenu = element.nextElementSibling;
-    if (subMenu && subMenu.classList.contains('sub-menu')) {
-        subMenu.style.display = (subMenu.style.display === 'flex') ? 'none' : 'flex';
 
-        const icon = element.querySelector('i');
-        if (icon) {
-            icon.classList.toggle('fa-chevron-down');
-            icon.classList.toggle('fa-chevron-up');
-        }
-    }
-}
-*/
 // Kiểm tra kích thước màn hình và áp dụng overlay nếu cần
 const checkScreenSize = () => {
     const menu = document.getElementById("side-nav");
@@ -429,16 +416,23 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
 
     const fetchSuggestions = (query = '') => {
         const type = typeSelect.value;
-        if (type !== 'blog') {
+
+         if (type !== 'blog' && type !== 'document') {
             suggestions.style.display = 'none';
             return;
         }
 
         // Gọi API tùy query hoặc default
-        const url = query
-            ? `https://backend-yl09.onrender.com/api/blogs/search?q=${encodeURIComponent(query)}`
-            : `https://backend-yl09.onrender.com/api/blogs/search?default=true`;
-
+        let url = '';
+        if (type === 'blog') {
+            url = query
+                ? `https://backend-yl09.onrender.com/api/blogs/search?q=${encodeURIComponent(query)}`
+                : `https://backend-yl09.onrender.com/api/blogs/search?default=true`;
+        } else if (type === 'document') {
+            url = query
+                ? `https://backend-yl09.onrender.com/api/review-documents/search?q=${encodeURIComponent(query)}`
+                : `https://backend-yl09.onrender.com/api/review-documents/search?default=true`;
+        }
         fetch(url)
             .then(res => res.json())
             .then(data => {
@@ -452,7 +446,11 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
                     const li = document.createElement('li');
                     li.textContent = blog.title;
                     li.addEventListener('click', () => {
-                        window.location.href = `/blog-read?post=${blog._id}`;
+                        if (type === 'blog') {
+                            window.location.href = `/blog-read?post=${item._id}`;
+                        } else if (type === 'document') {
+                            window.location.href = `/document.html?slug=${item.slug}`;
+                        }
                     });
                     suggestions.appendChild(li);
                 });
@@ -466,7 +464,7 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
     };
 
     input.addEventListener('focus', () => {
-        if (typeSelect.value === 'blog') {
+         if (type === 'blog' || type === 'document') {
             fetchSuggestions();
         }
     });
