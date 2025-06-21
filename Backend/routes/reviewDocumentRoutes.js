@@ -14,7 +14,4 @@ router.delete('/documents/reject/:id', documentController.deleteDocumentById);
 //Cuối cùng: bắt theo ID
 router.get('/:id', documentController.getDocumentById);
 
-router.post('/:documentId/comments', authMiddleware, documentController.createDocumentComment);
-
-
 module.exports = router;
