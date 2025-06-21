@@ -8,7 +8,8 @@ const documentSchema = new mongoose.Schema({
   },
   slug: { 
     type: String,
-    unique: true },
+    required: true
+  },
   fileUrl: {
     type: String,
     required: true

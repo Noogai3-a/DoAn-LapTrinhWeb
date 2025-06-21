@@ -90,7 +90,7 @@ exports.uploadDocument = async (req, res) => {
       const rawName = req.body[`filename_${index}`] || file.originalname;
       const title = normalizeTitle(rawName);
       const baseSlug = slugifyTitle(title);
-      const slug = `${subjectNameSlug}-${baseSlug}`;
+      const slug = `${subjectNameSlug}-${baseSlug}-${Date.now()}`;
 
       let previewPath = null;
       let previewFilename = null;
