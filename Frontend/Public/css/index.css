@@ -47,6 +47,11 @@
     object-fit: cover;
 }
 
+a,
+a:visited {
+  color: black; /* hoặc bất kỳ màu nào bạn chọn */
+  text-decoration: none; /* nếu muốn bỏ gạch chân */
+}
 
 /* Document Section */
 .document {
