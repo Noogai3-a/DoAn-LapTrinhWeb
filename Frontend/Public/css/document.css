@@ -50,7 +50,8 @@
 }
 
 .comment-section {
-    max-width: 1000px;
+    width: 90%;
+    max-width: 1400px; /* Giới hạn chiều rộng tối đa lớn hơn */
     margin: 40px auto;
     background: white;
     padding: 30px;
@@ -58,7 +59,6 @@
 }
 
 .comment-section h2 {
-    margin-left: 40px;
     margin-bottom: 20px;
     font-size: 24px;
 }
@@ -90,11 +90,6 @@
 
 .comment-form button:hover {
     background: #0056b3;
-}
-
-.comments-list {
-    margin-left: 40px;
-    margin-right: 40px;
 }
 
 .comment-item {
