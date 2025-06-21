@@ -18,36 +18,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Tạo từng document-item
   function createDocumentItem(doc) {
-    const placeholder = "/assets/doc-default.png";
-    let realImage = placeholder;
-
-    if (doc.previewUrl) {
-      realImage = proxyImageURL(getDriveDirectLink(doc.previewUrl));
-    }
-
+    const fileUrl = `https://backend-yl09.onrender.com/${doc.fileUrl.replace(/\\/g, '/')}`;
     const subtitle = `${doc.subjectNameLabel || ''} • ${doc.subjectTypeLabel || ''}`;
     const detailUrl = `/document.html?slug=${doc.slug}`;
-
+    let thumbnailSrc = '/assets/doc-default.png';
+    if (doc.previewUrl) {
+      if (doc.previewUrl.startsWith('http')) {
+        thumbnailSrc = doc.previewUrl; // là URL đầy đủ rồi
+      } else {
+        // chỉ là phần đuôi như "thumbnail?id=abcxyz"
+        thumbnailSrc = 'https://drive.google.com/' + doc.previewUrl;
+      }
+    }
     return `
-      <a href="${detailUrl}" class="doc-item">
+    <div class="document-item">
+      <a href="${detailUrl}" style="text-decoration: none;">
         <img 
-          src="${placeholder}" 
-          data-src="${realImage}" 
+          src="${thumbnailSrc || '/assets/doc-default.png'}" 
           alt="${doc.title}" 
-          class="doc-image lazy-img"
-        >
-        <div class="doc-info">
-          <h3>${doc.title}</h3>
-          <div class="doc-meta">
-            <p>${subtitle}</p>
-            <div class="doc-stats">
-              <span class="views"><i class="fas fa-eye"></i> ${doc.views || 0}</span>
-              <span class="downloads"><i class="fas fa-download"></i> ${doc.downloads || 0}</span>
-            </div>
-          </div>
-        </div>
+          style="width: 150px; height: 200px; object-fit: cover; border-radius: 4px;" 
+        />
+        <p class="doc-title">${doc.title}</p>
+        <p class="doc-subtitle">${subtitle}</p>
       </a>
-    `;
+    </div>
+  `;
   }
 
   // Tải tất cả ảnh trước khi hiển thị thật
