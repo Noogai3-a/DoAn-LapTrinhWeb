@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const Document = require('../models/Document');
+const SubjectType = require('../models/SubjectType');
 const { uploadFileToDrive } = require('../uploads/googleDrive');
-const data = require('../data.json');
+
 const {
   normalizeTitle,
   convertDocxToPdf,
@@ -37,19 +38,20 @@ function removeVietnameseTones(str) {
     .replace(/đ/g, "d").replace(/Đ/g, "D");
 }
 
+async function getLabelsFromSlug(subjectTypeSlug, subjectNameSlug) {
+  const subjectType = await SubjectType.findOne({ typeSlug: subjectTypeSlug });
 
-function getLabelsFromSlug(subjectTypeSlug, subjectNameSlug) {
-  const subjectType = data[subjectTypeSlug];
-  if (!subjectType || !subjectType.subjects) return null;
+  if (!subjectType) return null;
 
-  const subject = subjectType.subjects.find(s => s.slug === subjectNameSlug);
+  const subject = subjectType.subjects.find(s => s.subjectSlug === subjectNameSlug);
   if (!subject) return null;
 
   return {
-    subjectTypeLabel: subjectType.label,
-    subjectNameLabel: subject.label
+    subjectTypeLabel: subjectType.typeLabel,
+    subjectNameLabel: subject.subjectLabel
   };
 }
+
 
 exports.uploadDocument = async (req, res) => {
   try {
@@ -70,7 +72,7 @@ exports.uploadDocument = async (req, res) => {
       return res.status(400).json({ error: 'Thiếu thông tin bắt buộc.' });
     }
 
-    const labels = getLabelsFromSlug(subjectTypeSlug, subjectNameSlug);
+    const labels = await getLabelsFromSlug(subjectTypeSlug, subjectNameSlug);
     if (!labels) {
       req.files.forEach(file => fs.existsSync(file.path) && fs.unlinkSync(file.path));
       return res.status(400).json({ error: 'Slug không hợp lệ hoặc không tồn tại trong data.json.' });

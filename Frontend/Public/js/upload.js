@@ -139,13 +139,25 @@ document.addEventListener("DOMContentLoaded", function () {
   // Tải dữ liệu từ data.json
   let subjectNamesByType = {};
 
-  // Fetch data.json
-  fetch('/json/data.json')
+  // Fetch danh sách môn
+  fetch('https://backend-yl09.onrender.com/api/subject-types')
     .then(response => response.json())
     .then(data => {
-      subjectNamesByType = data;
+      // Chuyển data từ mảng thành object kiểu { [typeSlug]: { label, subjects } }
+      const map = {};
+      for (const item of data) {
+        map[item.typeSlug] = {
+          label: item.typeLabel,
+          subjects: item.subjects.map(s => ({
+            slug: s.subjectSlug,
+            label: s.subjectLabel
+          }))
+        };
+      }
+      subjectNamesByType = map;
       populateSubjectTypeSelect();
     });
+
 
   // Populate loại môn học
   function populateSubjectTypeSelect() {
@@ -292,11 +304,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const newSubject = { label: customInput, slug: newSlug };
 
         try {
-          await fetch('https://backend-yl09.onrender.com/api/add-subject', {
+          await fetch(`https://backend-yl09.onrender.com/api/subject-types/${typeSlug}/subjects`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ typeSlug, newSubject })
+            body: JSON.stringify({
+              subjectLabel: customInput,
+              subjectSlug: newSlug
+            })
           });
+
 
           subjectNamesByType[typeSlug].subjects.push(newSubject);
 

@@ -32,118 +32,111 @@ function toggleMenu() {
 
 
 //side bar
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const sideNav = document.getElementById('side-nav');
 
-  fetch('/json/data.json')
-    .then(res => {
-      if (!res.ok) throw new Error('Không tải được data.json');
-      return res.json();
-    })
-    .then(data => {
-      const categories = Object.keys(data);
+  try {
+    // 1. Lấy danh sách loại môn học
+    const res = await fetch('https://backend-yl09.onrender.com/api/subject-types');
+    if (!res.ok) throw new Error('Không lấy được danh sách loại môn');
+    const subjectTypes = await res.json();
 
-      if (categories.length === 0) {
-        const li = document.createElement('div');
-        li.innerHTML = `<div class="menu-item-title">Không có môn học nào.</div>`;
-        sideNav.appendChild(li);
-        return;
-      }
+    if (subjectTypes.length === 0) {
+      const li = document.createElement('div');
+      li.innerHTML = `<div class="menu-item-title">Không có môn học nào.</div>`;
+      sideNav.appendChild(li);
+      return;
+    }
 
-      categories.forEach(categoryKey => {
-        const category = data[categoryKey];
-        const categoryLabel = category.label || categoryKey;
+    for (const type of subjectTypes) {
+      const { typeSlug, typeLabel } = type;
 
-        // Tạo phần tử menu-item
-        const menuItem = document.createElement('div');
-        menuItem.className = 'menu-item';
+      // 2. Lấy danh sách môn học cho loại này
+      const subjectsRes = await fetch(`https://backend-yl09.onrender.com/api/subject-types/${typeSlug}/subjects`);
+      if (!subjectsRes.ok) continue;
+      const subjects = await subjectsRes.json();
 
-        // Tiêu đề nhóm môn học
-        const menuItemTitle = document.createElement('div');
-        menuItemTitle.className = 'menu-item-title';
-        menuItemTitle.innerHTML = `${categoryLabel} <i class="fa-solid fa-chevron-down"></i>`;
-        menuItemTitle.style.cursor = 'pointer';
+      // Tạo phần tử nhóm môn
+      const menuItem = document.createElement('div');
+      menuItem.className = 'menu-item';
 
-        // Sub menu chứa các môn học con
-        const subMenu = document.createElement('div');
-        subMenu.className = 'sub-menu';
+      const menuItemTitle = document.createElement('div');
+      menuItemTitle.className = 'menu-item-title';
+      menuItemTitle.innerHTML = `${typeLabel} <i class="fa-solid fa-chevron-down"></i>`;
+      menuItemTitle.style.cursor = 'pointer';
 
-        // Toggle submenu khi click vào title
-        menuItemTitle.setAttribute('onclick', 'toggleSubmenu(this)');
+      const subMenu = document.createElement('div');
+      subMenu.className = 'sub-menu';
 
-        // Duyệt qua từng môn học trong nhóm
-        (category.subjects || []).forEach(subject => {
-          const subjectLink = document.createElement('a');
-          subjectLink.href = 'javascript:void(0)';
-          subjectLink.textContent = subject.label;
+      // Toggle show/hide môn học
+      menuItemTitle.setAttribute('onclick', 'toggleSubmenu(this)');
 
-          // Danh sách file bên trong mỗi môn học
-          const fileList = document.createElement('div');
-          fileList.className = 'sub-menu file-list';
-          fileList.style.marginLeft = '15px';
-          fileList.style.display = 'none'; // ẩn ban đầu
+      // 3. Duyệt từng môn học
+      subjects.forEach(subject => {
+        const subjectLink = document.createElement('a');
+        subjectLink.href = 'javascript:void(0)';
+        subjectLink.textContent = subject.subjectLabel;
 
-          subjectLink.addEventListener('click', () => {
-            // Toggle hiện/ẩn fileList
-            fileList.style.display = fileList.style.display === 'none' ? 'block' : 'none';
+        const fileList = document.createElement('div');
+        fileList.className = 'sub-menu file-list';
+        fileList.style.marginLeft = '15px';
+        fileList.style.display = 'none';
 
-            // Nếu đã load rồi thì không fetch lại
-            if (fileList.dataset.loaded === 'true') return;
+        subjectLink.addEventListener('click', () => {
+          fileList.style.display = fileList.style.display === 'none' ? 'block' : 'none';
+          if (fileList.dataset.loaded === 'true') return;
 
-            fileList.innerHTML = '<div>Đang tải...</div>';
+          fileList.innerHTML = '<div>Đang tải...</div>';
 
-            const subjectTypeSlug = categoryKey;
-            const subjectSlug = subject.slug;
+          fetch(`https://backend-yl09.onrender.com/api/documents/by-subject/${encodeURIComponent(typeSlug)}/${encodeURIComponent(subject.subjectSlug)}`, {
+            credentials: 'include'
+          })
+            .then(res => {
+              if (!res.ok) throw new Error('Lỗi tải tài liệu');
+              return res.json();
+            })
+            .then(data => {
+              fileList.innerHTML = '';
+              fileList.dataset.loaded = 'true';
 
-            fetch(`https://backend-yl09.onrender.com/api/documents/by-subject/${encodeURIComponent(subjectTypeSlug)}/${encodeURIComponent(subjectSlug)}`, { credentials: 'include' })
-              .then(res => {
-                if (!res.ok) throw new Error('Lỗi tải tài liệu');
-                return res.json();
-              })
-              .then(data => {
-                fileList.innerHTML = '';
-                fileList.dataset.loaded = 'true';
+              if (!data.documents || data.documents.length === 0) {
+                const noFile = document.createElement('div');
+                noFile.textContent = 'Chưa có file tài liệu.';
+                fileList.appendChild(noFile);
+                return;
+              }
 
-                if (!data.documents || data.documents.length === 0) {
-                  const noFile = document.createElement('div');
-                  noFile.textContent = 'Chưa có file tài liệu.';
-                  fileList.appendChild(noFile);
-                  return;
-                }
-
-                data.documents.forEach(doc => {
-                  const fileDiv = document.createElement('div');
-                  const link = document.createElement('a');
-                  link.href = `/document.html?slug=${doc.slug}`;
-                  link.textContent = doc.title;
-                  fileDiv.appendChild(link);
-                  fileList.appendChild(fileDiv);
-                });
-              })
-              .catch(err => {
-                fileList.innerHTML = `<div style="color:red;">Lỗi: ${err.message}</div>`;
+              data.documents.forEach(doc => {
+                const fileDiv = document.createElement('div');
+                const link = document.createElement('a');
+                link.href = `/document.html?slug=${doc.slug}`;
+                link.textContent = doc.title;
+                fileDiv.appendChild(link);
+                fileList.appendChild(fileDiv);
               });
-          });
-
-          // Gắn vào sub-menu
-          subMenu.appendChild(subjectLink);
-          subMenu.appendChild(fileList);
+            })
+            .catch(err => {
+              fileList.innerHTML = `<div style="color:red;">Lỗi: ${err.message}</div>`;
+            });
         });
 
-        // Gắn vào menu-item rồi vào nav
-        menuItem.appendChild(menuItemTitle);
-        menuItem.appendChild(subMenu);
-        sideNav.appendChild(menuItem);
+        subMenu.appendChild(subjectLink);
+        subMenu.appendChild(fileList);
       });
-    })
-    .catch(err => {
-      console.error(err);
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'alert alert-danger';
-      errorDiv.textContent = `Lỗi tải danh sách môn học: ${err.message}`;
-      sideNav.appendChild(errorDiv);
-    });
+
+      menuItem.appendChild(menuItemTitle);
+      menuItem.appendChild(subMenu);
+      sideNav.appendChild(menuItem);
+    }
+  } catch (err) {
+    console.error(err);
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'alert alert-danger';
+    errorDiv.textContent = `Lỗi tải danh sách môn học: ${err.message}`;
+    sideNav.appendChild(errorDiv);
+  }
 });
+
 
 function toggleSubmenu(element) {
   const subMenu = element.nextElementSibling;
