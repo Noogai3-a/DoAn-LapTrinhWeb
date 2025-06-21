@@ -442,16 +442,18 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
                     return;
                 }
 
-                data.forEach(blog => {
+                data.forEach(item => {
                     const li = document.createElement('li');
-                    li.textContent = blog.title;
+                    li.textContent = item.title;
+
                     li.addEventListener('click', () => {
                         if (type === 'blog') {
-                            window.location.href = `/blog-read?post=${item._id}`;
+                        window.location.href = `/blog-read?post=${item._id}`;
                         } else if (type === 'document') {
-                            li.innerHTML = `<a href="/document.html?slug=${doc.slug}">${doc.title}</a>`;
+                        window.location.href = `/document.html?slug=${item.slug}`;
                         }
                     });
+
                     suggestions.appendChild(li);
                 });
 
