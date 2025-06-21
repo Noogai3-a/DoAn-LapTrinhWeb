@@ -23,19 +23,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     return `
-    <a href="${detailUrl}" class="document-item">
-      <img 
-        src="/assets/doc-default.png" 
-        data-src="${thumbnailSrc}" 
-        alt="${doc.title}" 
-        class="doc-image lazy-img"
-      >
-      <div class="doc-meta">
-        <h6>${date}</h6>
-      </div>
-      <h3>${doc.title}</h3>
-      <p>${subtitle.substring(0, 50)}...</p>
-    </a>
+    <div class="document-item-wrapper"> <!-- Thêm wrapper để dễ căn chỉnh -->
+      <a href="${detailUrl}" class="document-item">
+        <img 
+          src="/assets/doc-default.png" 
+          data-src="${thumbnailSrc}" 
+          alt="${doc.title}" 
+          class="doc-image lazy-img"
+        >
+        <div class="doc-meta">
+          <h6>${date}</h6>
+        </div>
+        <h3>${doc.title}</h3>
+        <p>${subtitle.substring(0, 50)}...</p>
+      </a>
+    </div>
     `;
   }
 

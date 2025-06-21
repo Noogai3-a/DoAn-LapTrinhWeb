@@ -267,11 +267,14 @@ a:visited {
 }
 
 .document-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /*tự động đổ cột, mỗi cột rộng ít nhất 250px*/
-    gap: 20px;
-    margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+  justify-items: center; /* Căn giữa các item */
+  padding: 0 20px; /* Thêm padding hai bên */
 }
+
 
 .document-item {
     width: 220px;
