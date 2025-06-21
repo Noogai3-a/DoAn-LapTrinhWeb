@@ -10,23 +10,27 @@ const Admin = require('../models/Admin');
 
 exports.getDocumentsBySubject = async (req, res) => {
   const { subjectTypeSlug, subjectNameSlug } = req.params;
-
   console.log('[API] Nhận request:', subjectTypeSlug, subjectNameSlug);
 
   try {
     const type = await SubjectType.findOne({ typeSlug: subjectTypeSlug });
     if (!type) {
+      console.warn('❌ Không tìm thấy loại môn:', subjectTypeSlug);
       return res.status(404).json({ message: 'Không tìm thấy loại môn.' });
     }
 
     if (!Array.isArray(type.subjects)) {
+      console.error('❌ Dữ liệu subjects bị lỗi:', type.subjects);
       return res.status(500).json({ message: 'Dữ liệu môn học bị lỗi.' });
     }
 
     const subject = type.subjects.find(s => s.subjectSlug === subjectNameSlug);
     if (!subject) {
+      console.warn('❌ Không tìm thấy môn:', subjectNameSlug);
       return res.status(404).json({ message: 'Không tìm thấy môn học.' });
     }
+
+    console.log(`📘 Đã tìm thấy: ${type.typeLabel} → ${subject.subjectLabel}`);
 
     const documents = await Document.find({
       subjectTypeSlug,
@@ -34,17 +38,19 @@ exports.getDocumentsBySubject = async (req, res) => {
       status: 'approved'
     }).select('title slug fileUrl').lean();
 
-    res.status(200).json({
-      subjectType: type.typeLabel,
-      subjectName: subject.subjectLabel,
+    console.log(`📄 Số tài liệu tìm thấy: ${documents.length}`);
+
+    return res.status(200).json({
+      subjectType: type.typeLabel || '',
+      subjectName: subject.subjectLabel || '',
       documents: documents || []
     });
   } catch (error) {
-    console.error('[Lỗi truy vấn MongoDB]', error);
-    res.status(500).json({ message: 'Lỗi server.' });
+    console.error('[❌ Lỗi truy vấn MongoDB]', error);
+    return res.status(500).json({ message: 'Lỗi server.' });
   }
-
 };
+
 
 
 // Lấy tài liệu mới nhất (đã được duyệt)
