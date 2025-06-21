@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const subjectTypeController = require('../controllers/subjectController');
+const subjectTypeController = require('../controllers/subjectTypeController');
 
 // Lấy tất cả loại môn
 router.get('/', subjectTypeController.getAllSubjectTypes);
