@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // Giới hạn 5 tài liệu mới nhất
     if (Array.isArray(latestDocs)) {
-      latestDocs = latestDocs.slice(0, 5);
+      latestDocs = latestDocs.slice(0, 4);
     }
 
     // Lấy tài liệu xem nhiều nhất
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Giới hạn 5 tài liệu xem nhiều nhất
     if (Array.isArray(popularDocs)) {
       popularDocs.sort((a, b) => (b.views || 0) - (a.views || 0));
-      popularDocs = popularDocs.slice(0, 5);
+      popularDocs = popularDocs.slice(0, 4);
     }
 
     // Hiển thị tài liệu mới nhất
