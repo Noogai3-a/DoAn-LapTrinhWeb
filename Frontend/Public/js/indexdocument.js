@@ -33,6 +33,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         >
         <div class="doc-meta">
           <h6>${date}</h6>
+          <div class="doc-stats">
+          <span class="views"><i class="fas fa-eye"></i> ${doc.views || 0}</span>
         </div>
         <h3>${doc.title}</h3>
         <p>${subtitle.substring(0, 50)}...</p>
