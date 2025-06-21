@@ -19,20 +19,20 @@ exports.getDocumentsBySubject = async (req, res) => {
       return res.status(404).json({ message: 'Không tìm thấy loại môn.' });
     }
 
+    if (!Array.isArray(type.subjects)) {
+      return res.status(500).json({ message: 'Dữ liệu môn học bị lỗi.' });
+    }
+
     const subject = type.subjects.find(s => s.subjectSlug === subjectNameSlug);
     if (!subject) {
       return res.status(404).json({ message: 'Không tìm thấy môn học.' });
     }
 
-    const query = {
+    const documents = await Document.find({
       subjectTypeSlug,
       subjectNameSlug,
       status: 'approved'
-    };
-
-    console.log('[MongoDB Query]', query);
-
-    const documents = await Document.find(query).select('title slug fileUrl').lean();
+    }).select('title slug fileUrl').lean();
 
     res.status(200).json({
       subjectType: type.typeLabel,
@@ -43,6 +43,7 @@ exports.getDocumentsBySubject = async (req, res) => {
     console.error('[Lỗi truy vấn MongoDB]', error);
     res.status(500).json({ message: 'Lỗi server.' });
   }
+
 };
 
 

@@ -178,6 +178,7 @@ app.use('/api/upload-documents', uploadRoutes);         // chứa: POST upload
 
 //Duyệt tài liệu
 app.use('/api/review-documents', documentRoutes);       // chứa: /:id, duyệt/xóa document
+app.use('/api/documents', documentRoutes);
 
 //Xem tài liệu 
 app.use('/api/documents', reviewDocRoutes);             // chứa: /latest, /popular → frontend dùng
