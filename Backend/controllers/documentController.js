@@ -6,6 +6,7 @@ const { containsBadWords } = require('../utils/badWords');
 const { analyzeSentiment } = require('../utils/sentiment');
 const notificationController = require('./notificationController');
 const User = require('../models/User');
+const Admin = require('../models/Admin');
 
 
 // Trả lại cả label (hiển thị cho client), không dùng để query
@@ -251,13 +252,15 @@ exports.createDocumentComment = async (req, res) => {
       return res.status(404).json({ msg: 'Document not found' });
     }
 
-    // Tạo thông báo (tương tự blog)
+    // Tạo thông báo
+    const commenterId = userId ? userId.toString() : null;
+
     if (parentComment) {
       // Nếu là reply, gửi thông báo cho người viết comment gốc
       const parentCommentDoc = await DocumentComment.findById(parentComment);
-      if (parentCommentDoc && parentCommentDoc.userId.toString() !== userId.toString()) {
+      if (parentCommentDoc && parentCommentDoc.userId.toString() !== commenterId) {
         await notificationController.createNotification(
-          parentCommentDoc.userId, // ID của người viết comment gốc
+          parentCommentDoc.userId,
           'REPLY',
           {
             message: `${username} đã phản hồi bình luận của bạn`,
@@ -273,39 +276,47 @@ exports.createDocumentComment = async (req, res) => {
         // Xử lý thông báo cho bình luận mới
         const commenterId = userId ? userId.toString() : null;
 
-        // Trường hợp tài liệu do "admin" đăng
-        if (doc.uploader === 'admin') {
-            const adminUsers = await User.find({ role: 'admin' });
+        // Trường hợp tài liệu do "admin" đăng (uploader là string)
+        if (typeof doc.uploader === 'string' && doc.uploader === 'admin') {
+            const adminUsers = await Admin.find({});
             for (const adminUser of adminUsers) {
                 // Không gửi thông báo nếu admin tự bình luận
                 if (adminUser._id.toString() !== commenterId) {
-                    await notificationController.createNotification(
-                        adminUser._id,
-                        'COMMENT',
-                        {
-                            message: `${username} đã bình luận vào một tài liệu của quản trị viên`,
-                            postId: documentId,
-                            commentId: newComment._id
-                        },
-                        doc.title,
-                        'DOCUMENT'
-                    );
+                    try {
+                        await notificationController.createNotification(
+                            adminUser._id,
+                            'COMMENT',
+                            {
+                                message: `${username} đã bình luận vào một tài liệu của quản trị viên`,
+                                postId: documentId,
+                                commentId: newComment._id
+                            },
+                            doc.title,
+                            'DOCUMENT'
+                        );
+                    } catch (notifErr) {
+                        console.error('❌ Lỗi gửi thông báo cho admin:', notifErr.message);
+                    }
                 }
             }
         } 
-        // Trường hợp tài liệu do user cụ thể đăng
+        // Trường hợp tài liệu do user đăng (uploader là ObjectId)
         else if (doc.uploader && mongoose.Types.ObjectId.isValid(doc.uploader) && doc.uploader.toString() !== commenterId) {
-            await notificationController.createNotification(
-                doc.uploader, // ID của tác giả document
-                'COMMENT',
-                {
-                    message: `${username} đã bình luận vào tài liệu của bạn`,
-                    postId: documentId,
-                    commentId: newComment._id
-                },
-                doc.title,
-                'DOCUMENT'
-            );
+            try {
+                await notificationController.createNotification(
+                    doc.uploader,
+                    'COMMENT',
+                    {
+                        message: `${username} đã bình luận vào tài liệu của bạn`,
+                        postId: documentId,
+                        commentId: newComment._id
+                    },
+                    doc.title,
+                    'DOCUMENT'
+                );
+            } catch (notifErr) {
+                console.error('❌ Lỗi gửi thông báo cho user:', notifErr.message);
+            }
         }
     }
 
