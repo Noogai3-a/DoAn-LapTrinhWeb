@@ -5,6 +5,7 @@ const DocumentComment = require('../models/DocumentComment');
 const { containsBadWords } = require('../utils/badWords');
 const { analyzeSentiment } = require('../utils/sentiment');
 const notificationController = require('./notificationController');
+const User = require('../models/User');
 
 
 // Trả lại cả label (hiển thị cho client), không dùng để query
@@ -268,20 +269,44 @@ exports.createDocumentComment = async (req, res) => {
           'DOCUMENT'
         );
       }
-    } else if (doc.uploader && mongoose.Types.ObjectId.isValid(doc.uploader) && doc.uploader.toString() !== userId.toString()) {
-      // Nếu là comment mới, gửi thông báo cho tác giả document
-      // CHỈ TẠO THÔNG BÁO NẾU UPLOADER LÀ OBJECTID HỢP LỆ
-      await notificationController.createNotification(
-        doc.uploader, // ID của tác giả document
-        'COMMENT',
-        {
-          message: `${username} đã bình luận vào tài liệu của bạn`,
-          postId: documentId,
-          commentId: newComment._id
-        },
-        doc.title,
-        'DOCUMENT'
-      );
+    } else {
+        // Xử lý thông báo cho bình luận mới
+        const commenterId = userId ? userId.toString() : null;
+
+        // Trường hợp tài liệu do "admin" đăng
+        if (doc.uploader === 'admin') {
+            const adminUsers = await User.find({ role: 'admin' });
+            for (const adminUser of adminUsers) {
+                // Không gửi thông báo nếu admin tự bình luận
+                if (adminUser._id.toString() !== commenterId) {
+                    await notificationController.createNotification(
+                        adminUser._id,
+                        'COMMENT',
+                        {
+                            message: `${username} đã bình luận vào một tài liệu của quản trị viên`,
+                            postId: documentId,
+                            commentId: newComment._id
+                        },
+                        doc.title,
+                        'DOCUMENT'
+                    );
+                }
+            }
+        } 
+        // Trường hợp tài liệu do user cụ thể đăng
+        else if (doc.uploader && mongoose.Types.ObjectId.isValid(doc.uploader) && doc.uploader.toString() !== commenterId) {
+            await notificationController.createNotification(
+                doc.uploader, // ID của tác giả document
+                'COMMENT',
+                {
+                    message: `${username} đã bình luận vào tài liệu của bạn`,
+                    postId: documentId,
+                    commentId: newComment._id
+                },
+                doc.title,
+                'DOCUMENT'
+            );
+        }
     }
 
     res.status(201).json({ msg: 'Comment added', comment: newComment });
