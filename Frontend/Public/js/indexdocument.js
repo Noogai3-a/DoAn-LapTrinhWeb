@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="doc-meta">
         <h6>${date}</h6>
         <div class="doc-stats">
-          <span class="views"><i class="fas fa-eye"></i> ${doc.views || 0}</span>
+          <span class="views"><i class="fas fa-eye"></i> ${doc.viewCount || 0}</span>
         </div>
       </div>
       <h3>${doc.title}</h3>

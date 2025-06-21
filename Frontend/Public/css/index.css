@@ -78,25 +78,6 @@ a:visited {
 }
 
 /* Document Section - Giống với Blog */
-.document-item {
-    background-color: white;
-    border: 1px solid #e0e0e0;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
-    text-decoration: none;
-    color: inherit;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.document-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-}
 .document-box .section {
   margin-bottom: 40px;
 }
@@ -169,14 +150,14 @@ a:visited {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .doc-stats {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     color: #777;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .doc-stats span {
@@ -193,19 +174,6 @@ a:visited {
     color: #666;
 }
 
-
-.document-item h3 {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-
-.document-item p {
-    font-size: 14px;
-    color: #777;
-    margin-top: auto;
-}
 
 .blog-meta {
     display: flex;
@@ -270,18 +238,45 @@ a:visited {
   padding: 0 20px; /* Thêm padding hai bên */
 }
 
-
+/* Document Item */
 .document-item {
-    width: 220px;
-    background-color: #fff;
+    width: 100%;
+    max-width: 320px; /* Tăng từ 280px lên 320px */
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    padding: 25px; /* Tăng padding từ 20px */
     border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    padding: 15px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    display: flex;
-    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
     text-decoration: none;
     color: inherit;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tăng kích thước hình ảnh */
+.document-item img {
+    width: 100%;
+    height: 220px; /* Tăng từ 180px */
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* Tăng kích thước font chữ */
+.document-item h3 {
+    font-size: 20px; /* Tăng từ 18px */
+    color: #333;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.document-item p {
+    font-size: 15px; /* Tăng từ 14px */
+    color: #666;
+    margin-top: auto;
+    line-height: 1.5;
 }
 
 .document-item:hover {
@@ -289,13 +284,7 @@ a:visited {
     box-shadow: 0 8px 16px rgba(0,0,0,0.15);
 }
 
-.document-item img {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 12px;
-}
+
 
 .document-item .doc-title {
     font-size: 16px;
@@ -310,16 +299,6 @@ a:visited {
     margin: 0;
 }
 
-.document-item h3 {
-    font-size: 20px;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.document-item p {
-    font-size: 14px;
-    color: #666;
-}
 
 /* Blog section */
 .blog {

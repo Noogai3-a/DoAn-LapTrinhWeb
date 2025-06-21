@@ -37,7 +37,8 @@
   
 .document-item {
     text-align: center;
-    width: 150px;
+    width: 200px;
+    height: 250
 }
   
 .document-item img {
