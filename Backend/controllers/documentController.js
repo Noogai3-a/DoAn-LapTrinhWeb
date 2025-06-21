@@ -1,5 +1,4 @@
 const Document = require('../models/Document');
-const data = require('../data.json');
 const mongoose = require('mongoose');
 const DocumentComment = require('../models/DocumentComment');
 const { containsBadWords } = require('../utils/badWords');

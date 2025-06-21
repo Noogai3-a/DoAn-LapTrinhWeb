@@ -1,17 +1,18 @@
 const Document = require('../models/Document');
-const data = require('../data.json');
+const SubjectType = require('../models/SubjectType');
 
 // 👇 Thêm tra label từ slug
-function getLabelsFromSlug(subjectTypeSlug, subjectNameSlug) {
-  const subjectType = data[subjectTypeSlug];
-  if (!subjectType || !subjectType.subjects) return null;
+async function getLabelsFromSlug(subjectTypeSlug, subjectNameSlug) {
+  const subjectType = await SubjectType.findOne({ typeSlug: subjectTypeSlug });
 
-  const subject = subjectType.subjects.find(s => s.slug === subjectNameSlug);
+  if (!subjectType) return null;
+
+  const subject = subjectType.subjects.find(s => s.subjectSlug === subjectNameSlug);
   if (!subject) return null;
 
   return {
-    subjectTypeLabel: subjectType.label,
-    subjectNameLabel: subject.label
+    subjectTypeLabel: subjectType.typeLabel,
+    subjectNameLabel: subject.subjectLabel
   };
 }
 
@@ -26,7 +27,7 @@ exports.uploadMultipleDocuments = async (req, res) => {
       return res.status(400).json({ message: 'Chưa chọn file nào' });
     }
 
-    const labels = getLabelsFromSlug(subjectTypeSlug, subjectNameSlug);
+    const labels = await getLabelsFromSlug(subjectTypeSlug, subjectNameSlug);
     if (!labels) {
       return res.status(400).json({ message: 'Slug không hợp lệ hoặc không tìm thấy label' });
     }

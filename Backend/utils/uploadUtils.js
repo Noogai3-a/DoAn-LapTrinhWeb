@@ -1,7 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const CloudConvert = require("cloudconvert");
-const data = require("../data.json");
+const SubjectType = require('../models/SubjectType');
+
 
 const cloudConvert = new CloudConvert(process.env.CLOUDCONVERT_API_KEY);
 
@@ -156,18 +157,24 @@ async function generateThumbnail(pdfPath, outputImagePath) {
 }
 
 
-function getLabelsFromSlug(typeSlug, nameSlug) {
-  const type = data[typeSlug];
-  if (!type) return null;
+async function getLabelsFromSlug(typeSlug, nameSlug) {
+  try {
+    const subjectType = await SubjectType.findOne({ typeSlug });
+    if (!subjectType) return null;
 
-  const name = type.subjects.find(s => s.slug === nameSlug);
-  if (!name) return null;
+    const subject = subjectType.subjects.find(s => s.subjectSlug === nameSlug);
+    if (!subject) return null;
 
-  return {
-    subjectTypeLabel: type.label,
-    subjectNameLabel: name.label
-  };
+    return {
+      subjectTypeLabel: subjectType.typeLabel,
+      subjectNameLabel: subject.subjectLabel
+    };
+  } catch (err) {
+    console.error("❌ Lỗi khi truy vấn label từ slug:", err);
+    return null;
+  }
 }
+
 
 module.exports = {
   normalizeTitle,
