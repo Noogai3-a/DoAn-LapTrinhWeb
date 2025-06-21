@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           fileList.innerHTML = '<li>Đang tải...</li>';
           fileList.classList.remove('collapse');
 
-          fetch(`https://backend-yl09.onrender.com/api/review-documents/by-subject/${encodeURIComponent(typeSlug)}/${encodeURIComponent(subject.subjectSlug)}`, {
+          fetch(`https://backend-yl09.onrender.com/api/documents/by-subject/${encodeURIComponent(typeSlug)}/${encodeURIComponent(subject.subjectSlug)}`, {
             credentials: 'include'
           })
             .then(res => {
