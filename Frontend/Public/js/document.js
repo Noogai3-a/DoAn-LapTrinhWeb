@@ -70,7 +70,7 @@ function toDrivePreviewUrl(fileUrl) {
   const match = fileUrl.match(/id=([^&]+)/); // lấy ID từ uc?id=...
   if (!match) return fileUrl;
   const fileId = match[1];
-  return `https://drive.google.com/file/d/${fileId}/embed`;
+  return `https://drive.google.com/file/d/${fileId}/preview`;
 }
 
 async function loadDocumentAndComments(slug) {
