@@ -6,6 +6,7 @@ const { analyzeSentiment } = require('../utils/sentiment');
 const notificationController = require('./notificationController');
 const User = require('../models/User');
 const Admin = require('../models/Admin');
+const SubjectType = require('../models/SubjectType');
 
 
 exports.getDocumentsBySubject = async (req, res) => {
