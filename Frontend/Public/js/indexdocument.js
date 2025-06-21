@@ -74,14 +74,24 @@ document.addEventListener("DOMContentLoaded", async () => {
       credentials: 'include'
     });
     if (!latestRes.ok) throw new Error("Không lấy được danh sách tài liệu mới nhất");
-    const latestDocs = await latestRes.json();
+    let latestDocs = await latestRes.json();
+    
+    // Giới hạn 5 tài liệu mới nhất
+    if (Array.isArray(latestDocs)) {
+      latestDocs = latestDocs.slice(0, 5);
+    }
 
     // Lấy tài liệu xem nhiều nhất
     const popularRes = await fetch(`${BACKEND_URL}/documents/popular`, {
       credentials: 'include'
     });
     if (!popularRes.ok) throw new Error("Không lấy được danh sách tài liệu phổ biến");
-    const popularDocs = await popularRes.json();
+    let popularDocs = await popularRes.json();
+    
+    // Giới hạn 5 tài liệu xem nhiều nhất
+    if (Array.isArray(popularDocs)) {
+      popularDocs = popularDocs.slice(0, 5);
+    }
 
     // Hiển thị tài liệu mới nhất
     if (Array.isArray(latestDocs) && latestDocs.length > 0) {
