@@ -268,13 +268,14 @@ exports.createDocumentComment = async (req, res) => {
           'DOCUMENT'
         );
       }
-    } else if (doc.uploader.toString() !== userId.toString()) {
-      // Nếu là comment mới, gửi thông báo cho tác giả blog
+    } else if (doc.uploader && mongoose.Types.ObjectId.isValid(doc.uploader) && doc.uploader.toString() !== userId.toString()) {
+      // Nếu là comment mới, gửi thông báo cho tác giả document
+      // CHỈ TẠO THÔNG BÁO NẾU UPLOADER LÀ OBJECTID HỢP LỆ
       await notificationController.createNotification(
-        doc.uploader, // ID của tác giả blog
+        doc.uploader, // ID của tác giả document
         'COMMENT',
         {
-          message: `${username} đã bình luận vào bài viết của bạn`,
+          message: `${username} đã bình luận vào tài liệu của bạn`,
           postId: documentId,
           commentId: newComment._id
         },
