@@ -1,6 +1,10 @@
 const Document = require('../models/Document');
 const data = require('../data.json');
 const mongoose = require('mongoose');
+const DocumentComment = require('../models/DocumentComment');
+const { containsBadWords } = require('../utils/badWords');
+const { analyzeSentiment } = require('../utils/sentiment');
+const notificationController = require('./notificationController');
 
 
 // Trả lại cả label (hiển thị cho client), không dùng để query
@@ -112,8 +116,9 @@ exports.deleteDocumentById = async (req, res) => {
       console.log("Không tìm thấy document ID:", objectId);
       return res.status(404).json({ msg: 'Tài liệu không tồn tại' });
     }
-
+    await DocumentComment.deleteMany({ document: id });
     await Document.deleteOne({ _id: objectId });
+    
     res.json({ msg: 'Tài liệu đã bị từ chối và xoá khỏi hệ thống.' });
   } catch (err) {
     console.error('Lỗi khi từ chối tài liệu:', err);
@@ -178,11 +183,12 @@ exports.updateDocument = async (req, res) => {
 
 exports.getDocumentById = async (req, res) => {
   try {
-    const doc = await Document.findById(req.params.id);
-    if (!doc) {
-      return res.status(404).json({ msg: 'Document không tồn tại' });
+    const document = await Document.findById(req.params.id);
+    if (!document) {
+      return res.status(404).json({ msg: 'Tài liệu không tìm thấy' });
     }
-    res.json(doc);
+    const comments = await DocumentComment.find({ document: document._id }).sort({ createdAt: -1 }).lean();
+    res.json({ document, comments });
   } catch (err) {
     console.error('Lỗi khi lấy document theo ID:', err);
     res.status(500).json({ msg: 'Lỗi server' });
@@ -190,4 +196,107 @@ exports.getDocumentById = async (req, res) => {
 };
 
 
+exports.createDocumentComment = async (req, res) => {
+  try {
+    const { documentId, username, email, content, parentComment } = req.body;
+    const userId = req.session.user?.id ?? req.session.admin?.id;
 
+    if (!documentId || !username || !email || !content) {
+      return res.status(400).json({ msg: 'All fields are required' });
+    }
+
+    if (parentComment) {
+      const parentExists = await DocumentComment.findById(parentComment);
+      if (!parentExists) {
+        return res.status(400).json({ msg: 'Parent comment not found' });
+      }
+    }
+
+    if (containsBadWords(content)) {
+      return res.status(400).json({ 
+        msg: 'Comment chứa từ ngữ không phù hợp',
+        containsBadWords: true
+      });
+    }
+
+    const scores = await analyzeSentiment(content);
+    const V = scores['Very Negative'] || 0;
+    const N = scores['Negative'] || 0;
+    const Neu = scores['Neutral'] || 0;
+
+    const aggressive = (V + N) - Neu;
+    const HARD_BLOCK = 0.50;
+
+    if (aggressive >= HARD_BLOCK) {
+      return res.status(400).json({
+        msg: 'Comment bị đánh giá quá tiêu cực – vui lòng điều chỉnh!',
+        sentiment: { V, N, Neu, aggressive }
+      });
+    }
+
+    const newComment = new DocumentComment({
+        document: documentId,
+        username,
+        email,
+        userId,
+        content,
+        parentComment: parentComment || null
+    });
+
+    await newComment.save();
+
+    const doc = await Document.findById(documentId);
+    if (!doc) {
+      return res.status(404).json({ msg: 'Document not found' });
+    }
+
+    // Tạo thông báo (tương tự blog)
+    if (parentComment) {
+      // Nếu là reply, gửi thông báo cho người viết comment gốc
+      const parentCommentDoc = await DocumentComment.findById(parentComment);
+      if (parentCommentDoc && parentCommentDoc.userId.toString() !== userId.toString()) {
+        await notificationController.createNotification(
+          parentCommentDoc.userId, // ID của người viết comment gốc
+          'REPLY',
+          {
+            message: `${username} đã phản hồi bình luận của bạn`,
+            postId: documentId,
+            commentId: newComment._id,
+            replyId: newComment._id
+          },
+          doc.title,
+          'DOCUMENT'
+        );
+      }
+    } else if (doc.uploader.toString() !== userId.toString()) {
+      // Nếu là comment mới, gửi thông báo cho tác giả blog
+      await notificationController.createNotification(
+        doc.uploader, // ID của tác giả blog
+        'COMMENT',
+        {
+          message: `${username} đã bình luận vào bài viết của bạn`,
+          postId: documentId,
+          commentId: newComment._id
+        },
+        doc.title,
+        'DOCUMENT'
+      );
+    }
+
+    res.status(201).json({ msg: 'Comment added', comment: newComment });
+  } catch (err) {
+    console.error('Error creating document comment:', err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+// [THÊM MỚI] Lấy comment theo document
+exports.getCommentsByDocumentId = async (req, res) => {
+  try {
+    const { documentId } = req.params;
+    const comments = await DocumentComment.find({ document: documentId }).sort({ createdAt: -1 });
+    res.json(comments);
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
