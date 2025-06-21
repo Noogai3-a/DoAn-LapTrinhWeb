@@ -23,25 +23,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     return `
-    <div class="document-item-wrapper"> <!-- Thêm wrapper để dễ căn chỉnh -->
-      <a href="${detailUrl}" class="document-item">
-        <img 
-          src="/assets/doc-default.png" 
-          data-src="${thumbnailSrc}" 
-          alt="${doc.title}" 
-          class="doc-image lazy-img"
-        >
-        <div class="doc-meta">
-          <h6>${date}</h6>
-          <div class="doc-stats">
+    <a href="${detailUrl}" class="document-item">
+      <img 
+        src="/assets/doc-default.png" 
+        data-src="${thumbnailSrc}" 
+        alt="${doc.title}" 
+        class="doc-image lazy-img"
+      >
+      <div class="doc-meta">
+        <h6>${date}</h6>
+        <div class="doc-stats">
           <span class="views"><i class="fas fa-eye"></i> ${doc.views || 0}</span>
         </div>
-        <h3>${doc.title}</h3>
-        <p>${subtitle.substring(0, 50)}...</p>
-      </a>
-    </div>
+      </div>
+      <h3>${doc.title}</h3>
+      <p>${subtitle.substring(0, 50)}...</p>
+    </a>
     `;
-  }
+}
 
   // Tải tất cả ảnh trước khi hiển thị thật
   function lazyLoadImages(callback) {

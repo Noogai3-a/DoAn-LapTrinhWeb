@@ -164,6 +164,7 @@ a:visited {
   line-height: 1.4;
 }
 
+/* Style cho phần thống kê */
 .doc-meta {
     display: flex;
     justify-content: space-between;
@@ -172,21 +173,24 @@ a:visited {
 }
 
 .doc-stats {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  font-size: 13px;
-  color: #888;
+    display: flex;
+    gap: 15px;
+    color: #777;
+    font-size: 12px;
 }
 
 .doc-stats span {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .doc-stats i {
-  font-size: 12px;
+    font-size: 14px;
+}
+
+.views {
+    color: #666;
 }
 
 
