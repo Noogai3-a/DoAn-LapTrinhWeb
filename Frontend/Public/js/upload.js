@@ -174,8 +174,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (selectedType && subjectNamesByType[selectedType]?.subjects) {
       subjectNamesByType[selectedType].subjects.forEach(subject => {
         const option = document.createElement("option");
-        option.value = subject.slug;
-        option.textContent = subject.label;
+        option.value = subject.subjectSlug;
+        option.textContent = subject.subjectLabel; 
         subjectNameSelect.appendChild(option);
       });
     }
@@ -208,7 +208,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else if (typeSlug && nameSlug && subjectNamesByType[typeSlug]?.subjects) {
       const subject = subjectNamesByType[typeSlug].subjects.find(s => s.slug === nameSlug);
       if (subject) {
-        subjectNameLabel.value = subject.label;
+        subjectNameLabel.value = subject.subjectLabel;
       } else {
         subjectNameLabel.value = '';
       }
