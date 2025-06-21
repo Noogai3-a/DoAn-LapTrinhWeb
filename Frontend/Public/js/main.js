@@ -430,8 +430,8 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
                 : `https://backend-yl09.onrender.com/api/blogs/search?default=true`;
         } else if (type === 'document') {
             url = query
-                ? `https://backend-yl09.onrender.com/api/review-documents/search?q=${encodeURIComponent(query)}`
-                : `https://backend-yl09.onrender.com/api/review-documents/search?default=true`;
+                ? `https://backend-yl09.onrender.com/api/documents/search?q=${encodeURIComponent(query)}`
+                : `https://backend-yl09.onrender.com/api/documents/search?default=true`;
         }
         fetch(url)
             .then(res => res.json())
