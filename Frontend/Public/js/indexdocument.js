@@ -1,50 +1,129 @@
 const BACKEND_URL = 'https://backend-yl09.onrender.com/api';
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const latestContainer = document.getElementById("latest-documents");
   const popularContainer = document.getElementById("popular-documents");
 
-  function createDocumentHTML(doc) {
+  // Tạo từng document-item với style giống blog
+  function createDocumentItem(doc) {
     const fileUrl = `https://backend-yl09.onrender.com/${doc.fileUrl.replace(/\\/g, '/')}`;
     const subtitle = `${doc.subjectNameLabel || ''} • ${doc.subjectTypeLabel || ''}`;
     const detailUrl = `/document.html?slug=${doc.slug}`;
+    const date = doc.createdAt 
+      ? new Date(doc.createdAt).toLocaleDateString("vi-VN") 
+      : "";
+    
     let thumbnailSrc = '/assets/doc-default.png';
     if (doc.previewUrl) {
       if (doc.previewUrl.startsWith('http')) {
-        thumbnailSrc = doc.previewUrl; // là URL đầy đủ rồi
+        thumbnailSrc = doc.previewUrl;
       } else {
-        // chỉ là phần đuôi như "thumbnail?id=abcxyz"
         thumbnailSrc = 'https://drive.google.com/' + doc.previewUrl;
       }
     }
+
     return `
-      <a href="${detailUrl}" style="text-decoration: none;">
-        <img 
-          src="${thumbnailSrc || '/assets/doc-default.png'}" 
-          alt="${doc.title}" 
-          style="width: 150px; height: 200px; object-fit: cover; border-radius: 4px;" 
-        />
-        <p class="doc-title">${doc.title}</p>
-        <p class="doc-subtitle">${subtitle}</p>
-      </a>
+    <a href="${detailUrl}" class="document-item">
+      <img 
+        src="/assets/doc-default.png" 
+        data-src="${thumbnailSrc}" 
+        alt="${doc.title}" 
+        class="doc-image lazy-img"
+      >
+      <div class="doc-meta">
+        <h6>${date}</h6>
+        <div class="doc-stats">
+          <span class="views"><i class="fas fa-eye"></i> ${doc.views || 0}</span>
+        </div>
+      </div>
+      <h3>${doc.title}</h3>
+      <p>${subtitle.substring(0, 50)}...</p>
+    </a>
     `;
+}
+
+  // Tải tất cả ảnh trước khi hiển thị thật
+  function lazyLoadImages(callback) {
+    const lazyImages = document.querySelectorAll("img.lazy-img");
+    let loadedCount = 0;
+    const total = lazyImages.length;
+
+    if (total === 0) {
+      callback();
+      return;
+    }
+
+    lazyImages.forEach(img => {
+      const realSrc = img.getAttribute("data-src");
+      if (!realSrc) {
+        loadedCount++;
+        if (loadedCount === total) callback();
+        return;
+      }
+
+      const temp = new Image();
+      temp.onload = temp.onerror = () => {
+        loadedCount++;
+        img._preloadedSrc = realSrc;
+        if (loadedCount === total) callback();
+      };
+      temp.src = realSrc;
+    });
   }
 
-  fetch(`${BACKEND_URL}/documents/latest`, {
-    credentials: 'include'
-  })
-    .then(res => res.json())
-    .then(data => {
-      latestContainer.innerHTML = data.map(createDocumentHTML).join('');
-    })
-    .catch(err => console.error("❌ Lỗi tải tài liệu mới nhất:", err));
+  try {
+    // Lấy tài liệu mới nhất
+    const latestRes = await fetch(`${BACKEND_URL}/documents/latest`, {
+      credentials: 'include'
+    });
+    if (!latestRes.ok) throw new Error("Không lấy được danh sách tài liệu mới nhất");
+    let latestDocs = await latestRes.json();
+    
+    // Giới hạn 5 tài liệu mới nhất
+    if (Array.isArray(latestDocs)) {
+      latestDocs = latestDocs.slice(0, 5);
+    }
 
-  fetch(`${BACKEND_URL}/documents/popular`, {
-    credentials: 'include'
-  })
-    .then(res => res.json())
-    .then(data => {
-      popularContainer.innerHTML = data.map(createDocumentHTML).join('');
-    })
-    .catch(err => console.error("❌ Lỗi tải tài liệu phổ biến:", err));
+    // Lấy tài liệu xem nhiều nhất
+    const popularRes = await fetch(`${BACKEND_URL}/documents/popular`, {
+      credentials: 'include'
+    });
+    if (!popularRes.ok) throw new Error("Không lấy được danh sách tài liệu phổ biến");
+    let popularDocs = await popularRes.json();
+    
+    // Giới hạn 5 tài liệu xem nhiều nhất
+    if (Array.isArray(popularDocs)) {
+      popularDocs.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+      popularDocs = popularDocs.slice(0, 5);
+    }
+
+    // Hiển thị tài liệu mới nhất
+    if (Array.isArray(latestDocs) && latestDocs.length > 0) {
+      latestContainer.innerHTML = latestDocs.map(createDocumentItem).join('');
+    } else {
+      latestContainer.innerHTML = '<p>Không có tài liệu mới nào</p>';
+    }
+
+    // Hiển thị tài liệu phổ biến
+    if (Array.isArray(popularDocs) && popularDocs.length > 0) {
+      popularContainer.innerHTML = popularDocs.map(createDocumentItem).join('');
+    } else {
+      popularContainer.innerHTML = '<p>Không có tài liệu phổ biến</p>';
+    }
+
+    // Load ảnh lazy
+    lazyLoadImages(() => {
+      document.querySelectorAll("img.lazy-img").forEach(img => {
+        if (img._preloadedSrc) {
+          img.src = img._preloadedSrc;
+          img.classList.add("fade-in");
+        }
+      });
+    });
+
+  } catch (err) {
+    console.error("Lỗi khi load tài liệu:", err);
+    latestContainer.innerHTML = '<p>Không thể tải tài liệu. Vui lòng thử lại sau.</p>';
+    popularContainer.innerHTML = '<p>Không thể tải tài liệu. Vui lòng thử lại sau.</p>';
+  }
 });

@@ -72,19 +72,43 @@ a:visited {
 .section .section-title {
     text-align: left;
     font-size: 28px;
-    color: #468189;
     margin-bottom: 20px;
     width: 100%;
     padding-left: 20px;
 }
 
-
-.document-box{
+/* Document Section - Giống với Blog */
+.document-item {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    height: 100%;
 }
+
+.document-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+.document-box .section {
+  margin-bottom: 40px;
+}
+
+.document-box .section-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+  position: relative;
+  padding-bottom: 10px;
+}
+
 
 .breadcrumb {
     font-size: 30px;
@@ -94,72 +118,93 @@ a:visited {
     padding-top: 20px;
     padding-left: 20px;
 }
-
-.document-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-top: 20px;
-  align-items: stretch;
-}
-
-.doc-list {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-top: 20px;
-    align-items: stretch;
-}
-
 .doc-list {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-top: 20px;
-  align-items: stretch;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
 }
 
 .doc-item {
-  background-color: white;
-  border: 1px solid #e0e0e0;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   text-decoration: none;
-
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  color: #333;
 }
 
 .doc-item:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .doc-image {
-  width: 100%;
-  max-height: 250px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 15px;
+    width: 100%; 
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
 }
 
-.doc-item h3 {
-  font-size: 20px;
-  color: #333;
-  margin-bottom: 10px;
+.doc-image.fade-in {
+  opacity: 1;
 }
 
-.doc-item h6 {
-  color: silver;
+.doc-info {
+  padding: 15px;
 }
 
-.doc-item p {
-  font-size: 14px;
-  color: #777;
+.doc-info h3 {
+  font-size: 18px;
+  margin: 0 0 10px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Style cho phần thống kê */
+.doc-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.doc-stats {
+    display: flex;
+    gap: 15px;
+    color: #777;
+    font-size: 12px;
+}
+
+.doc-stats span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.doc-stats i {
+    font-size: 14px;
+}
+
+.views {
+    color: #666;
+}
+
+
+.document-item h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+
+.document-item p {
+    font-size: 14px;
+    color: #777;
+    margin-top: auto;
 }
 
 .blog-meta {
@@ -217,11 +262,14 @@ a:visited {
 }
 
 .document-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /*tự động đổ cột, mỗi cột rộng ít nhất 250px*/
-    gap: 20px;
-    margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+  justify-items: center; /* Căn giữa các item */
+  padding: 0 20px; /* Thêm padding hai bên */
 }
+
 
 .document-item {
     width: 220px;

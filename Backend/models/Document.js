@@ -50,6 +50,7 @@ const documentSchema = new mongoose.Schema({
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending'
   },
+  views: { type: Number, default: 0 }, 
   uploadDate: {
     type: Date,
     default: Date.now
