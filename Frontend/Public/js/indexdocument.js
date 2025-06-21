@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function createDocumentHTML(doc) {
     const fileUrl = `https://backend-yl09.onrender.com/${doc.fileUrl.replace(/\\/g, '/')}`;
     const subtitle = `${doc.subjectNameLabel || ''} • ${doc.subjectTypeLabel || ''}`;
-    const title = doc.title || 'Tài liệu';
+    const detailUrl = `/document.html?slug=${doc.slug}`;
     let thumbnailSrc = '/assets/doc-default.png';
     if (doc.previewUrl) {
       if (doc.previewUrl.startsWith('http')) {
@@ -18,12 +18,17 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     return `
-      <a href="${fileUrl}" class="doc-item" target="_blank">
-        <img src="${thumbnailSrc}" alt="${title}" class="doc-image">
-        <h3>${title}</h3>
-        <h6>${subtitle}</h6>
-        <p>${doc.description || ''}</p>
+      <div class="document-item">
+      <a href="${detailUrl}" style="text-decoration: none;">
+        <img 
+          src="${thumbnailSrc || '/assets/doc-default.png'}" 
+          alt="${doc.title}" 
+          style="width: 150px; height: 200px; object-fit: cover; border-radius: 4px;" 
+        />
+        <p class="doc-title">${doc.title}</p>
+        <p class="doc-subtitle">${subtitle}</p>
       </a>
+    </div>
     `;
   }
 
