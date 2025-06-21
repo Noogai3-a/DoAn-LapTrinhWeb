@@ -79,6 +79,25 @@ a:visited {
 }
 
 /* Document Section - Giống với Blog */
+.document-item {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.document-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
 .document-box .section {
   margin-bottom: 40px;
 }
@@ -123,11 +142,13 @@ a:visited {
 }
 
 .doc-image {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 0.5s ease;
+    width: 100%; 
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
 }
 
 .doc-image.fade-in {
@@ -146,9 +167,10 @@ a:visited {
 }
 
 .doc-meta {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 .doc-stats {
@@ -167,6 +189,20 @@ a:visited {
 
 .doc-stats i {
   font-size: 12px;
+}
+
+
+.document-item h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+
+.document-item p {
+    font-size: 14px;
+    color: #777;
+    margin-top: auto;
 }
 
 .blog-meta {

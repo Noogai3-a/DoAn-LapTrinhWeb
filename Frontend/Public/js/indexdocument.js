@@ -4,35 +4,39 @@ document.addEventListener("DOMContentLoaded", async () => {
   const latestContainer = document.getElementById("latest-documents");
   const popularContainer = document.getElementById("popular-documents");
 
-  // Tạo từng document-item
+  // Tạo từng document-item với style giống blog
   function createDocumentItem(doc) {
     const fileUrl = `https://backend-yl09.onrender.com/${doc.fileUrl.replace(/\\/g, '/')}`;
     const subtitle = `${doc.subjectNameLabel || ''} • ${doc.subjectTypeLabel || ''}`;
     const detailUrl = `/document.html?slug=${doc.slug}`;
+    const date = doc.createdAt 
+      ? new Date(doc.createdAt).toLocaleDateString("vi-VN") 
+      : "";
+    
     let thumbnailSrc = '/assets/doc-default.png';
     if (doc.previewUrl) {
       if (doc.previewUrl.startsWith('http')) {
-        thumbnailSrc = doc.previewUrl; // là URL đầy đủ rồi
+        thumbnailSrc = doc.previewUrl;
       } else {
-        // chỉ là phần đuôi như "thumbnail?id=abcxyz"
         thumbnailSrc = 'https://drive.google.com/' + doc.previewUrl;
       }
     }
+
     return `
-    <div class="document-item">
-      <a href="${detailUrl}" style="text-decoration: none;">
-        <img 
-          src="${thumbnailSrc || '/assets/doc-default.png'}" 
-          alt="${doc.title}" 
-          class="doc-image lazy-img"
-        />
-        <div class="doc-info">
-          <h3>${doc.title}</h3>
-          <p class="doc-meta">${subtitle}</p>
-          </div>
-      </a>
-    </div>
-  `;
+    <a href="${detailUrl}" class="document-item">
+      <img 
+        src="/assets/doc-default.png" 
+        data-src="${thumbnailSrc}" 
+        alt="${doc.title}" 
+        class="doc-image lazy-img"
+      >
+      <div class="doc-meta">
+        <h6>${date}</h6>
+      </div>
+      <h3>${doc.title}</h3>
+      <p>${subtitle.substring(0, 50)}...</p>
+    </a>
+    `;
   }
 
   // Tải tất cả ảnh trước khi hiển thị thật
