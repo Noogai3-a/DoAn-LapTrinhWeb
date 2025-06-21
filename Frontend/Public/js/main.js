@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       subMenu.className = 'sub-menu';
 
       menuItemTitle.addEventListener('click', () => {
-        subMenu.classList.toggle('open');
+        subMenu.classList.toggle('show');
       });
 
       for (const { subjectSlug, subjectLabel } of subjects) {
