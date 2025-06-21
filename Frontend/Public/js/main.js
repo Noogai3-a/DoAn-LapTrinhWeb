@@ -449,7 +449,7 @@ fetch('https://backend-yl09.onrender.com/api/user-info', { credentials: 'include
                         if (type === 'blog') {
                             window.location.href = `/blog-read?post=${item._id}`;
                         } else if (type === 'document') {
-                            window.location.href = `/document.html?slug=${item.slug}`;
+                            li.innerHTML = `<a href="/document.html?slug=${doc.slug}">${doc.title}</a>`;
                         }
                     });
                     suggestions.appendChild(li);
